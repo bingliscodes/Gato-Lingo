@@ -4,13 +4,28 @@ from ..services.speech_to_text import SpeechToTextService
 from ..services.text_to_speech import TextToSpeechService
 from ..config import settings
 import base64
-import json
+
+if settings.use_mock_services:
+    from ..services.mock_services import (
+        MockConversationEngine as ConversationEngine,
+        MockSpeechToTextService as SpeechToTextService,
+        MockTextToSpeechService as TextToSpeechService,
+    )
+else:
+    from ..services.conversation_engine import ConversationEngine
+    from ..services.speech_to_text import SpeechToTextService
+    from ..services.text_to_speech import TextToSpeechService
 
 class ConversationHandler:
     def __init__(self):
-        self.conversation_engine = ConversationEngine(settings.anthropic_api_key)
-        self.stt_service = SpeechToTextService(settings.openai_api_key)
-        self.tts_service = TextToSpeechService(settings.openai_api_key)
+        if settings.use_mock_services:
+            self.conversation_engine = ConversationEngine()
+            self.stt_service = SpeechToTextService()
+            self.tts_service = TextToSpeechService()
+        else:
+            self.conversation_engine = ConversationEngine(settings.anthropic_api_key)
+            self.stt_service = SpeechToTextService(settings.openai_api_key)
+            self.tts_service = TextToSpeechService(settings.openai_api_key)
     
     async def handle_connection(self, websocket: WebSocket):
         await websocket.accept()
@@ -22,7 +37,6 @@ class ConversationHandler:
         try:
             while True:
                 data = await websocket.receive_json()
-                print(f"Received: {data}")
                 
                 if data["type"] == "config":
                     # Initialize conversation with config
