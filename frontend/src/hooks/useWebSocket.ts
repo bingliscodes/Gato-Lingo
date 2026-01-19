@@ -17,6 +17,7 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
 
     ws.onopen = () => {
       setConnectionStatus('connected')
+      console.log('WebSocket connected')
     }
 
     ws.onmessage = (event) => {
@@ -27,8 +28,9 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
       setConnectionStatus('disconnected')
     }
 
-    ws.onerror = () => {
+    ws.onerror = (err) => {
       setConnectionStatus('disconnected')
+      console.error('WebSocket error:', err)
     }
 
     return () => {

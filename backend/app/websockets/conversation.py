@@ -22,6 +22,7 @@ class ConversationHandler:
         try:
             while True:
                 data = await websocket.receive_json()
+                print(f"Received: {data}")
                 
                 if data["type"] == "config":
                     # Initialize conversation with config
