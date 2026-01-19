@@ -21,9 +21,3 @@ async def health_check():
 @app.websocket("/ws/conversation")
 async def websocket_endpoint(websocket: WebSocket):
     await conversation_handler.handle_connection(websocket)
-```
-
-**.env**
-```
-ANTHROPIC_API_KEY=your-anthropic-key
-OPENAI_API_KEY=your-openai-key
