@@ -1,6 +1,7 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from .websockets.conversation import ConversationHandler
+from ..database.database import session
 
 app = FastAPI(title="Language Tutor API")
 
@@ -13,6 +14,8 @@ app.add_middleware(
 )
 
 conversation_handler = ConversationHandler()
+
+db = session()
 
 @app.get("/health")
 async def health_check():

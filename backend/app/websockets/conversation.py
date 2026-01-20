@@ -6,6 +6,7 @@ from ..config import settings
 import base64
 
 if settings.use_mock_services:
+    print("Using mock_services...")
     from ..services.mock_services import (
         MockConversationEngine as ConversationEngine,
         MockSpeechToTextService as SpeechToTextService,
