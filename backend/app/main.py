@@ -1,9 +1,12 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from .websockets.conversation import ConversationHandler
-from ..database.database import session
+from ..database.database import session, engine
+from ..models import database_models
 
 app = FastAPI(title="Language Tutor API")
+
+database_models.Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,
