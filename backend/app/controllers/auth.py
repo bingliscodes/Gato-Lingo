@@ -8,8 +8,205 @@ from sqlalchemy.orm import Session
 
 from ..database.database import get_db
 from ..models.user import User
-from ..schemas.auth import (SignupRequest, LoginRequest, AuthResponse, UserData, ForgotPasswordRequest, ResetPasswordRequest, MessageResponse)
+from ..schemas.auth import (
+    SignupRequest,
+    LoginRequest,
+    AuthResponse,
+    UserData,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    MessageResponse
+)
 from ..schemas.user import UserResponse
+from ..utils.password import hash_password, verify_password
 from ..utils.jwt import create_access_token
 from ..dependencies.auth import get_current_user
-from ..utils.password import verify_password
+from ..config import settings
+
+router = APIRouter(
+    prefix="/auth",
+    tags=["auth"]
+)
+
+
+def set_token_cookie(response: Response, token: str):
+    response.set_cookie(
+        key="jwt",
+        value=token,
+        httponly=True,
+        secure=settings.frontend_url.startswith("https"),  # True in production
+        samesite="lax",
+        max_age=settings.jwt_expires_in_minutes * 60  # Convert to seconds
+    )
+
+
+@router.post("/signup", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
+def signup(
+    user_data: SignupRequest,
+    response: Response,
+    db: Session = Depends(get_db)
+):
+    # Check if email already exists
+    existing_user = db.query(User).filter(User.email == user_data.email).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    # Create new user
+    new_user = User(
+        email=user_data.email,
+        password_hash=hash_password(user_data.password),
+        first_name=user_data.first_name,
+        last_name=user_data.last_name,
+        native_language=user_data.native_language,
+        target_language=user_data.target_language,
+        proficiency_level=user_data.proficiency_level
+    )
+    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    # Create token
+    token = create_access_token(new_user.id)
+    
+    # Set cookie
+    set_token_cookie(response, token)
+    
+    return AuthResponse(
+        status="success",
+        token=token,
+        user=UserData.model_validate(new_user)
+    )
+
+
+@router.post("/login", response_model=AuthResponse)
+def login(
+    credentials: LoginRequest,
+    response: Response,
+    db: Session = Depends(get_db)
+):
+    # Find user by email
+    user = db.query(User).filter(User.email == credentials.email).first()
+    
+    # Check if user exists and password is correct
+    if not user or not verify_password(credentials.password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password"
+        )
+    
+    # Create token
+    token = create_access_token(user.id)
+    
+    # Set cookie
+    set_token_cookie(response, token)
+    
+    return AuthResponse(
+        status="success",
+        token=token,
+        user=UserData.model_validate(user)
+    )
+
+
+@router.post("/logout", response_model=MessageResponse)
+def logout(response: Response):
+    response.delete_cookie(
+        key="jwt",
+        httponly=True,
+        secure=settings.frontend_url.startswith("https"),
+        samesite="lax"
+    )
+    
+    return MessageResponse(
+        status="success",
+        message="Logged out successfully"
+    )
+
+
+@router.get("/me", response_model=UserResponse)
+def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+@router.post("/forgot-password", response_model=MessageResponse)
+def forgot_password(
+    request_data: ForgotPasswordRequest,
+    db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(User.email == request_data.email).first()
+    
+    if not user:
+        # Don't reveal if email exists (security best practice)
+        # But you could also raise an error like your Express version
+        return MessageResponse(
+            status="success",
+            message="If that email exists, a reset link has been sent"
+        )
+    
+    # Generate reset token (plain token to send, hashed to store)
+    reset_token = secrets.token_urlsafe(32)
+    hashed_token = hashlib.sha256(reset_token.encode()).hexdigest()
+    
+    # Save to user
+    user.password_reset_token = hashed_token
+    user.password_reset_expires = datetime.utcnow() + timedelta(hours=1)
+    db.commit()
+    
+    # TODO: Send email with reset link
+    # reset_url = f"{settings.frontend_url}/resetPassword/{reset_token}"
+    # await send_password_reset_email(user.email, reset_url)
+    
+    # For development, print the token
+    print(f"Password reset token for {user.email}: {reset_token}")
+    print(f"Reset URL: {settings.frontend_url}/resetPassword/{reset_token}")
+    
+    return MessageResponse(
+        status="success",
+        message="Token sent to email!"
+    )
+
+
+@router.post("/reset-password/{token}", response_model=AuthResponse)
+def reset_password(
+    token: str,
+    request_data: ResetPasswordRequest,
+    response: Response,
+    db: Session = Depends(get_db)
+):
+    # Hash the token to compare with stored hash
+    hashed_token = hashlib.sha256(token.encode()).hexdigest()
+    
+    # Find user with valid token
+    user = db.query(User).filter(
+        User.password_reset_token == hashed_token,
+        User.password_reset_expires > datetime.utcnow()
+    ).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Token is invalid or has expired"
+        )
+    
+    # Update password
+    user.password_hash = hash_password(request_data.password)
+    user.password_changed_at = datetime.utcnow()
+    
+    # Clear reset token fields
+    user.password_reset_token = None
+    user.password_reset_expires = None
+    
+    db.commit()
+    
+    # Log user in with new token
+    jwt_token = create_access_token(user.id)
+    set_token_cookie(response, jwt_token)
+    
+    return AuthResponse(
+        status="success",
+        token=jwt_token,
+        user=UserData.model_validate(user)
+    )
