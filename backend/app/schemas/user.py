@@ -1,23 +1,29 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, field_validator, model_validator
 from typing import Optional
 from datetime import datetime
+from uuid import UUID
 
-# Base schema with shared fields
-class UserBase(BaseModel):
+class UserCreate(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
+    password: str
+    password_confirm: str
+
+    # optional fields
     native_language: Optional[str] = None
     target_language: Optional[str] = None
     proficiency_level: Optional[str] = "beginner"
 
-# Schema for creating a user (what the client sends)
-class UserCreate(UserBase):
-    password: str
+        
+    # Validate passwords match (runs after individual field validation)
+    @model_validator(mode='after')
+    def passwords_match(self):
+        if self.password != self.password_confirm:
+            raise ValueError('Passwords do not match')
+        return self
     
-    # Note: No 'id', no 'created_at' - the database handles those
-
-# Schema for updating a user (all fields optional)
+# Schema for updating a user (all fields optional; passwords not updated this way)
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     first_name: Optional[str] = None
@@ -25,31 +31,18 @@ class UserUpdate(BaseModel):
     native_language: Optional[str] = None
     target_language: Optional[str] = None
     proficiency_level: Optional[str] = None
-    password: Optional[str] = None
 
 # Schema for returning a user (what the client receives)
-class UserResponse(UserBase):
-    id: int
+class UserResponse(BaseModel):
+    id: UUID
+    email: str
+    first_name: str
+    last_name: str
     role: str
+    native_language: Optional[str]
+    target_language: Optional[str]
+    proficiency_level: Optional[str]
     created_at: datetime
-    updated_at: Optional[datetime] = None
-    
-    # This tells Pydantic to read data from SQLAlchemy models
+    updated_at: Optional[datetime]
+
     model_config = ConfigDict(from_attributes=True)
-    
-    # Note: No 'password_hash' - never expose this!
-"""
-Why multiple schemas?
-
-UserCreate:    What client sends when creating
-               - Has password (plain text, will be hashed)
-               - No id (database assigns it)
-
-UserUpdate:    What client sends when updating  
-               - All fields optional (only update what's provided)
-
-UserResponse:  What we send back to client
-               - Has id, created_at (database-generated fields)
-               - No password (never expose this!)
-
-               """
