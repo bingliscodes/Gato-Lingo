@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, field_validator, model_validator
+from pydantic import BaseModel, EmailStr, model_validator
 from typing import Optional
 from uuid import UUID
 from datetime import datetime
@@ -9,9 +9,9 @@ class SignupRequest(BaseModel):
     last_name: str
     password: str
     password_confirm: str
-    native_language: Optional[str]
-    target_language: Optional[str]
-    proficiency_level: Optional[str]
+    native_language: Optional[str] = None
+    target_language: Optional[str] = None
+    proficiency_level: Optional[str] = "beginner"
 
     @model_validator(mode='after')
     def passwords_match(self):
