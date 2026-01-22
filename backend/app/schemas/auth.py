@@ -48,7 +48,7 @@ class UserData(BaseModel):
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
 
-class PasswordResetRequest(BaseModel):
+class ResetPasswordRequest(BaseModel):
     password: str
     password_confirm: str
 
