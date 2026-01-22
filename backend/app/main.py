@@ -1,34 +1,12 @@
-from fastapi import FastAPI, WebSocket, Depends
+from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+
+from .database.database import engine, Base
+from .controllers import user as user_controller
 from .websockets.conversation import ConversationHandler
-from ..database.database import session, engine
-from ..models import database_models
 
+Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Language Tutor API")
-
-database_models.Base.metadata.create_all(bind=engine)
-
-users = [database_models.User(id=1, first_name="ben", last_name="inglis", email="testEmail", native_language="english", target_language="cat", password="pass", password_confirm="pass", role="admin" ),
-         database_models.User(id=2, first_name="cannoli", last_name="inglis", email="cannoliEmail", native_language="cat", target_language="spanish", password="pass", password_confirm="pass", role="admin" )]
-
-def get_db():
-    db = session()
-    try:
-        yield db
-    finally:
-        db.close()
-
-def init_db():
-    db = session()
-
-    count = db.query(database_models.User).count
-
-    if count == 0:
-        db.add_all(users)
-        db.commit()
-
-init_db()
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,13 +16,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include routers
+app.include_router(user_controller.router)
+
+# WebSocket handler
 conversation_handler = ConversationHandler()
-
-@app.get("/users")
-def get_all_users(db: Session = Depends(get_db)):
-    db_users = db.query(database_models.User).all()
-
-    return db_users
 
 @app.get("/health")
 async def health_check():
