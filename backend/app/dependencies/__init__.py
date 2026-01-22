@@ -77,7 +77,7 @@ def get_current_user(
         )
     
     # Check if user changed password after token was issued
-    token_issued_at = datetime.utcfromtimestamp(payload.get("iat", 0))
+    token_issued_at = datetime.fromtimestamp(datetime.timezone.utc)(payload.get("iat", 0))
     if user.password_changed_at and user.password_changed_at > token_issued_at:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -152,7 +152,7 @@ def forgot_password(
     
     # Save to user
     user.password_reset_token = hashed_token
-    user.password_reset_expires = datetime.utcnow() + timedelta(hours=1)
+    user.password_reset_expires = datetime.now(datetime.timezone.utc) + timedelta(hours=1)
     db.commit()
     
     # TODO: Send email with reset link
@@ -182,7 +182,7 @@ def reset_password(
     # Find user with valid token
     user = db.query(User).filter(
         User.password_reset_token == hashed_token,
-        User.password_reset_expires > datetime.utcnow()
+        User.password_reset_expires > datetime.now(datetime.timezone.utc)
     ).first()
     
     if not user:
@@ -193,7 +193,7 @@ def reset_password(
     
     # Update password
     user.password_hash = hash_password(request_data.password)
-    user.password_changed_at = datetime.utcnow()
+    user.password_changed_at = datetime.now(datetime.timezone.utc)
     
     # Clear reset token fields
     user.password_reset_token = None
