@@ -3,25 +3,6 @@ from typing import Optional
 from datetime import datetime
 from uuid import UUID
 
-class UserCreate(BaseModel):
-    email: EmailStr
-    first_name: str
-    last_name: str
-    password: str
-    password_confirm: str
-
-    # optional fields
-    native_language: Optional[str] = None
-    target_language: Optional[str] = None
-    proficiency_level: Optional[str] = "beginner"
-
-        
-    # Validate passwords match (runs after individual field validation)
-    @model_validator(mode='after')
-    def passwords_match(self):
-        if self.password != self.password_confirm:
-            raise ValueError('Passwords do not match')
-        return self
     
 # Schema for updating a user (all fields optional; passwords not updated this way)
 class UserUpdate(BaseModel):
