@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, model_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, model_validator
 from typing import Optional
 from uuid import UUID
 from datetime import datetime
@@ -28,8 +28,7 @@ class AuthResponse(BaseModel):
     token: str
     user: "UserData"
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class UserData(BaseModel):
     id: UUID
@@ -42,8 +41,7 @@ class UserData(BaseModel):
     proficiency_level: Optional[str]
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
