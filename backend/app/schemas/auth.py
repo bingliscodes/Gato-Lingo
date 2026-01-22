@@ -23,13 +23,6 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
-class AuthResponse(BaseModel):
-    status: str = "success"
-    token: str
-    user: "UserData"
-
-    model_config = ConfigDict(from_attributes=True)
-
 class UserData(BaseModel):
     id: UUID
     email: str
@@ -42,6 +35,15 @@ class UserData(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class AuthResponse(BaseModel):
+    status: str = "success"
+    token: str
+    user: "UserData"
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
@@ -59,5 +61,3 @@ class ResetPasswordRequest(BaseModel):
 class MessageResponse(BaseModel):
     status: str = "success"
     message: str
-
-AuthResponse.model_rebuild()
