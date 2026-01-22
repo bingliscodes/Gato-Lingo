@@ -19,13 +19,7 @@ def get_token_from_request(
     request: Request,
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
 ) -> Optional[str]:
-    """
-    Extract JWT token from either:
-    1. Authorization header (Bearer token)
-    2. Cookie (jwt)
-    
-    This mirrors your Express protect middleware checking req.cookies.jwt
-    """
+
     # First, try Authorization header
     if credentials:
         return credentials.credentials
@@ -44,7 +38,6 @@ def get_current_user(
 ) -> User:
     """
     Dependency that gets the current authenticated user.
-    Equivalent to your protect middleware.
     """
     if not token:
         raise HTTPException(
@@ -77,7 +70,7 @@ def get_current_user(
         )
     
     # Check if user changed password after token was issued
-    token_issued_at = datetime.fromtimestamp(datetime.timezone.utc)(payload.get("iat", 0))
+    token_issued_at = datetime.fromtimestamp(payload.get("iat", 0))
     if user.password_changed_at and user.password_changed_at > token_issued_at:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -107,7 +100,6 @@ def get_current_user_optional(
 def require_roles(*allowed_roles: str):
     """
     Dependency factory that checks if user has one of the allowed roles.
-    Equivalent to your restrictTo middleware.
     
     Usage:
         @router.get("/admin-only", dependencies=[Depends(require_roles("admin"))])
