@@ -3,6 +3,7 @@ Seed the database with initial data for development.
 """
 from sqlalchemy.orm import Session
 from ..models.user import User
+from ..utils.password import hash_password
 
 def seed_users(db: Session):
     """Add test users if none exist."""
@@ -18,7 +19,7 @@ def seed_users(db: Session):
     test_users = [
         User(
             email="ben@example.com",
-            password_hash="hashed_password123",  # Use proper hashing in production!
+            password_hash=hash_password("password123"),  
             first_name="Ben",
             last_name="Inglis",
             role="admin",
@@ -28,7 +29,7 @@ def seed_users(db: Session):
         ),
         User(
             email="cannoli@example.com",
-            password_hash="hashed_password123",
+            password_hash=hash_password("password123"),
             first_name="Cannoli",
             last_name="Inglis",
             role="student",
