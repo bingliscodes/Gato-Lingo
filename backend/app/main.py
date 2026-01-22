@@ -8,6 +8,21 @@ app = FastAPI(title="Language Tutor API")
 
 database_models.Base.metadata.create_all(bind=engine)
 
+users = [database_models.User(id=1, first_name="ben", last_name="inglis", email="testEmail", native_language="english", target_language="cat", password="pass", password_confirm="pass", role="admin" ),
+         database_models.User(id=2, first_name="cannoli", last_name="inglis", email="cannoliEmail", native_language="cat", target_language="spanish", password="pass", password_confirm="pass", role="admin" )]
+
+
+def init_db():
+    db = session()
+
+    count = db.query(database_models.User).count
+
+    if count == 0:
+        db.add_all(users)
+        db.commit()
+
+init_db()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://localhost:3000"],
@@ -18,7 +33,6 @@ app.add_middleware(
 
 conversation_handler = ConversationHandler()
 
-db = session()
 
 @app.get("/health")
 async def health_check():
