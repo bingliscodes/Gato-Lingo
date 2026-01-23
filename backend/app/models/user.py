@@ -27,7 +27,6 @@ class User(SQLModel, table=True):
     password_reset_expires: Optional[datetime] = Field(default=None)
 
 
-    
 class UserBase(SQLModel):
     email: str = Field(index=True, unique=True)
     first_name: str
@@ -77,3 +76,16 @@ class AuthResponse(SQLModel):
 class MessageResponse(SQLModel):
     status: str = "success"
     message: str
+
+class ForgotPasswordRequest(SQLModel):
+    email: EmailStr
+
+class ResetPasswordRequest(SQLModel):
+    password: str
+    password_confirm: str
+
+    @model_validator(mode='after')
+    def passwords_match(self):
+        if self.password != self.password_confirm:
+            raise ValueError('Passwords do not match')
+        return self
