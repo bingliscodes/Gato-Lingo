@@ -1,8 +1,11 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 from pydantic import EmailStr, model_validator
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List, TYPE_CHECKING
 import uuid
+
+if TYPE_CHECKING:
+    from .conversation_session import ConversationSession
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
@@ -25,6 +28,8 @@ class User(SQLModel, table=True):
     password_changed_at: Optional[datetime] = Field(default=None)
     password_reset_token: Optional[str] = Field(default=None)
     password_reset_expires: Optional[datetime] = Field(default=None)
+
+    sessions: List["ConversationSession"] = Relationship(back_populates="student")
 
 
 class UserBase(SQLModel):

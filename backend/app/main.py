@@ -7,6 +7,7 @@ from .database.database import engine, init_db
 from .database.seed import seed_all
 from .controllers import user as user_controller
 from .controllers import auth as auth_controller
+from .controllers import conversation_session as conversation_session_controller
 from .websockets.conversation import ConversationHandler
 
 @asynccontextmanager
@@ -36,6 +37,7 @@ app.add_middleware(
 # Include routers
 app.include_router(user_controller.router)
 app.include_router(auth_controller.router)
+app.include_router(conversation_session_controller.router)
 
 # WebSocket handler
 conversation_handler = ConversationHandler()
