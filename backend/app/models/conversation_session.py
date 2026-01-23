@@ -1,10 +1,11 @@
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, List
 import uuid
 
 if TYPE_CHECKING:
     from .user import User
+    from .conversation_turns import ConversationTurn
 
 class ConversationSession(SQLModel, table=True):
     __tablename__ = "conversation_sessions"
@@ -24,7 +25,10 @@ class ConversationSession(SQLModel, table=True):
 
     # Foreign Keys
     student_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
+    
+    # Relationships (virtual fields)
     student: Optional["User"] = Relationship(back_populates="sessions")
+    turns: List["ConversationTurn"] = Relationship(back_populates="conversation_session")
 
 
 class ConversationSessionResponse(SQLModel):
