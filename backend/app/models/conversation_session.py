@@ -26,7 +26,6 @@ class ConversationSession(SQLModel, table=True):
 
     # Foreign Keys
     student_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
-    session_score_id: Optional[uuid.UUID] = Field(default=None, foreign_key="session_scores.id")
     
     # Relationships (virtual fields)
     student: Optional["User"] = Relationship(back_populates="sessions")
