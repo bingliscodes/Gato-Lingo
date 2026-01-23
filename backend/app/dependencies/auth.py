@@ -4,14 +4,12 @@ from uuid import UUID
 
 from fastapi import Depends, HTTPException, status, Request, Response
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from sqlalchemy.orm import Session
+from sqlmodel import Session, select
 
 from ..database.database import get_db
 from ..models.user import User
 from ..utils.jwt import decode_token
-from ..config import settings
 
-# This extracts the token from the Authorization header
 security = HTTPBearer(auto_error=False)
 
 
@@ -24,12 +22,7 @@ def get_token_from_request(
     if credentials:
         return credentials.credentials
     
-    # Then, try cookie
-    token = request.cookies.get("jwt")
-    if token:
-        return token
-    
-    return None
+    return request.cookies.get("jwt")
 
 
 def get_current_user(
@@ -62,7 +55,9 @@ def get_current_user(
         )
     
     # Check if user still exists
-    user = db.query(User).filter(User.id == UUID(user_id)).first()
+    statement = select(User).where(User.id == UUID(user_id))
+    user = db.exec(statement).first()
+    
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

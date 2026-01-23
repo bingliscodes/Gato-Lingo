@@ -2,7 +2,7 @@ from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from .database.database import engine, Base, session
+from .database.database import engine, Base, session, SessionDep, init_db
 from .database.seed import seed_all
 from .controllers import user as user_controller
 from .controllers import auth as auth_controller
@@ -13,14 +13,9 @@ async def lifespan(app: FastAPI):
     """Runs on startup and shutdown."""
     # Startup
     print("Creating database tables...")
-    Base.metadata.create_all(bind=engine)
+    init_db(engine)
     
     print("Seeding database...")
-    db = session()
-    try:
-        seed_all(db)
-    finally:
-        db.close()
     
     yield  # App runs here
     

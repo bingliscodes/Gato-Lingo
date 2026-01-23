@@ -1,31 +1,79 @@
-from sqlalchemy import Column, String, DateTime
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.sql import func
-from ..database.database import Base
+from sqlmodel import SQLModel, Field
+from pydantic import EmailStr, model_validator, field_serializer
+from datetime import datetime
+from typing import Optional
 import uuid
 
-class User(Base):
+class User(SQLModel, table=True):
     __tablename__ = "users"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: uuid.UUID = Field(default_factory=uuid.uuidv4, primary_key=True)
 
-    # Required fields
-    email = Column(String(255), unique=True, index=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
-    first_name = Column(String(100), nullable=False)
-    last_name = Column(String(100), nullable=False)
+    email: str = Field(unique=True, index=True)
+    password_hash: str
+    first_name: str
+    last_name: str
+    role: str = Field(default="student")
+    native_language: Optional[str] = None  # Optional = nullable
+    target_language: Optional[str] = None  # Optional = nullable
     
-    # Optional fields with defaults
-    role = Column(String(20), default="student")
-    native_language = Column(String(50), nullable=True)
-    target_language = Column(String(50), nullable=True)
-    proficiency_level = Column(String(20), default="beginner")
+    # Timestamps
+    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = Field(default=None)
     
-    # Timestamps - generated automatically by database
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    # Password reset fields (internal only)
+    password_changed_at: Optional[datetime] = Field(default=None)
+    password_reset_token: Optional[str] = Field(default=None)
+    password_reset_expires: Optional[datetime] = Field(default=None)
 
-    # Password management fields (internal only - never exposed via API)
-    password_changed_at = Column(DateTime(timezone=True), nullable=True)
-    password_reset_token = Column(String(255), nullable=True)
-    password_reset_expires = Column(DateTime(timezone=True), nullable=True)
+
+    
+class UserBase(SQLModel):
+    email: str = Field(index=True, unique=True)
+    first_name: str
+    last_name: str
+    role: str = Field(default="student")
+    native_language: Optional[str] = None
+    target_language: Optional[str] = None
+
+class UserCreate(SQLModel):
+    """Schema for creating a new user (signup)."""
+    email: EmailStr
+    first_name: str
+    last_name: str
+    password: str
+    password_confirm: str
+    native_language: Optional[str] = None
+    target_language: Optional[str] = None
+    
+    @model_validator(mode='after')
+    def passwords_match(self):
+        if self.password != self.password_confirm:
+            raise ValueError('Passwords do not match')
+        return self
+    
+class UserUpdate(SQLModel):
+    """Schema for updating a user (all fields optional)."""
+    email: Optional[EmailStr] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    native_language: Optional[str] = None
+    target_language: Optional[str] = None
+
+class LoginRequest(SQLModel):
+    email: EmailStr
+    password: str
+
+class UserResponse(UserBase):
+    id: uuid.UUID
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+class AuthResponse(SQLModel):
+    status: str = "success"
+    token: str
+    user: UserResponse
+
+class MessageResponse(SQLModel):
+    status: str = "success"
+    message: str
