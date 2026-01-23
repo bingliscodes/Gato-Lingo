@@ -49,7 +49,7 @@ def update_user(
 ):
     if current_user.id != user_id and current_user.role != "admin":
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="You can only update your own profile!"
         )
     

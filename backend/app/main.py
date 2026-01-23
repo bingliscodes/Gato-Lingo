@@ -1,8 +1,9 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from sqlmodel import Session
 
-from .database.database import session, init_db, get_db
+from .database.database import engine, init_db
 from .database.seed import seed_all
 from .controllers import user as user_controller
 from .controllers import auth as auth_controller
@@ -15,8 +16,10 @@ async def lifespan(app: FastAPI):
     init_db()
     
     print("Seeding database...")
-    
-    yield  # App runs here
+    with Session(engine) as db:
+        seed_all(db)
+
+    yield 
     
     print("Shutting down...")
 

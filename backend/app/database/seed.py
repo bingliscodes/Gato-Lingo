@@ -1,14 +1,12 @@
 """
 Seed the database with initial data for development.
 """
-
-from fastapi import Depends
 from sqlmodel import Session, select
 from ..database.database import get_db
 from ..models.user import User
 from ..utils.password import hash_password
 
-def seed_users(db: Session = Depends(get_db)):
+def seed_users(db: Session):
     """Add test users if none exist."""
     
     # Check if users already exist

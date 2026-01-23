@@ -4,7 +4,7 @@ from ..config import settings
 
 db_url = f"postgresql://{settings.postgres_user}:{settings.postgres_password}@localhost:5432/{settings.db_name}"
 
-engine = create_engine(db_url)
+engine = create_engine(db_url, echo=True)
 
 def init_db():
     SQLModel.metadata.create_all(engine)

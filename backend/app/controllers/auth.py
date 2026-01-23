@@ -5,7 +5,7 @@ import hashlib
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
 
-from ..database import get_db
+from ..database.database import get_db
 from ..models.user import (
     User,
     UserCreate,
