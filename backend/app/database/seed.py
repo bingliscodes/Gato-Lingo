@@ -1,15 +1,21 @@
 """
 Seed the database with initial data for development.
 """
-from sqlalchemy.orm import Session
+
+from fastapi import Depends
+from sqlmodel import Session, select
+from ..database.database import get_db
 from ..models.user import User
 from ..utils.password import hash_password
 
-def seed_users(db: Session):
+def seed_users(db: Session = Depends(get_db)):
     """Add test users if none exist."""
     
     # Check if users already exist
-    user_count = db.query(User).count()
+    statement = select(User)
+    results = db.exec(statement)
+    users = results.all()
+    user_count = len(users)
     
     if user_count > 0:
         print(f"Database already has {user_count} users. Skipping seed.")
@@ -25,7 +31,6 @@ def seed_users(db: Session):
             role="admin",
             native_language="english",
             target_language="spanish",
-            proficiency_level="intermediate"
         ),
         User(
             email="cannoli@example.com",
@@ -35,7 +40,6 @@ def seed_users(db: Session):
             role="student",
             native_language="cat",
             target_language="spanish",
-            proficiency_level="beginner"
         ),
     ]
     
