@@ -73,10 +73,6 @@ class AuthResponse(SQLModel):
     token: str
     user: UserResponse
 
-class MessageResponse(SQLModel):
-    status: str = "success"
-    message: str
-
 class ForgotPasswordRequest(SQLModel):
     email: EmailStr
 
@@ -89,3 +85,8 @@ class ResetPasswordRequest(SQLModel):
         if self.password != self.password_confirm:
             raise ValueError('Passwords do not match')
         return self
+
+class MessageResponse(SQLModel):
+    status: str = "success"
+    message: str
+

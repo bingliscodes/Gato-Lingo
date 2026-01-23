@@ -5,7 +5,6 @@ from uuid import UUID
 
 from ..database.database import get_db
 from ..models.user import User, UserUpdate, UserResponse
-from ..utils.password import hash_password
 from ..dependencies.auth import get_current_user, require_roles
 
 router = APIRouter(prefix="/users", tags=["users"])
