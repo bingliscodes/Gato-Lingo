@@ -24,3 +24,10 @@ class ConversationTurn(SQLModel, table=True):
     # Relationships (virtual fields)
     conversation_session: Optional["ConversationSession"] = Relationship(back_populates="turns")
 
+class ConversationTurnResponse(SQLModel):
+    id: uuid.UUID
+    timestamp: datetime
+    speaker: str
+    audio_url: str
+    transcript: str
+    turn_number: int

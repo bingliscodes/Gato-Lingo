@@ -24,7 +24,7 @@ class ConversationSession(SQLModel, table=True):
     vocabulary: str # same as above
     difficulty_level: str
 
-    # Foreign Keys
+    # Foreign Keys – should be on the "many" side of relationship
     student_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
     
     # Relationships (virtual fields)

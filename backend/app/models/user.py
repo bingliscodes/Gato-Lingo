@@ -19,6 +19,8 @@ class User(SQLModel, table=True):
     role: str = Field(default="student")
     native_language: Optional[str] = None  # Optional = nullable
     target_language: Optional[str] = None  # Optional = nullable
+
+    teacher_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
     
     # Timestamps
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
@@ -28,6 +30,13 @@ class User(SQLModel, table=True):
     password_changed_at: Optional[datetime] = Field(default=None)
     password_reset_token: Optional[str] = Field(default=None)
     password_reset_expires: Optional[datetime] = Field(default=None)
+
+    # Relationships
+    teacher: Optional["User"] = Relationship(
+        back_populates="students",
+        sa_relationship_kwargs={"remote_side": "User.id"}  # Self-referential relationship
+    )
+    students: List["User"] = Relationship(back_populates="teacher")
 
     sessions: List["ConversationSession"] = Relationship(back_populates="student")
 
