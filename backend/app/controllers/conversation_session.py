@@ -103,6 +103,26 @@ def complete_session(
     
     return session
 
+@router.get("/teacher/dashboard")
+def teacher_dashboard(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles("teacher"))
+):
+    statement = select(ConversationSession).where(
+        ConversationSession.assigned_by_id == current_user.id
+    )
+
+    sessions = db.exec(statement).all()
+
+    return {
+        "assigned": [s for s in sessions if s.status == SessionStatus.assigned],
+        "in_progress": [s for s in sessions if s.status == SessionStatus.in_progress],
+        "completed": [s for s in sessions if s.status == SessionStatus.completed],
+        "total": len(sessions)
+    }
+
+
+
 @router.get("/", response_model=List[ConversationSessionResponse])
 def get_all_conversation_sessions(db: Session = Depends(get_db)):
     statement = select(ConversationSession)
