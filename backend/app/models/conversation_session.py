@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING, List
 from enum import Enum
 import uuid
@@ -23,7 +23,7 @@ class ConversationSession(SQLModel, table=True):
     # Conversation meta data
     started_at: Optional[datetime] = Field(default=None)
     ended_at: Optional[datetime] = Field(default=None)
-    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
+    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
     
     # Session content
     conversation_prompt: str

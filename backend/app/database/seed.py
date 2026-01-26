@@ -26,7 +26,7 @@ def seed_users(db: Session):
             password_hash=hash_password("password123"),  
             first_name="Ben",
             last_name="Inglis",
-            role="admin",
+            role="teacher",
             native_language="english",
             target_language="spanish",
         ),

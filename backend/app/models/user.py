@@ -1,11 +1,12 @@
 from sqlmodel import SQLModel, Field, Relationship
 from pydantic import EmailStr, model_validator
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List, TYPE_CHECKING
 import uuid
 
 if TYPE_CHECKING:
     from .conversation_session import ConversationSession
+    from .vocabulary import VocabularyList
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
@@ -23,7 +24,7 @@ class User(SQLModel, table=True):
     teacher_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
     
     # Timestamps
-    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
+    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: Optional[datetime] = Field(default=None)
     
     # Password reset fields (internal only)
@@ -34,11 +35,29 @@ class User(SQLModel, table=True):
     # Relationships
     teacher: Optional["User"] = Relationship(
         back_populates="students",
-        sa_relationship_kwargs={"remote_side": "User.id"}  # Self-referential relationship
+        sa_relationship_kwargs={
+            "remote_side": "User.id", 
+            "foreign_keys": "[User.teacher_id]"
+        }  # Self-referential relationship
     )
-    students: List["User"] = Relationship(back_populates="teacher")
+    students: List["User"] = Relationship(
+        back_populates="teacher",
+        sa_relationship_kwargs={"foreign_keys": "[User.teacher_id]"})
+    
+    sessions: List["ConversationSession"] = Relationship(
+        back_populates="student", 
+        sa_relationship_kwargs={"foreign_keys": "[ConversationSession.student_id]"}
+    )
 
-    sessions: List["ConversationSession"] = Relationship(back_populates="student")
+    assigned_sessions: List["ConversationSession"] = Relationship(
+        back_populates="assigned_by",
+        sa_relationship_kwargs={"foreign_keys": "[ConversationSession.assigned_by_id]"}
+    )
+
+    vocabulary_lists: List["VocabularyList"] = Relationship(
+        back_populates="teacher",
+        sa_relationship_kwargs={"foreign_keys": "[VocabularyList.teacher_id]"}
+    )
 
 
 class UserBase(SQLModel):

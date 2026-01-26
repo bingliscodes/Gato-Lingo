@@ -44,7 +44,10 @@ class VocabularyList(SQLModel, table=True):
     teacher_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
     
     # Relationships
-    teacher: Optional["User"] = Relationship()
+    teacher: Optional["User"] = Relationship(
+        back_populates="vocabulary_lists", 
+        sa_relationship_kwargs={"foreign_keys": "[VocabularyList.teacher_id]"})
+    
     items: List["VocabularyItem"] = Relationship(
         back_populates="vocabulary_lists",
         link_model=VocabularyListItem
