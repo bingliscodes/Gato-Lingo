@@ -121,7 +121,23 @@ def teacher_dashboard(
         "total": len(sessions)
     }
 
+@router.get("student/exams")
+def student_exams(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    statement = select(ConversationSession).where(
+        ConversationSession.student_id == current_user.id
+    )
 
+    sessions = db.exec(statement).all()
+
+    return{
+        "assigned": [s for s in sessions if s.status == SessionStatus.assigned],
+        "in_progress": [s for s in sessions if s.status == SessionStatus.in_progress],
+        "completed": [s for s in sessions if s.status == SessionStatus.completed],
+        "total": len(sessions)
+    }
 
 @router.get("/", response_model=List[ConversationSessionResponse])
 def get_all_conversation_sessions(db: Session = Depends(get_db)):
