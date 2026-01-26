@@ -1,11 +1,14 @@
-import { Box } from "@chakra-ui/react";
-import { ConversationInterface } from "./components/ConversationInterface";
+import { Routes, Route } from "react-router";
+import HomePage from "./pages/HomePage";
+import RootLayout from "./pages/RootLayout";
 
 function App() {
   return (
-    <Box minH="100vh" bg="bg">
-      <ConversationInterface />
-    </Box>
+    <Routes>
+      <Route path="/" element={<RootLayout />}>
+        <Route index element={<HomePage />} />
+      </Route>
+    </Routes>
   );
 }
 
