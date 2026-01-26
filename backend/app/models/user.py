@@ -23,7 +23,7 @@ class User(SQLModel, table=True):
     teacher_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
     
     # Timestamps
-    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    created_at: Optional[datetime] = Field(default_factory=datetime.datetime.now(datetime.UTC))
     updated_at: Optional[datetime] = Field(default=None)
     
     # Password reset fields (internal only)
