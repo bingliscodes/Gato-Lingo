@@ -93,7 +93,7 @@ def complete_session(
         raise HTTPException(status_code=400, detail="Session is not im progress")
 
     session.status = SessionStatus.completed
-    session.ended_at = datetime.datetime.now(datetime.UTC)
+    session.ended_at = datetime.now(datetime.UTC)
 
     db.add(session)
     db.commit()

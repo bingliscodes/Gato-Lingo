@@ -23,7 +23,7 @@ class ConversationSession(SQLModel, table=True):
     # Conversation meta data
     started_at: Optional[datetime] = Field(default=None)
     ended_at: Optional[datetime] = Field(default=None)
-    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
     
     # Session content
     conversation_prompt: str

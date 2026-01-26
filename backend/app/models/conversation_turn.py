@@ -11,7 +11,7 @@ class ConversationTurn(SQLModel, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     
-    timestamp: Optional[datetime] = Field(default_factory=datetime.datetime.now(datetime.UTC))
+    timestamp: Optional[datetime] = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
     speaker: str 
     audio_url: str
     transcript: str

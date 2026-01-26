@@ -166,7 +166,7 @@ def reset_password(
     
     statement = select(User).where(
         User.password_reset_token == hashed_token,
-        User.password_reset_expires > datetime.datetime.now(datetime.UTC)
+        User.password_reset_expires > datetime.now(datetime.UTC)
     )
     user = db.exec(statement).first()
     

@@ -20,7 +20,7 @@ class SessionScore(SQLModel, table=True):
     vocabulary_used: str
     vocabulary_missed: str
     grammar_feedback: str
-    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
     
     # Foreign Keys
     session_id: Optional[uuid.UUID] = Field(default=None, foreign_key="conversation_sessions.id")
