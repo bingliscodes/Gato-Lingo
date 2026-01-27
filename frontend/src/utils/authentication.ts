@@ -5,7 +5,7 @@ interface LoginCredentials {
     password: string;
 }
 
-interface AuthResponse {
+export interface AuthResponse {
     status: string;
     token: string;
     user: {

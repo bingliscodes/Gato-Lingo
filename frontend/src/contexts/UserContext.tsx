@@ -1,9 +1,31 @@
-import { createContext, useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { verifyJWT } from "../utils/authentication";
+import { type AuthResponse } from "../utils/authentication";
 
-export const UserContext = createContext();
+export interface UserContextType {
+  userData: AuthResponse | {};
+  setUserData: Dispatch<SetStateAction<AuthResponse | {}>>;
+  isLoggedIn: boolean;
+  refreshUserData: () => void;
+}
 
-export const UserContextProvider = ({ children }) => {
+export const UserContext = createContext<UserContextType | undefined>(
+  undefined,
+);
+
+type Props = {
+  children: ReactNode;
+};
+
+export const UserContextProvider = ({ children }: Props) => {
   const [userData, setUserData] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
