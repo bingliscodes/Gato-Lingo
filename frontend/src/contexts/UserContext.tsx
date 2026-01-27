@@ -4,17 +4,15 @@ import {
   useEffect,
   useCallback,
   type ReactNode,
-  type Dispatch,
-  type SetStateAction,
 } from "react";
-import { verifyJWT } from "../utils/authentication";
-import { type AuthResponse } from "../utils/authentication";
+import { verifyJWT, type User } from "../utils/authentication";
 
 export interface UserContextType {
-  userData: AuthResponse | {};
-  setUserData: Dispatch<SetStateAction<AuthResponse | {}>>;
+  userData: User | null;
+  setUserData: (user: User | null) => void;
   isLoggedIn: boolean;
-  refreshUserData: () => void;
+  isLoading: boolean;
+  refreshUserData: () => Promise<void>;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(
@@ -26,24 +24,21 @@ type Props = {
 };
 
 export const UserContextProvider = ({ children }: Props) => {
-  const [userData, setUserData] = useState({});
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const isLoggedIn = userData !== null;
 
   const loadUserData = useCallback(async () => {
+    setIsLoading(true);
     try {
       const currentUser = await verifyJWT();
-      if (currentUser.status !== "success") {
-        setUserData({});
-        setIsLoggedIn(false);
-        return;
-      }
-
       setUserData(currentUser.user);
-      setIsLoggedIn(true);
     } catch (err) {
-      console.error(err);
-      setUserData({});
-      setIsLoggedIn(false);
+      console.error("Failed to verify user:", err);
+      setUserData(null);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -51,16 +46,13 @@ export const UserContextProvider = ({ children }: Props) => {
     loadUserData();
   }, [loadUserData]);
 
-  return (
-    <UserContext.Provider
-      value={{
-        userData,
-        setUserData,
-        isLoggedIn,
-        refreshUserData: loadUserData,
-      }}
-    >
-      {children}
-    </UserContext.Provider>
-  );
+  const value: UserContextType = {
+    userData,
+    setUserData,
+    isLoggedIn,
+    isLoading,
+    refreshUserData: loadUserData,
+  };
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
