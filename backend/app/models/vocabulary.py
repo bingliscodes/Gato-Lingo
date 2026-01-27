@@ -46,7 +46,8 @@ class VocabularyList(SQLModel, table=True):
     # Relationships
     teacher: Optional["User"] = Relationship(
         back_populates="vocabulary_lists", 
-        sa_relationship_kwargs={"foreign_keys": "[VocabularyList.teacher_id]"})
+        sa_relationship_kwargs={"foreign_keys": "[VocabularyList.teacher_id]"}
+    )
     
     items: List["VocabularyItem"] = Relationship(
         back_populates="vocabulary_lists",
