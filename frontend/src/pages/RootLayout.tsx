@@ -1,5 +1,6 @@
 import { Outlet } from "react-router";
 import { Flex } from "@chakra-ui/react";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function RootLayout() {
   return (
@@ -7,6 +8,7 @@ export default function RootLayout() {
       <Flex flex="1">
         <Outlet />
       </Flex>
+      <Toaster />
     </Flex>
   );
 }

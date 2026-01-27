@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { NavLink, useNavigate } from "react-router";
 
-// import { toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/ui/toaster";
 import { login } from "../utils/authentication";
 // import { UserContext } from "@/contexts/UserContext";
 
@@ -44,20 +44,17 @@ export default function LoginForm() {
 
     const loginPromise = login(credentials);
 
-    // toaster.promise(loginPromise, {
-    //   loading: {
-    //     title: "Logging In...",
-    //     description: "Checking your credentials.",
-    //   },
-    //   success: {
-    //     title: "Login Successful!",
-    //     description: "Redirecting to homepage.",
-    //   },
-    //   error: (err) => ({
-    //     title: "Login Failed",
-    //     description: err.message || "An unexpected error occured!",
-    //   }),
-    // });
+    toaster.promise(loginPromise, {
+      loading: {
+        title: "Logging In...",
+        description: "Checking your credentials.",
+      },
+      success: {
+        title: "Login Successful!",
+        description: "Redirecting to homepage.",
+      },
+      error: { title: "Error", description: "Login failed.", status: "error" },
+    });
 
     try {
       await loginPromise;
