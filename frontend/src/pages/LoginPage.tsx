@@ -13,7 +13,7 @@ import {
 import { NavLink, useNavigate } from "react-router";
 
 // import { toaster } from "@/components/ui/toaster";
-// import { login } from "../utils/js/authentication";
+import { login } from "../utils/authentication";
 // import { UserContext } from "@/contexts/UserContext";
 
 interface LoginCredentials {
@@ -26,26 +26,23 @@ interface LoginError {
 }
 
 export default function LoginForm() {
-  const login = async (credentials: LoginCredentials): Promise<void> => {
-    console.log("mock logging in...", credentials);
-    return new Promise((resolve) => setTimeout(resolve, 1000));
-  };
-
   const [loginError, setLoginError] = useState<LoginError | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [checked, setChecked] = useState(false);
+
   //   const { refreshUserData } = useContext(UserContext);
   const refreshUserData = async (): Promise<void> => {
     console.log("mock refreshUserData...");
   };
-  const [checked, setChecked] = useState(false);
   const nav = useNavigate();
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
-    const entries = Object.fromEntries(formData.entries()) as LoginCredentials;
+    const credentials: LoginCredentials = { email, password };
 
-    const loginPromise = login(entries);
+    const loginPromise = login(credentials);
 
     // toaster.promise(loginPromise, {
     //   loading: {
@@ -110,6 +107,8 @@ export default function LoginForm() {
               type="email"
               placeholder="email address"
               name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <Field.ErrorText></Field.ErrorText>
           </Field.Root>
@@ -120,6 +119,8 @@ export default function LoginForm() {
               type={checked ? "text" : "password"}
               placeholder="password"
               name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <Field.ErrorText></Field.ErrorText>
           </Field.Root>
