@@ -22,6 +22,19 @@ interface AuthResponse {
     };
 }
 
+interface UserResponse {
+    id: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    role: string;
+    native_language: string | null;
+    target_language: string | null;
+    created_at: string
+    updated_at: string | null
+}
+
+
 interface ApiError{
     detail: string;
 }
@@ -54,4 +67,31 @@ export const login = async(credentials: LoginCredentials): Promise<AuthResponse>
         // Fallback for unknown error types
         throw new Error("An unexpected error occurred");
     }
+};
+
+export const verifyJWT = async (): Promise<UserResponse>=> {
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}auth/me`,
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+
+  } catch (err) {
+        if (axios.isAxiosError(err)) {
+            const axiosError = err as AxiosError<ApiError>;
+            const message = axiosError.response?.data?.detail || "Login failed";
+            throw new Error(message);
+        }
+        
+        // Handle other errors
+        if (err instanceof Error) {
+            throw new Error(err.message);
+        }
+        
+        // Fallback for unknown error types
+        throw new Error("An unexpected error occurred");
+  }
 };
