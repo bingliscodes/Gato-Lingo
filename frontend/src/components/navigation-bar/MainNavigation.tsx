@@ -1,6 +1,6 @@
 "use client";
 
-import { HStack, Box, Container } from "@chakra-ui/react";
+import { HStack, Box } from "@chakra-ui/react";
 
 import RightNavContent from "./RightNavContent.tsx";
 

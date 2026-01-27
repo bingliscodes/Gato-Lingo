@@ -1,8 +1,10 @@
 import { Flex, Button, Stack } from "@chakra-ui/react";
 import { NavLink, useNavigate } from "react-router";
 
+import { useUser } from "@/contexts/UserContext";
+
 export default function RightNavContent() {
-  const isLoggedIn = false;
+  const { isLoggedIn } = useUser();
 
   const nav = useNavigate();
   const handleLogout = () => {};

@@ -14,7 +14,7 @@ import { NavLink, useNavigate } from "react-router";
 
 import { toaster } from "@/components/ui/toaster";
 import { login } from "../utils/authentication";
-import { UserContext } from "@/contexts/UserContext";
+import { useUser } from "@/contexts/UserContext";
 
 interface LoginCredentials {
   email: string;
@@ -30,7 +30,7 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [checked, setChecked] = useState(false);
-  const { refreshUserData } = useContext(UserContext);
+  const { refreshUserData } = useUser();
 
   const nav = useNavigate();
 
@@ -59,7 +59,6 @@ export default function LoginForm() {
       await refreshUserData();
       nav("/");
     } catch (err) {
-      // Type guard for error
       if (err instanceof Error) {
         setLoginError({ message: err.message });
       } else {
