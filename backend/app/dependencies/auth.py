@@ -7,7 +7,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlmodel import Session, select
 
 from ..database.database import get_db
-from ..models.user import User
+from ..models.user import User, AuthResponse
 from ..utils.jwt import decode_token
 
 security = HTTPBearer(auto_error=False)
@@ -28,7 +28,7 @@ def get_token_from_request(
 def get_current_user(
     token: Optional[str] = Depends(get_token_from_request),
     db: Session = Depends(get_db)
-) -> User:
+) -> AuthResponse:
     """
     Dependency that gets the current authenticated user.
     """
@@ -72,7 +72,7 @@ def get_current_user(
             detail="User recently changed password! Please log in again."
         )
     
-    return user
+    return AuthResponse(status = "success", token = token, user = user)
 
 
 def get_current_user_optional(

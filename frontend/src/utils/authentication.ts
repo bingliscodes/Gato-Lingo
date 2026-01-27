@@ -22,19 +22,6 @@ interface AuthResponse {
     };
 }
 
-interface UserResponse {
-    id: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    role: string;
-    native_language: string | null;
-    target_language: string | null;
-    created_at: string
-    updated_at: string | null
-}
-
-
 interface ApiError{
     detail: string;
 }
@@ -69,7 +56,7 @@ export const login = async(credentials: LoginCredentials): Promise<AuthResponse>
     }
 };
 
-export const verifyJWT = async (): Promise<UserResponse>=> {
+export const verifyJWT = async (): Promise<AuthResponse>=> {
   try {
     const res = await axios.get(
       `${import.meta.env.VITE_API_BASE_URL}auth/me`,
@@ -77,6 +64,7 @@ export const verifyJWT = async (): Promise<UserResponse>=> {
         withCredentials: true,
       }
     );
+    
     return res.data;
 
   } catch (err) {
