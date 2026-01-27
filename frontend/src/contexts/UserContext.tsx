@@ -3,6 +3,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useContext,
   type ReactNode,
 } from "react";
 import { verifyJWT, type User } from "../utils/authentication";
@@ -55,4 +56,14 @@ export const UserContextProvider = ({ children }: Props) => {
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+};
+
+export const useUser = (): UserContextType => {
+  const context = useContext(UserContext);
+
+  if (context === undefined) {
+    throw new Error("useUser must be used within a UserContextProvider");
+  }
+
+  return context;
 };
