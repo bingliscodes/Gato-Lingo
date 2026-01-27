@@ -14,7 +14,7 @@ import { NavLink, useNavigate } from "react-router";
 
 import { toaster } from "@/components/ui/toaster";
 import { login } from "../utils/authentication";
-// import { UserContext } from "@/contexts/UserContext";
+import { UserContext } from "@/contexts/UserContext";
 
 interface LoginCredentials {
   email: string;
@@ -30,11 +30,8 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [checked, setChecked] = useState(false);
+  const { refreshUserData } = useContext(UserContext);
 
-  //   const { refreshUserData } = useContext(UserContext);
-  const refreshUserData = async (): Promise<void> => {
-    console.log("mock refreshUserData...");
-  };
   const nav = useNavigate();
 
   async function handleSubmit(e: React.SyntheticEvent) {
@@ -53,7 +50,7 @@ export default function LoginForm() {
         title: "Login Successful!",
         description: "Redirecting to homepage.",
       },
-      error: { title: "Error", description: "Login failed.", status: "error" },
+      error: { title: "Error", description: "Login failed." },
     });
 
     try {
