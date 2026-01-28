@@ -77,22 +77,21 @@ interface ConversationSession {
     student_id: string | null
 }
 
-interface DashboardExamResponse {
+export interface DashboardExamResponse {
     exam: ExamResponse;
     total_assigned: number;
     pending: number;
     in_progress: number;
     completed: number;
-    sessions: ConversationSession [] | [];
+    sessions: ConversationSession [];
 }
 
 export const getCreatedExams = async(): Promise<DashboardExamResponse[]> => {
-
     try {
-        const res = await axios.get<DashboardExamResponse>(
+        const res = await axios.get<DashboardExamResponse[]>(
             `${import.meta.env.VITE_API_BASE_URL}exams/dashboard`,
             {withCredentials: true}
-        )
+        );
         return res.data;
     }catch(err){
          throw new Error(getErrorMessage(err));
