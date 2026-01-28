@@ -117,8 +117,8 @@ def logout(response: Response):
     )
 
 
-@router.get("/me", response_model=AuthResponse)
-def get_me(current_user: AuthResponse = Depends(get_current_user)):
+@router.get("/me", response_model=User)
+def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 

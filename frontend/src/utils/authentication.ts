@@ -60,7 +60,7 @@ export const login = async(credentials: LoginCredentials): Promise<AuthResponse>
 export const verifyJWT = async (): Promise<User>=> {
   try {
     const res = await axios.get(
-      `${import.meta.env.VITE_API_BASE_URL}users/me`,
+      `${import.meta.env.VITE_API_BASE_URL}auth/me`,
       {
         withCredentials: true,
       }
