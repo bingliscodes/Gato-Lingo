@@ -5,7 +5,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from ..database.database import get_db
-from ..models.conversation_session import ConversationSession, ConversationSessionResponse, SessionStatus
+from ..models.conversation_session import ConversationSession, SessionStatus, ConversationSessionResponse
 from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
 

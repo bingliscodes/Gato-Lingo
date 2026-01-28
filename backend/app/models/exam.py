@@ -6,8 +6,7 @@ import uuid
 if TYPE_CHECKING:
     from .user import User
     from .vocabulary import VocabularyList
-    from .conversation_session import ConversationSession, ConversationSessionResponse
-
+    from .conversation_session import ConversationSession
 
 class Exam(SQLModel, table=True):
     __tablename__ = "exams"
@@ -55,27 +54,4 @@ class ExamCreate(SQLModel):
     vocabulary_list_id: Optional[uuid.UUID] = None
     difficulty_level: str
 
-
-
-class ExamResponse(SQLModel):
-    id: uuid.UUID
-    title: str
-    description: Optional[str]
-    cultural_context: Optional[str]
-    target_language: str
-    topic: str
-    tenses: Optional[str]
-    vocabulary_list_manual: Optional[str]
-    vocabulary_list_id: Optional[uuid.UUID]
-    difficulty_level: str
-    conversation_prompt: str
-    created_by_id: Optional[uuid.UUID]
-    created_at: datetime
-
-class DashboardExamResponse(SQLModel):
-    exam: ExamResponse
-    total_assigned: int
-    pending: int
-    in_progress: int
-    completed: int
-    sessions: List[ConversationSessionResponse]
+from ..schemas.responses import ExamResponse, DashboardExamResponse

@@ -46,13 +46,5 @@ class SessionAssignment(SQLModel):
     student_ids: List[uuid.UUID]  # Can assign to multiple students at once
     due_date: Optional[datetime] = None
 
-
-class ConversationSessionResponse(SQLModel):
-    id: uuid.UUID
-    status: SessionStatus
-    due_date: Optional[datetime]
-    started_at: Optional[datetime]
-    ended_at: Optional[datetime]
-    created_at: datetime
-    exam_id: Optional[uuid.UUID]
-    student_id: Optional[uuid.UUID]
+# Import response schema from shared file
+from ..schemas.responses import ConversationSessionResponse

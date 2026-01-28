@@ -98,7 +98,7 @@ export const getCreatedExams = async(): Promise<DashboardExamResponse[]> => {
         }
 }
 
-interface StudentResponse {
+export interface StudentResponse {
     id: string;
     first_name: string;
     last_name: string;
