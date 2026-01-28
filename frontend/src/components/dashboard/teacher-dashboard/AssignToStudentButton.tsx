@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Button } from "@chakra-ui/react";
+import { Button, Dialog, Flex } from "@chakra-ui/react";
 import { getStudents, type StudentResponse } from "@/utils/apiCalls";
+import StudentSearch from "./StudentSearch";
 
 export interface AssignToStudentButtonProps {
   examId: string;
@@ -9,39 +10,32 @@ export interface AssignToStudentButtonProps {
 export default function AssignToStudentButton({
   examId,
 }: AssignToStudentButtonProps) {
-  const [studentData, setStudentData] = useState<StudentResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  console.log(examId);
-  useEffect(() => {
-    async function loadStudents() {
-      try {
-        const data = await getStudents();
-        setStudentData(data);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadStudents();
-  }, []);
-
-  if (isLoading) return <div>Loading students...</div>;
-  if (error) return <div> Error: {error}</div>;
-
   return (
-    <div>
-      {studentData.map((student) => (
-        <div key={student.id}>
-          <h2>
-            {student.first_name} {student.last_name}
-          </h2>
-        </div>
-      ))}
-    </div>
+    <Flex>
+      <Dialog.Root>
+        <Dialog.Trigger asChild>
+          <Button variant="outline" size="sm">
+            Open Dialog
+          </Button>
+        </Dialog.Trigger>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Header>
+              <Dialog.Title>Dialog</Dialog.Title>
+            </Dialog.Header>
+            <Dialog.Body>
+              <StudentSearch />
+            </Dialog.Body>
+            <Dialog.Footer>
+              <Dialog.ActionTrigger asChild>
+                <Button variant="outline">Cancel</Button>
+              </Dialog.ActionTrigger>
+              <Button>Save</Button>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Dialog.Root>
+    </Flex>
   );
 }
