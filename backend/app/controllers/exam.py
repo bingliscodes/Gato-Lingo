@@ -3,6 +3,8 @@ from sqlmodel import Session, select
 from typing import List
 from uuid import UUID
 
+from ..config import settings
+from ..services.conversation_engine import ConversationEngine
 from ..database.database import get_db
 from ..models.exam import Exam, ExamCreate, ExamResponse
 from ..models.conversation_session import ConversationSession, SessionStatus, SessionAssignment, ConversationSessionResponse
@@ -11,6 +13,7 @@ from ..dependencies.auth import get_current_user, require_roles
 
 router = APIRouter(prefix="/exams", tags=["exams"])
 
+conversation_engine = ConversationEngine(settings.anthropic_api_key)
 
 @router.post("/", response_model=ExamResponse, status_code=status.HTTP_201_CREATED)
 def create_exam(
@@ -24,6 +27,26 @@ def create_exam(
         **exam_data.model_dump(),
         created_by_id=current_user.id
     )
+    """
+    For this to work, the data has to be formatted as follows: 
+        target_language: str,
+        student_level: str,
+        vocabulary: list[str],
+        topic: str,
+        verb_tenses: list[str],
+        region_variant: Optional[str] = None
+    """
+    conversation_prompt = conversation_engine.build_system_prompt(
+        target_language = exam_data.target_language,
+        student_level = exam_data.difficulty_level,
+        vocabulary = exam_data.vocabulary_list_id,
+        topic = exam_data.topic,
+        verb_tenses = exam_data.tenses,
+        region_variant = exam_data.cultural_context
+    )
+    
+    exam.conversation_prompt = conversation_prompt
+    
     
     db.add(exam)
     db.commit()

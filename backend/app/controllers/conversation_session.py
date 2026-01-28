@@ -11,8 +11,6 @@ from ..dependencies.auth import get_current_user, require_roles
 
 router = APIRouter(prefix="/conversation-sessions", tags=["conversation-sessions"])
 
-
-
 @router.post("/${session_id}/start")
 def start_session(
     session_id: UUID,

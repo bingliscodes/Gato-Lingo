@@ -46,7 +46,6 @@ class Exam(SQLModel, table=True):
 class ExamCreate(SQLModel):
     title: str
     description: Optional[str] = None
-    conversation_prompt: str
     cultural_context: Optional[str] = None
     target_language: str
     topic: str
