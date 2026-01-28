@@ -11,44 +11,7 @@ from ..dependencies.auth import get_current_user, require_roles
 
 router = APIRouter(prefix="/conversation-sessions", tags=["conversation-sessions"])
 
-@router.post("/assign", status_code=status.HTTP_201_CREATED)
-def assign_exam(
-    student_id: UUID,
-    vocabulary_list_id: UUID,
-    topic: str,
-    target_language: str,
-    difficulty_level: str,
-    conversation_prompt: str,
-    due_date: Optional[datetime] = None,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles("teacher"))
-):
-    statement = select(User).where(User.id == student_id, User.teacher_id == current_user.id)
-    student = db.exec(statement).first()
 
-    if not student:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Student not found or not assigned to you"
-        )
-    
-    new_session = ConversationSession(
-        student_id=student_id,
-        assigned_by=current_user.id,
-        vocabulary_list_id=vocabulary_list_id,
-        topic=topic,
-        target_language=target_language,
-        difficulty_level=difficulty_level,
-        conversation_prompt=conversation_prompt,
-        due_date=due_date,
-        status=SessionStatus.assigned
-    )
-
-    db.add(new_session)
-    db.commit()
-    db.refresh(new_session)
-
-    return new_session
 
 @router.post("/${session_id}/start")
 def start_session(
@@ -103,41 +66,6 @@ def complete_session(
     
     return session
 
-@router.get("/teacher/dashboard")
-def teacher_dashboard(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles("teacher"))
-):
-    statement = select(ConversationSession).where(
-        ConversationSession.assigned_by_id == current_user.id
-    )
-
-    sessions = db.exec(statement).all()
-
-    return {
-        "assigned": [s for s in sessions if s.status == SessionStatus.assigned],
-        "in_progress": [s for s in sessions if s.status == SessionStatus.in_progress],
-        "completed": [s for s in sessions if s.status == SessionStatus.completed],
-        "total": len(sessions)
-    }
-
-@router.get("student/exams")
-def student_exams(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    statement = select(ConversationSession).where(
-        ConversationSession.student_id == current_user.id
-    )
-
-    sessions = db.exec(statement).all()
-
-    return{
-        "assigned": [s for s in sessions if s.status == SessionStatus.assigned],
-        "in_progress": [s for s in sessions if s.status == SessionStatus.in_progress],
-        "completed": [s for s in sessions if s.status == SessionStatus.completed],
-        "total": len(sessions)
-    }
 
 @router.get("/", response_model=List[ConversationSessionResponse])
 def get_all_conversation_sessions(db: Session = Depends(get_db)):
