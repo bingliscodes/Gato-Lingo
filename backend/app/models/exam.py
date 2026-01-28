@@ -52,25 +52,23 @@ class ExamCreate(SQLModel):
     topic: str
     tenses: Optional[str] = None
     vocabulary_list_manual: Optional[str] = None
-    difficulty_level: str
     vocabulary_list_id: Optional[uuid.UUID] = None
+    difficulty_level: str
+
 
 
 class ExamResponse(SQLModel):
     id: uuid.UUID
     title: str
     description: Optional[str]
-    conversation_prompt: str
     cultural_context: Optional[str]
     target_language: str
     topic: str
     tenses: Optional[str]
-    vocabulary_list_manual: Optional[str] = None
-    difficulty_level: str
+    vocabulary_list_manual: Optional[str]
     vocabulary_list_id: Optional[uuid.UUID]
+    difficulty_level: str
+    conversation_prompt: str
     created_by_id: Optional[uuid.UUID]
     created_at: datetime
 
-class ExamConfirm(SQLModel):
-    id: uuid.UUID
-    title: str

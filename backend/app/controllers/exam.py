@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
-from typing import List
+from typing import List, Optional
 from uuid import UUID
+import json
 
 from ..config import settings
 from ..services.conversation_engine import ConversationEngine
@@ -14,6 +15,20 @@ from ..dependencies.auth import get_current_user, require_roles
 router = APIRouter(prefix="/exams", tags=["exams"])
 
 conversation_engine = ConversationEngine(settings.anthropic_api_key)
+
+def parse_tenses(tenses_json: Optional[str]) -> List[str]:
+    if not tenses_json:
+        return []
+    try:
+        parsed = json.loads(tenses_json)
+        return parsed if isinstance(parsed, list) else []
+    except json.JSONDecodeError:
+        return []
+    
+def parse_vocabulary(vocab_string: Optional[str]) -> List[str]:
+    if not vocab_string:
+        return []
+    return [word.strip() for word in vocab_string.split(",") if word.strip()]
 
 @router.post("/", response_model=ExamResponse, status_code=status.HTTP_201_CREATED)
 def create_exam(
