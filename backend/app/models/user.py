@@ -7,12 +7,12 @@ import uuid
 if TYPE_CHECKING:
     from .conversation_session import ConversationSession
     from .vocabulary import VocabularyList
+    from .exam import Exam
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
     
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-
     email: str = Field(unique=True, index=True)
     password_hash: str
     first_name: str
@@ -20,8 +20,6 @@ class User(SQLModel, table=True):
     role: str = Field(default="student")
     native_language: Optional[str] = None  # Optional = nullable
     target_language: Optional[str] = None  # Optional = nullable
-
-    teacher_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
     
     # Timestamps
     created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -33,12 +31,13 @@ class User(SQLModel, table=True):
     password_reset_expires: Optional[datetime] = Field(default=None)
 
     # Relationships
+    teacher_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
     teacher: Optional["User"] = Relationship(
         back_populates="students",
         sa_relationship_kwargs={
             "remote_side": "User.id", 
             "foreign_keys": "[User.teacher_id]"
-        }  # Self-referential relationship
+        }
     )
     students: List["User"] = Relationship(
         back_populates="teacher",
@@ -49,9 +48,9 @@ class User(SQLModel, table=True):
         sa_relationship_kwargs={"foreign_keys": "[ConversationSession.student_id]"}
     )
 
-    assigned_sessions: List["ConversationSession"] = Relationship(
-        back_populates="assigned_by",
-        sa_relationship_kwargs={"foreign_keys": "[ConversationSession.assigned_by_id]"}
+    created_exams: List["Exam"] = Relationship(
+        back_populates="created_by",
+        sa_relationship_kwargs={"foreign_keys": "[Exam.created_by_id]"}
     )
 
     vocabulary_lists: List["VocabularyList"] = Relationship(

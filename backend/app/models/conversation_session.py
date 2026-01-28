@@ -33,6 +33,7 @@ class ConversationSession(SQLModel, table=True):
     student_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
 
     # Relationships (virtual fields)
+    exam: Optional["Exam"] = Relationship(back_populates="sessions") 
     student: Optional["User"] = Relationship(back_populates="sessions", sa_relationship_kwargs={"foreign_keys": "[ConversationSession.student_id]"})
     turns: List["ConversationTurn"] = Relationship(back_populates="conversation_session")
     session_score: Optional["SessionScore"] = Relationship(back_populates="session")
