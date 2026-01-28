@@ -40,8 +40,12 @@ def get_my_profile(current_user: User = Depends(get_current_user)):
     return current_user
 
 @router.get("/my-students", response_model=StudentResponse)
-def get_my_students(current_user: User = Depends(get_current_user)):
-    return []
+def get_my_students(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)):
+    statement = select(User).where(User.teacher_id == current_user.id)
+    students = db.exec(statement).all()
+    return students
 
 @router.patch("/{user_id}", response_model=UserResponse)
 def update_user(
