@@ -76,6 +76,7 @@ class UserCreate(SQLModel):
     password_confirm: str
     native_language: Optional[str] = None
     target_language: Optional[str] = None
+    role: Optional[str] = "student"
     
     @model_validator(mode='after')
     def passwords_match(self):

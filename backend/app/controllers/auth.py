@@ -58,6 +58,7 @@ def signup(
         last_name=user_data.last_name,
         native_language=user_data.native_language,
         target_language=user_data.target_language,
+        role=user_data.role
     )
     
     db.add(new_user)

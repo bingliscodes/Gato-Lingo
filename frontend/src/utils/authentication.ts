@@ -6,24 +6,21 @@ interface LoginCredentials {
 }
 
 export interface User {
- id: string;
-        email: string;
-        first_name: string;
-        last_name: string;
-        role: string;
-        native_language: string | null;
-        target_language: string | null;
-        created_at: string
-        updated_at: string | null
+    id: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    role: string;
+    native_language: string | null;
+    target_language: string | null;
+    created_at: string
+    updated_at: string | null
 }
 
 export interface AuthResponse {
     status: string;
     token: string;
-    user: {
-       
-
-    };
+    user: User;
 }
 
 interface ApiError{

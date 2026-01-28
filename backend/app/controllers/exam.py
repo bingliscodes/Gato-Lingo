@@ -41,10 +41,9 @@ def create_exam(
     conversation_prompt = conversation_engine.build_system_prompt(
         target_language = exam_data.target_language,
         student_level = exam_data.difficulty_level,
-        vocabulary = exam_data.vocabulary_list_id,
+        vocabulary = exam_data.vocabulary_list_manual,
         topic = exam_data.topic,
-        verb_tenses = exam_data.tenses,
-        region_variant = exam_data.cultural_context
+        verb_tenses = exam_data.tenses
     )
     
     exam.conversation_prompt = conversation_prompt

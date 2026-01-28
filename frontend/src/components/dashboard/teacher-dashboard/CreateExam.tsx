@@ -1,45 +1,56 @@
 "use client";
 
 import { useState } from "react";
-import { Text, Flex, Field, Input, Stack, Button } from "@chakra-ui/react";
+import {
+  Text,
+  Flex,
+  Field,
+  Input,
+  Stack,
+  Button,
+  Box,
+  NativeSelect,
+  Textarea,
+  Heading,
+} from "@chakra-ui/react";
 import { NavLink, useNavigate } from "react-router";
 
 import { toaster } from "@/components/ui/toaster";
 import { useUser } from "@/contexts/UserContext";
-
-interface ExamDetails {
-  culturalContext: string | null;
-  targetLanguage: string;
-  topic: string;
-  tenses: string | null;
-  difficultyLevel: string;
-  vocabularyList: string;
-}
+import { createExam, type ExamDetails } from "@/utils/apiCalls";
 
 export default function CreateExam() {
   const [error, setError] = useState(null);
   const [examTitle, setExamTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [culturalContext, setCulturalContext] = useState("");
-  const [targetLanguage, setTargetLanguage] = useState("");
-  const [topic, setTopic] = useState("");
-  const [tenses, setTenses] = useState("");
-  const [difficultyLevel, setDifficultyLevel] = useState("");
-  const [vocabularyList, setVocabularyList] = useState("");
+  const [targetLanguage, setTargetLanguage] = useState("spanish");
+  const [level, setLevel] = useState("beginner");
+  const [topic, setTopic] = useState("Ordering food at a restaurant");
+  const [vocabularyList, setVocabularyList] = useState(
+    "menu, cuenta, mesero, propina, reservación, plato, bebida, postre",
+  );
+  const [verbTenses, setVerbTenses] = useState(["present", "preterite"]);
+  const [regionVariant, setRegionVariant] = useState("");
 
   const { refreshUserData } = useUser();
 
   const nav = useNavigate();
+  const toggleTense = (tense: string) => {
+    setVerbTenses((prev) =>
+      prev.includes(tense) ? prev.filter((t) => t !== tense) : [...prev, tense],
+    );
+  };
 
   async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
 
     const details: ExamDetails = {
-      culturalContext,
+      examTitle,
+      regionVariant,
       targetLanguage,
       topic,
-      tenses,
-      difficultyLevel,
+      verbTenses,
+      level,
       vocabularyList,
     };
 
@@ -73,133 +84,127 @@ export default function CreateExam() {
   }
 
   return (
-    <Flex
-      direction="column"
-      gap={4}
-      py={2}
-      align="center"
-      justify="center"
-      flex="1"
-      mt="-8rem"
+    <Box
+      p={6}
+      borderWidth="1px"
+      borderRadius="lg"
+      bg="bg.panel"
+      maxW="500px"
+      mx="auto"
     >
-      <Flex as="form" onSubmit={handleSubmit} justify="center" w="100%">
-        <Flex
-          mt={2}
-          justify="center"
-          direction="column"
-          gap={4}
-          py={6}
-          w="50%"
-          bgGradient="sidebar"
-          p={6}
-          borderRadius="1rem"
-        >
-          <Text fontSize="3xl" fontWeight="bold" color="text.sidebar">
-            Create new exam
-          </Text>
-          <Field.Root px={4} color="text.sidebar">
-            <Field.Label>Exam Title</Field.Label>
-            <Input
-              borderColor="borders"
-              type="text"
-              placeholder="exam title"
-              name="examTitle"
-              value={examTitle}
-              onChange={(e) => setExamTitle(e.target.value)}
-            />
-            <Field.ErrorText></Field.ErrorText>
-          </Field.Root>
-          <Field.Root px={4} color="text.sidebar">
-            <Field.Label>Description</Field.Label>
-            <Input
-              borderColor="borders"
-              type="text"
-              placeholder="provide a brief description of the exam"
-              name="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <Field.ErrorText></Field.ErrorText>
-          </Field.Root>
-          <Field.Root px={4} color="text.sidebar">
-            <Field.Label>Cultural Context</Field.Label>
-            <Input
-              borderColor="borders"
-              type="text"
-              placeholder="cultural context"
-              name="culturalContext"
-              value={culturalContext}
-              onChange={(e) => setCulturalContext(e.target.value)}
-            />
-            <Field.ErrorText></Field.ErrorText>
-          </Field.Root>
+      <Heading size="lg" mb={6}>
+        Configure Your Practice Session
+      </Heading>
 
-          <Field.Root px={4} color="text.sidebar">
-            <Field.Label>Target Language</Field.Label>
-            <Input
-              placeholder="target language"
-              name="targetLanguage"
+      <Stack gap={4}>
+        <Field.Root>
+          <Field.Label>Exam Title</Field.Label>
+          <Input
+            value={examTitle}
+            onChange={(e) => setExamTitle(e.target.value)}
+            placeholder="Exam Title"
+          />
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>Exam Title</Field.Label>
+          <Input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Briefly describe the exam"
+          />
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>Target Language</Field.Label>
+          <NativeSelect.Root>
+            <NativeSelect.Field
               value={targetLanguage}
               onChange={(e) => setTargetLanguage(e.target.value)}
-            />
-            <Field.ErrorText></Field.ErrorText>
-          </Field.Root>
-          <Field.Root px={4} color="text.sidebar">
-            <Field.Label>Topic</Field.Label>
-            <Input
-              placeholder="topic"
-              name="topic"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-            />
-            <Field.ErrorText></Field.ErrorText>
-          </Field.Root>
-          <Field.Root px={4} color="text.sidebar">
-            <Field.Label>Tenses</Field.Label>
-            <Input
-              placeholder="tenses"
-              name="tenses"
-              value={tenses}
-              onChange={(e) => setTenses(e.target.value)}
-            />
-            <Field.ErrorText></Field.ErrorText>
-          </Field.Root>
-          <Field.Root px={4} color="text.sidebar">
-            <Field.Label>Difficulty Level</Field.Label>
-            <Input
-              placeholder="difficulty level"
-              name="difficultyLevel"
-              value={difficultyLevel}
-              onChange={(e) => setDifficultyLevel(e.target.value)}
-            />
-            <Field.ErrorText></Field.ErrorText>
-          </Field.Root>
-          <Field.Root px={4} color="text.sidebar">
-            <Field.Label>Vocabulary List</Field.Label>
-            <Input
-              placeholder="vocabulary list"
-              name="vocabularyList"
-              value={vocabularyList}
-              onChange={(e) => setVocabularyList(e.target.value)}
-            />
-            <Field.ErrorText></Field.ErrorText>
-          </Field.Root>
-          {error && (
-            <Text fontSize="sm" color="red.400">
-              {error.message}
-            </Text>
-          )}
-          <Button
-            mx={4}
-            mt={2}
-            type="submit"
-            textStyle="xl"
-            _hover={{ bg: "bg.secondaryBtnHover" }}
-          >
-            Create Exam
-          </Button>
-        </Flex>
-      </Flex>
-    </Flex>
+            >
+              <option value="spanish">Spanish</option>
+              <option value="french">French</option>
+              <option value="german">German</option>
+              <option value="italian">Italian</option>
+              <option value="portuguese">Portuguese</option>
+              <option value="japanese">Japanese</option>
+              <option value="korean">Korean</option>
+              <option value="chinese">Chinese (Mandarin)</option>
+            </NativeSelect.Field>
+          </NativeSelect.Root>
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>Level</Field.Label>
+          <NativeSelect.Root>
+            <NativeSelect.Field
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+            >
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </NativeSelect.Field>
+          </NativeSelect.Root>
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>Regional Variant (Optional)</Field.Label>
+          <Input
+            placeholder="e.g., Mexico, Argentina, Spain"
+            value={regionVariant}
+            onChange={(e) => setRegionVariant(e.target.value)}
+          />
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>Conversation Topic</Field.Label>
+          <Input
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder="What would you like to talk about?"
+          />
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>Vocabulary to Practice</Field.Label>
+          <Textarea
+            value={vocabularyList}
+            onChange={(e) => setVocabularyList(e.target.value)}
+            placeholder="Enter words separated by commas"
+            rows={3}
+          />
+          <Field.HelperText>Separate words with commas</Field.HelperText>
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>Verb Tenses to Practice</Field.Label>
+          <Stack direction="row" flexWrap="wrap" gap={2}>
+            {[
+              "present",
+              "preterite",
+              "imperfect",
+              "future",
+              "conditional",
+              "subjunctive",
+            ].map((tense) => (
+              <Button
+                key={tense}
+                size="sm"
+                variant={verbTenses.includes(tense) ? "solid" : "outline"}
+                colorPalette={verbTenses.includes(tense) ? "blue" : "gray"}
+                onClick={() => toggleTense(tense)}
+              >
+                {tense.charAt(0).toUpperCase() + tense.slice(1)}
+              </Button>
+            ))}
+          </Stack>
+        </Field.Root>
+
+        <Button onClick={handleSubmit} colorPalette="blue" size="lg" mt={4}>
+          Create Exam
+        </Button>
+      </Stack>
+    </Box>
   );
 }

@@ -24,6 +24,7 @@ class Exam(SQLModel, table=True):
     target_language: str
     topic: str
     tenses: Optional[str] = None  # JSON array as string
+    vocabulary_list_manual: Optional[str] = None #Use this field until set up vocab list uploads
     difficulty_level: str
     
     created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -50,6 +51,7 @@ class ExamCreate(SQLModel):
     target_language: str
     topic: str
     tenses: Optional[str] = None
+    vocabulary_list_manual: Optional[str] = None
     difficulty_level: str
     vocabulary_list_id: Optional[uuid.UUID] = None
 
@@ -63,7 +65,12 @@ class ExamResponse(SQLModel):
     target_language: str
     topic: str
     tenses: Optional[str]
+    vocabulary_list_manual: Optional[str] = None
     difficulty_level: str
     vocabulary_list_id: Optional[uuid.UUID]
     created_by_id: Optional[uuid.UUID]
     created_at: datetime
+
+class ExamConfirm(SQLModel):
+    id: uuid.UUID
+    title: str
