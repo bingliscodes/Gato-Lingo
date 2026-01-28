@@ -76,7 +76,6 @@ class UserCreate(SQLModel):
     password_confirm: str
     native_language: Optional[str] = None
     target_language: Optional[str] = None
-    teacher_id: Optional[str] = None
     role: Optional[str] = "student"
     
     @model_validator(mode='after')
@@ -105,7 +104,6 @@ class UserResponse(UserBase):
 class StudentResponse(SQLModel):
     id: uuid.UUID
     email: str
-    password_hash: str
     first_name: str
     last_name: str
 

@@ -28,7 +28,7 @@ def get_token_from_request(
 def get_current_user(
     token: Optional[str] = Depends(get_token_from_request),
     db: Session = Depends(get_db)
-) -> AuthResponse:
+) -> User:
     """
     Dependency that gets the current authenticated user.
     """
@@ -72,7 +72,7 @@ def get_current_user(
             detail="User recently changed password! Please log in again."
         )
     
-    return AuthResponse(status = "success", token = token, user = user)
+    return user
 
 
 def get_current_user_optional(
@@ -102,11 +102,11 @@ def require_roles(*allowed_roles: str):
             ...
     """
     def role_checker(current_user: User = Depends(get_current_user)) -> User:
-        if current_user.user.role not in allowed_roles:
+        if current_user.role not in allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You do not have permission to perform this action"
             )
-        return current_user.user
+        return current_user
     
     return role_checker

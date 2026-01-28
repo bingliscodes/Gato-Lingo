@@ -105,14 +105,20 @@ export interface StudentResponse {
     email: string;
 }
 
-export const getStudents = async(): Promise<StudentResponse[]> => {
-try {
+export const getStudents = async (): Promise<StudentResponse[]> => {
+    try {
         const res = await axios.get<StudentResponse[]>(
             `${import.meta.env.VITE_API_BASE_URL}users/my-students`,
-            {withCredentials: true}
+            { withCredentials: true }
         );
         return res.data;
-    }catch(err){
-         throw new Error(getErrorMessage(err));
+    } catch (err) {
+        if (axios.isAxiosError(err)) {
+            // Log the full error response
+            console.error("Status:", err.response?.status);
+            console.error("Data:", err.response?.data);
+            console.error("Headers:", err.response?.headers);
         }
-}
+        throw new Error(getErrorMessage(err));
+    }
+};

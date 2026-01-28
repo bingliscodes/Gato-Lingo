@@ -17,21 +17,15 @@ export interface User {
     updated_at: string | null
 }
 
-export interface AuthResponse {
-    status: string;
-    token: string;
-    user: User;
-}
-
 interface ApiError{
     detail: string;
 }
 
-export const login = async(credentials: LoginCredentials): Promise<AuthResponse> => {
+export const login = async(credentials: LoginCredentials): Promise<User> => {
     const {email, password} = credentials;
 
     try {
-        const res = await axios.post<AuthResponse>(
+        const res = await axios.post<User>(
             `${import.meta.env.VITE_API_BASE_URL}auth/login`,
             {email, password},
             {withCredentials: true},

@@ -34,7 +34,7 @@ export const UserContextProvider = ({ children }: Props) => {
     setIsLoading(true);
     try {
       const currentUser = await verifyJWT();
-      setUserData(currentUser.user);
+      setUserData(currentUser);
     } catch (err) {
       console.error("Failed to verify user:", err);
       setUserData(null);

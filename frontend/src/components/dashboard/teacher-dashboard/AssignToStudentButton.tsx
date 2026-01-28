@@ -13,6 +13,7 @@ export default function AssignToStudentButton({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  console.log(examId);
   useEffect(() => {
     async function loadStudents() {
       try {
