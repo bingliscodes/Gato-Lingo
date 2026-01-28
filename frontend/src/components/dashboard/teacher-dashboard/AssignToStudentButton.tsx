@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { Button, Dialog, Flex } from "@chakra-ui/react";
-import { getStudents, type StudentResponse } from "@/utils/apiCalls";
 import StudentSearch from "./StudentSearch";
 
 export interface AssignToStudentButtonProps {
@@ -15,7 +13,7 @@ export default function AssignToStudentButton({
       <Dialog.Root>
         <Dialog.Trigger asChild>
           <Button variant="outline" size="sm">
-            Open Dialog
+            Assign to students
           </Button>
         </Dialog.Trigger>
         <Dialog.Backdrop />
