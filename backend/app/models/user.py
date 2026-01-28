@@ -101,6 +101,13 @@ class UserResponse(UserBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
+class StudentResponse(SQLModel):
+    id: uuid.UUID
+    email: str
+    password_hash: str
+    first_name: str
+    last_name: str
+
 class AuthResponse(SQLModel):
     status: str = "success"
     token: str

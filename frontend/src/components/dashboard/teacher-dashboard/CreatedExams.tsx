@@ -1,3 +1,4 @@
+import { Button } from "@chakra-ui/react";
 import { getCreatedExams, type DashboardExamResponse } from "@/utils/apiCalls";
 import { useEffect, useState } from "react";
 
@@ -46,6 +47,7 @@ export default function CreatedExams() {
               </li>
             ))}
           </ul>
+          <Button> assign to student</Button>
         </div>
       ))}
     </div>

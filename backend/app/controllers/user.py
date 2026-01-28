@@ -4,7 +4,7 @@ from typing import List
 from uuid import UUID
 
 from ..database.database import get_db
-from ..models.user import User, UserUpdate, UserResponse
+from ..models.user import User, UserUpdate, UserResponse, StudentResponse
 from ..dependencies.auth import get_current_user, require_roles
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -38,6 +38,10 @@ def get_user(
 @router.get("/me", response_model=UserResponse)
 def get_my_profile(current_user: User = Depends(get_current_user)):
     return current_user
+
+@router.get("/my-students", response_model=StudentResponse)
+def get_my_students(current_user: User = Depends(get_current_user)):
+    return []
 
 @router.patch("/{user_id}", response_model=UserResponse)
 def update_user(

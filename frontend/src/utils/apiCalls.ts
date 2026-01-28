@@ -97,3 +97,22 @@ export const getCreatedExams = async(): Promise<DashboardExamResponse[]> => {
          throw new Error(getErrorMessage(err));
         }
 }
+
+interface StudentResponse {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+}
+
+export const getStudents = async(): Promise<StudentResponse[]> => {
+try {
+        const res = await axios.get<StudentResponse[]>(
+            `${import.meta.env.VITE_API_BASE_URL}users/my-students`,
+            {withCredentials: true}
+        );
+        return res.data;
+    }catch(err){
+         throw new Error(getErrorMessage(err));
+        }
+}
