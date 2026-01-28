@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import {
   Field,
@@ -17,12 +16,12 @@ import { toaster } from "@/components/ui/toaster";
 import { useUser } from "@/contexts/UserContext";
 import { createExam, type ExamFormData } from "@/utils/apiCalls";
 
-interface examCreationError {
+interface ExamCreationError {
   message: string;
 }
 
 export default function CreateExam() {
-  const [error, setError] = useState<examCreationError | null>(null);
+  const [error, setError] = useState<ExamCreationError | null>(null);
   const [examTitle, setExamTitle] = useState("");
   const [description, setDescription] = useState("");
   const [targetLanguage, setTargetLanguage] = useState("spanish");
@@ -67,7 +66,10 @@ export default function CreateExam() {
         title: "Exam created successfully!",
         description: "View exam details in your dashboard.",
       },
-      error: { title: "Error", description: "Exam creation failed" },
+      error: {
+        title: "Error",
+        description: `Exam creation failed: ${error?.message}`,
+      },
     });
 
     try {
@@ -95,7 +97,7 @@ export default function CreateExam() {
       mx="auto"
     >
       <Heading size="lg" mb={6}>
-        Configure Your Practice Session
+        Configure exam details
       </Heading>
 
       <Stack gap={4}>
@@ -109,7 +111,7 @@ export default function CreateExam() {
         </Field.Root>
 
         <Field.Root>
-          <Field.Label>Exam Title</Field.Label>
+          <Field.Label>Exam Description</Field.Label>
           <Input
             value={description}
             onChange={(e) => setDescription(e.target.value)}

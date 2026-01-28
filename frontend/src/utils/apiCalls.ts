@@ -63,3 +63,38 @@ export const createExam = async(formData: ExamFormData): Promise<ExamResponse> =
          throw new Error(getErrorMessage(err));
         }
 } 
+
+type SessionStatus = "assigned" | "in_progress" | "completed";
+
+interface ConversationSession {
+    id: string;
+    status: SessionStatus;
+    due_date: string | null;
+    started_at: string | null
+    ended_at: string | null
+    created_at: string | null
+    exam_id: string | null;
+    student_id: string | null
+}
+
+interface DashboardExamResponse {
+    exam: ExamResponse;
+    total_assigned: number;
+    pending: number;
+    in_progress: number;
+    completed: number;
+    sessions: ConversationSession [] | [];
+}
+
+export const getCreatedExams = async(): Promise<DashboardExamResponse[]> => {
+
+    try {
+        const res = await axios.get<DashboardExamResponse>(
+            `${import.meta.env.VITE_API_BASE_URL}exams/dashboard`,
+            {withCredentials: true}
+        )
+        return res.data;
+    }catch(err){
+         throw new Error(getErrorMessage(err));
+        }
+}

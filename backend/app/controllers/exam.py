@@ -42,17 +42,6 @@ def create_exam(
     vocabulary_list = parse_vocabulary(exam_data.vocabulary_list_manual)
     tenses_list = parse_tenses(exam_data.tenses)
     
-    """
-    TODO: Get data in correct format from exam creation form. May need to use manual list of vocab temporarily,
-    then transform it once we work out the list uploads and management
-    For this to work, the data has to be formatted as follows: 
-        target_language: str,
-        student_level: str,
-        vocabulary: list[str],
-        topic: str,
-        verb_tenses: list[str],
-        region_variant: Optional[str] = None
-    """
     conversation_prompt = conversation_engine.build_system_prompt(
         target_language=exam_data.target_language,
         student_level=exam_data.difficulty_level,
