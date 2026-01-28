@@ -4,7 +4,7 @@ import uuid
 
 if TYPE_CHECKING:
     from .user import User
-    from .conversation_session import ConversationSession
+    from .exam import Exam
 
 
 # Bridge table for many-to-many
@@ -31,7 +31,6 @@ class VocabularyItem(SQLModel, table=True):
         link_model=VocabularyListItem
     )
 
-
 class VocabularyList(SQLModel, table=True):
     __tablename__ = "vocabulary_lists"
     
@@ -40,17 +39,14 @@ class VocabularyList(SQLModel, table=True):
     description: Optional[str] = None
     target_language: str
     
-    # Foreign key to teacher who created it
     teacher_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
     
-    # Relationships
     teacher: Optional["User"] = Relationship(
-        back_populates="vocabulary_lists", 
+        back_populates="vocabulary_lists",
         sa_relationship_kwargs={"foreign_keys": "[VocabularyList.teacher_id]"}
     )
-    
     items: List["VocabularyItem"] = Relationship(
         back_populates="vocabulary_lists",
         link_model=VocabularyListItem
     )
-    sessions: List["ConversationSession"] = Relationship(back_populates="vocabulary_list")
+    exams: List["Exam"] = Relationship(back_populates="vocabulary_list")
