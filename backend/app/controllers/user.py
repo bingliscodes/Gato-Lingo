@@ -16,6 +16,15 @@ def get_all_users(db: Session = Depends(get_db)):
     users = db.exec(statement).all()
     return users
 
+@router.get("/my-students", response_model=List[StudentResponse])
+def get_my_students(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)):
+    print("getting students for user:", current_user.id)
+    statement = select(User).where(User.teacher_id == current_user.id)
+    students = db.exec(statement).all()
+    return students
+
 # Protected route - must be logged in
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user(
@@ -39,14 +48,7 @@ def get_user(
 def get_my_profile(current_user: User = Depends(get_current_user)):
     return current_user
 
-@router.get("/my-students", response_model=List[StudentResponse])
-def get_my_students(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)):
-    print("getting students for user:", current_user.id)
-    statement = select(User).where(User.teacher_id == current_user.id)
-    students = db.exec(statement).all()
-    return students
+
 
 @router.patch("/{user_id}", response_model=UserResponse)
 def update_user(
