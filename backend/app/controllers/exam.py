@@ -38,10 +38,10 @@ def create_exam(
 ):
     """Teacher creates a new exam template."""
     
-    exam = Exam(
-        **exam_data.model_dump(),
-        created_by_id=current_user.id
-    )
+    # Parse the incoming data for prompt generation
+    vocabulary_list = parse_vocabulary(exam_data.vocabulary_list_manual)
+    tenses_list = parse_tenses(exam_data.tenses)
+    
     """
     TODO: Get data in correct format from exam creation form. May need to use manual list of vocab temporarily,
     then transform it once we work out the list uploads and management
@@ -54,15 +54,28 @@ def create_exam(
         region_variant: Optional[str] = None
     """
     conversation_prompt = conversation_engine.build_system_prompt(
-        target_language = exam_data.target_language,
-        student_level = exam_data.difficulty_level,
-        vocabulary = exam_data.vocabulary_list_manual,
-        topic = exam_data.topic,
-        verb_tenses = exam_data.tenses
+        target_language=exam_data.target_language,
+        student_level=exam_data.difficulty_level,
+        vocabulary=vocabulary_list,
+        topic=exam_data.topic,
+        verb_tenses=tenses_list,
+        region_variant=exam_data.cultural_context
     )
-    
-    exam.conversation_prompt = conversation_prompt
-    
+
+    # Create the exam
+    exam = Exam(
+        title=exam_data.title,
+        description=exam_data.description,
+        target_language=exam_data.target_language,
+        difficulty_level=exam_data.difficulty_level,
+        topic=exam_data.topic,
+        tenses=exam_data.tenses,  # Store as JSON string
+        vocabulary_list_manual=exam_data.vocabulary_list_manual,  # Store as comma-separated
+        vocabulary_list_id=exam_data.vocabulary_list_id,
+        cultural_context=exam_data.cultural_context,
+        conversation_prompt=conversation_prompt,
+        created_by_id=current_user.id
+    ) 
     
     db.add(exam)
     db.commit()

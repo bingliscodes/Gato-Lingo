@@ -9,7 +9,7 @@ export interface ExamFormData {
     topic: string;
     tenses: string[];                    // Array of tense names
     vocabulary_list_manual: string;      // Comma-separated string from textarea
-    cultural_context?: string;           // Regional variant
+    cultural_context?: string;           
 }
 
 // What the API returns

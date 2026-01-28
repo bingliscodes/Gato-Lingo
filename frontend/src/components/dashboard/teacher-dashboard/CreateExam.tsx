@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import {
-  Text,
-  Flex,
   Field,
   Input,
   Stack,
@@ -17,10 +15,14 @@ import { NavLink, useNavigate } from "react-router";
 
 import { toaster } from "@/components/ui/toaster";
 import { useUser } from "@/contexts/UserContext";
-import { createExam, type ExamDetails } from "@/utils/apiCalls";
+import { createExam, type ExamFormData } from "@/utils/apiCalls";
+
+interface examCreationError {
+  message: string;
+}
 
 export default function CreateExam() {
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<examCreationError | null>(null);
   const [examTitle, setExamTitle] = useState("");
   const [description, setDescription] = useState("");
   const [targetLanguage, setTargetLanguage] = useState("spanish");
@@ -30,7 +32,7 @@ export default function CreateExam() {
     "menu, cuenta, mesero, propina, reservación, plato, bebida, postre",
   );
   const [verbTenses, setVerbTenses] = useState(["present", "preterite"]);
-  const [regionVariant, setRegionVariant] = useState("");
+  const [culturalContext, setCulturalContext] = useState("");
 
   const { refreshUserData } = useUser();
 
@@ -44,32 +46,32 @@ export default function CreateExam() {
   async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
 
-    const details: ExamDetails = {
-      examTitle,
-      regionVariant,
-      targetLanguage,
+    const formData: ExamFormData = {
+      title: examTitle,
+      cultural_context: culturalContext,
+      target_language: targetLanguage,
       topic,
-      verbTenses,
-      level,
-      vocabularyList,
+      tenses: verbTenses,
+      difficulty_level: level,
+      vocabulary_list_manual: vocabularyList,
     };
 
-    // const loginPromise = login(credentials);
+    const examCreatePromise = createExam(formData);
 
-    toaster.promise(loginPromise, {
+    toaster.promise(examCreatePromise, {
       loading: {
-        title: "Logging In...",
-        description: "Checking your credentials.",
+        title: "Creating exam...",
+        description: "",
       },
       success: {
-        title: "Login Successful!",
-        description: "Redirecting to homepage.",
+        title: "Exam created successfully!",
+        description: "View exam details in your dashboard.",
       },
-      error: { title: "Error", description: "Login failed." },
+      error: { title: "Error", description: "Exam creation failed" },
     });
 
     try {
-      await loginPromise;
+      await examCreatePromise;
       setError(null);
       await refreshUserData();
       nav("/");
@@ -149,11 +151,11 @@ export default function CreateExam() {
         </Field.Root>
 
         <Field.Root>
-          <Field.Label>Regional Variant (Optional)</Field.Label>
+          <Field.Label>Cultural Context (Optional)</Field.Label>
           <Input
             placeholder="e.g., Mexico, Argentina, Spain"
-            value={regionVariant}
-            onChange={(e) => setRegionVariant(e.target.value)}
+            value={culturalContext}
+            onChange={(e) => setCulturalContext(e.target.value)}
           />
         </Field.Root>
 
