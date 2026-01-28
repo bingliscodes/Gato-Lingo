@@ -1,15 +1,7 @@
 "use client";
 
-import { useState, useContext } from "react";
-import {
-  Checkbox,
-  Text,
-  Flex,
-  Field,
-  Input,
-  Stack,
-  Button,
-} from "@chakra-ui/react";
+import { useState } from "react";
+import { Text, Flex, Field, Input, Stack, Button } from "@chakra-ui/react";
 import { NavLink, useNavigate } from "react-router";
 
 import { toaster } from "@/components/ui/toaster";
@@ -26,11 +18,13 @@ interface ExamDetails {
 
 export default function CreateExam() {
   const [error, setError] = useState(null);
+  const [examTitle, setExamTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [culturalContext, setCulturalContext] = useState("");
   const [targetLanguage, setTargetLanguage] = useState("");
   const [topic, setTopic] = useState("");
   const [tenses, setTenses] = useState("");
-  const [difficultylevel, setDifficultyLevel] = useState("");
+  const [difficultyLevel, setDifficultyLevel] = useState("");
   const [vocabularyList, setVocabularyList] = useState("");
 
   const { refreshUserData } = useUser();
@@ -104,6 +98,30 @@ export default function CreateExam() {
             Create new exam
           </Text>
           <Field.Root px={4} color="text.sidebar">
+            <Field.Label>Exam Title</Field.Label>
+            <Input
+              borderColor="borders"
+              type="text"
+              placeholder="exam title"
+              name="examTitle"
+              value={examTitle}
+              onChange={(e) => setExamTitle(e.target.value)}
+            />
+            <Field.ErrorText></Field.ErrorText>
+          </Field.Root>
+          <Field.Root px={4} color="text.sidebar">
+            <Field.Label>Description</Field.Label>
+            <Input
+              borderColor="borders"
+              type="text"
+              placeholder="provide a brief description of the exam"
+              name="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            <Field.ErrorText></Field.ErrorText>
+          </Field.Root>
+          <Field.Root px={4} color="text.sidebar">
             <Field.Label>Cultural Context</Field.Label>
             <Input
               borderColor="borders"
@@ -151,7 +169,7 @@ export default function CreateExam() {
             <Input
               placeholder="difficulty level"
               name="difficultyLevel"
-              value={difficultylevel}
+              value={difficultyLevel}
               onChange={(e) => setDifficultyLevel(e.target.value)}
             />
             <Field.ErrorText></Field.ErrorText>

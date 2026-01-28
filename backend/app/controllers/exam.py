@@ -28,6 +28,8 @@ def create_exam(
         created_by_id=current_user.id
     )
     """
+    TODO: Get data in correct format from exam creation form. May need to use manual list of vocab temporarily,
+    then transform it once we work out the list uploads and management
     For this to work, the data has to be formatted as follows: 
         target_language: str,
         student_level: str,
