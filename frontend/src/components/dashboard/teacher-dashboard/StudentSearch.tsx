@@ -66,7 +66,6 @@ export default function StudentSearch() {
 
   if (isLoading) return <div>Loading students...</div>;
   if (error) return <div> Error: {error}</div>;
-  console.log(studentData);
   return (
     <Flex direction="column">
       <Input
