@@ -7,7 +7,7 @@ import json
 from ..config import settings
 from ..services.conversation_engine import ConversationEngine
 from ..database.database import get_db
-from ..models.exam import Exam, ExamCreate, ExamResponse
+from ..models.exam import Exam, ExamCreate, ExamResponse, DashboardExamResponse
 from ..models.conversation_session import ConversationSession, SessionStatus, SessionAssignment, ConversationSessionResponse
 from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
@@ -136,7 +136,7 @@ def assign_exam(
     return sessions
 
 
-@router.get("/dashboard")
+@router.get("/dashboard", response_model=List[DashboardExamResponse])
 def teacher_dashboard(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_roles("teacher"))

@@ -20,30 +20,27 @@ def seed_users(db: Session):
         return
     
     # Create test users
-    test_users = [
-        User(
-            email="ben@example.com",
+    ben = User( email="ben@example.com",
             password_hash=hash_password("password123"),  
             first_name="Ben",
             last_name="Inglis",
             role="teacher",
             native_language="english",
-            target_language="spanish",
-        ),
-        User(
-            email="cannoli@example.com",
+            target_language="spanish",)
+    
+    cannoli = User (
+          email="cannoli@example.com",
             password_hash=hash_password("password123"),
             first_name="Cannoli",
             last_name="Inglis",
             role="student",
             native_language="cat",
             target_language="spanish",
-        ),
-    ]
-    db.add_all(test_users)
+            teacher = ben
+    )
+    db.add(ben)
+    db.add(cannoli)
     db.commit()
-    
-    print(f"Seeded {len(test_users)} users.")
 
 def seed_conversations(db: Session):
     test_statement = select(ConversationSession)

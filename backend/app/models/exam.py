@@ -6,7 +6,7 @@ import uuid
 if TYPE_CHECKING:
     from .user import User
     from .vocabulary import VocabularyList
-    from .conversation_session import ConversationSession
+    from .conversation_session import ConversationSession, ConversationSessionResponse
 
 
 class Exam(SQLModel, table=True):
@@ -72,3 +72,10 @@ class ExamResponse(SQLModel):
     created_by_id: Optional[uuid.UUID]
     created_at: datetime
 
+class DashboardExamResponse(SQLModel):
+    exam: ExamResponse
+    total_assigned: int
+    pending: int
+    in_progress: int
+    completed: int
+    sessions: List[ConversationSessionResponse]
