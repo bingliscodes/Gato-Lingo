@@ -30,9 +30,6 @@ export default function StudentSearch() {
     loadStudents();
   }, []);
 
-  if (isLoading) return <div>Loading students...</div>;
-  if (error) return <div> Error: {error}</div>;
-
   const debounceOnChange = debounce(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const input = e.target.value.trim().toLowerCase();
@@ -66,6 +63,10 @@ export default function StudentSearch() {
       inputRef.current.focus();
     }
   }, [menuIsOpen]);
+
+  if (isLoading) return <div>Loading students...</div>;
+  if (error) return <div> Error: {error}</div>;
+  console.log(studentData);
   return (
     <Flex direction="column">
       <Input
@@ -104,7 +105,9 @@ export default function StudentSearch() {
                 bg: "bg.secondaryBtnHover",
               }}
             >
-              <h1>{usr.id} </h1>
+              <h1>
+                {usr.first_name} {usr.last_name}
+              </h1>
             </Box>
           ))}
         </Flex>
