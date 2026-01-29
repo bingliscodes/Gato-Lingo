@@ -54,14 +54,4 @@ class ExamCreate(SQLModel):
     vocabulary_list_id: Optional[uuid.UUID] = None
     difficulty_level: str
 
-class ExamSummary(SQLModel):
-    id: uuid.UUID
-    title: str
-    topic: str
-    target_language: str
-    difficulty_level: str
-    vocabulary_list_manual: Optional[str] = None
-    tenses: Optional[str] = None
-    cultural_context: Optional[str] = None
-
-from ..schemas.responses import ExamResponse, DashboardExamResponse
+from ..schemas.responses import ExamResponse, DashboardExamResponse, StudentAssignmentResponse, ExamSummary

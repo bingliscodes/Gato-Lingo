@@ -2,6 +2,12 @@ from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING, List
 import uuid
+from enum import Enum
+
+class SessionStatus(str, Enum):
+    assigned = "assigned"
+    in_progress = "in_progress"
+    completed = "completed"
 
 if TYPE_CHECKING:
     from .user import User
@@ -42,4 +48,4 @@ class SessionAssignment(SQLModel):
     due_date: Optional[datetime] = None
 
 # Import response schema from shared file
-from ..schemas.responses import ConversationSessionResponse, SessionStatus, StudentAssignmentResponse
+from ..schemas.responses import ConversationSessionResponse, StudentAssignmentResponse

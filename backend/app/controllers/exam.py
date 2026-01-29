@@ -7,7 +7,7 @@ import json
 from ..config import settings
 from ..services.conversation_engine import ConversationEngine
 from ..database.database import get_db
-from ..models.exam import Exam, ExamCreate, ExamResponse, DashboardExamResponse
+from ..models.exam import Exam, ExamCreate, ExamResponse, DashboardExamResponse, StudentAssignmentResponse, ExamSummary
 from ..models.conversation_session import ConversationSession, SessionStatus, SessionAssignment, ConversationSessionResponse
 from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
@@ -167,7 +167,7 @@ def teacher_dashboard(
     
     return dashboard_data
 
-@router.get("/assignments", response_model=List[ConversationSession])
+@router.get("/assignments", response_model=List[StudentAssignmentResponse])
 def student_dashboard(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -175,4 +175,31 @@ def student_dashboard(
     assignments_statement = select(ConversationSession).where(ConversationSession.student_id == current_user.id)
     assignments = db.exec(assignments_statement).all()
 
-    return assignments
+    results = []
+
+    for session in assignments:
+        exam = db.get(Exam, session.exam_id) if session.exam_id else None
+
+        exam_summary = None
+        if exam:
+            exam_summary = ExamSummary(
+                id=exam.id,
+                title=exam.title,
+                topic=exam.topic,
+                target_language=exam.target_language,
+                difficulty_level=exam.difficulty_level,
+                vocabulary_list_manual=exam.vocabulary_list_manual,
+                tenses=exam.tenses,
+            )
+        results.append(StudentAssignmentResponse(
+            id=session.id,
+            status=session.status,
+            due_date=session.due_date,
+            started_at=session.started_at,
+            ended_at=session.ended_at,
+            created_at=session.created_at,
+            student_id=session.student_id,
+            exam=exam_summary,
+        ))
+
+    return results
