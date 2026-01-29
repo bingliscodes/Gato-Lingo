@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button, Dialog, Flex } from "@chakra-ui/react";
 
 import StudentSearch from "./StudentSearch";
@@ -39,6 +39,8 @@ export default function AssignToStudentButton({
       setIsLoading(false);
     }
   };
+
+  console.log(data); // This contains all the sessions created for each student
 
   const addedStudents = assignedStudentIds.length;
 

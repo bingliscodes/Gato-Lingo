@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios'
+import { getErrorMessage } from './helperFunctions';
 
 interface LoginCredentials {
     email: string;
@@ -84,3 +85,19 @@ export const verifyJWT = async (): Promise<User>=> {
         throw new Error("An unexpected error occurred");
   }
 };
+
+export interface MessageResponse{
+    status: string;
+    message: string;
+}
+
+export const logout = async(): Promise<MessageResponse> => {
+    try {
+        const res = await axios.get<MessageResponse>(`${import.meta.env.VITE_API_BASE_URL}auth/logout`,
+            {withCredentials: true}
+        )
+        return res.data
+    } catch(err){
+         throw new Error(getErrorMessage(err));
+        }
+}

@@ -1,4 +1,5 @@
-import axios, { AxiosError } from 'axios'
+import axios from 'axios';
+import { getErrorMessage } from "./helperFunctions";
 
 
 export interface ExamFormData {
@@ -30,20 +31,6 @@ export interface ExamResponse {
 }
 
 
-interface ApiError{
-    detail: string;
-}
-
-function getErrorMessage(err: unknown): string {
-    if (axios.isAxiosError(err)) {
-        const axiosError = err as AxiosError<ApiError>;
-        return axiosError.response?.data?.detail || "Request failed";
-    }
-    if (err instanceof Error) {
-        return err.message;
-    }
-    return "An unexpected error occurred";
-}
 
 export const createExam = async(formData: ExamFormData): Promise<ExamResponse> => {
     try{
