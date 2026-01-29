@@ -66,7 +66,7 @@ export const createExam = async(formData: ExamFormData): Promise<ExamResponse> =
 
 type SessionStatus = "assigned" | "in_progress" | "completed";
 
-interface ConversationSession {
+export interface ConversationSession {
     id: string;
     status: SessionStatus;
     due_date: string | null;
@@ -122,3 +122,24 @@ export const getStudents = async (): Promise<StudentResponse[]> => {
         throw new Error(getErrorMessage(err));
     }
 };
+
+export interface ExamAssignmentRequest {
+  exam_id: string;
+  student_ids: string[];
+  due_date: string | null;
+}
+
+export const assignExamToStudents = async (examAssignmentRequest: ExamAssignmentRequest): Promise<ConversationSession[]> => {
+    try{
+        const res = await axios.post<ConversationSession[]>(
+            `${import.meta.env.VITE_API_BASE_URL}exams/assign`,
+            examAssignmentRequest,
+            {withCredentials: true},
+        )
+        return res.data;
+    }
+   catch(err){
+         throw new Error(getErrorMessage(err));
+        }
+
+}
