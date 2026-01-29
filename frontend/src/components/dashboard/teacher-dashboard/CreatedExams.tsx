@@ -1,6 +1,6 @@
 import { getCreatedExams, type DashboardExamResponse } from "@/utils/apiCalls";
 import { useEffect, useState } from "react";
-import AssignToStudentButton from "./AssignToStudentButton";
+import AssignToStudentButton from "./exam-assignment/AssignToStudentButton";
 
 export default function CreatedExams() {
   const [examData, setExamData] = useState<DashboardExamResponse[]>([]);

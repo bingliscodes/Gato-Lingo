@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import { debounce } from "lodash";
 
 import { getStudents, type StudentResponse } from "@/utils/apiCalls";
+import StudentCard from "./StudentSearchCard";
 
 export default function StudentSearch() {
   const [inputValue, setInputValue] = useState("");
@@ -104,9 +105,7 @@ export default function StudentSearch() {
                 bg: "bg.secondaryBtnHover",
               }}
             >
-              <h1>
-                {usr.first_name} {usr.last_name}
-              </h1>
+              <StudentCard studentData={usr} />
             </Box>
           ))}
         </Flex>

@@ -1,5 +1,5 @@
 import { Button, Dialog, Flex } from "@chakra-ui/react";
-import StudentSearch from "./StudentSearch";
+import StudentSearch from "../StudentSearch";
 
 export interface AssignToStudentButtonProps {
   examId: string;
@@ -20,7 +20,7 @@ export default function AssignToStudentButton({
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
-              <Dialog.Title>Dialog</Dialog.Title>
+              <Dialog.Title>Select students</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
               <StudentSearch />
