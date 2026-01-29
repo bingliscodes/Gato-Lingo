@@ -2,7 +2,12 @@ from sqlmodel import SQLModel
 from datetime import datetime
 from typing import Optional, List
 from uuid import UUID
+from enum import Enum
 
+class SessionStatus(str, Enum):
+    assigned = "assigned"
+    in_progress = "in_progress"
+    completed = "completed"
 
 class ConversationSessionResponse(SQLModel):
     id: UUID
@@ -38,3 +43,25 @@ class DashboardExamResponse(SQLModel):
     in_progress: int
     completed: int
     sessions: List[ConversationSessionResponse]
+
+class ExamSummary(SQLModel):
+    id: UUID
+    title: str
+    topic: str
+    target_language: str
+    difficulty_level: str
+    vocabulary_list_manual: Optional[str] = None
+    tenses: Optional[str] = None
+    cultural_context: Optional[str] = None
+
+
+class StudentAssignmentResponse(SQLModel):
+    id: UUID
+    status: SessionStatus
+    due_date: Optional[datetime]
+    started_at: Optional[datetime]
+    ended_at: Optional[datetime]
+    created_at: datetime
+    student_id: Optional[UUID]
+
+    exam: Optional[ExamSummary] = None

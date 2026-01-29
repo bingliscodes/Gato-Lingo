@@ -20,6 +20,8 @@ export default function AssignToStudentButton({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // TODO: Fix allowing multiple assignments
+
   const handleExamAssignment = async (): Promise<void> => {
     try {
       const requestData: ExamAssignmentRequest = {

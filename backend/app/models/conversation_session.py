@@ -1,7 +1,6 @@
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING, List
-from enum import Enum
 import uuid
 
 if TYPE_CHECKING:
@@ -10,10 +9,6 @@ if TYPE_CHECKING:
     from .conversation_turn import ConversationTurn
     from .session_score import SessionScore
 
-class SessionStatus(str, Enum):
-    assigned = "assigned"
-    in_progress = "in_progress"
-    completed = "completed"
 
 class ConversationSession(SQLModel, table=True):
     __tablename__ = "conversation_sessions"
@@ -47,4 +42,4 @@ class SessionAssignment(SQLModel):
     due_date: Optional[datetime] = None
 
 # Import response schema from shared file
-from ..schemas.responses import ConversationSessionResponse
+from ..schemas.responses import ConversationSessionResponse, SessionStatus, StudentAssignmentResponse

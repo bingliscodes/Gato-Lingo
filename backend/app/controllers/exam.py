@@ -166,3 +166,13 @@ def teacher_dashboard(
         })
     
     return dashboard_data
+
+@router.get("/assignments", response_model=List[ConversationSession])
+def student_dashboard(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    assignments_statement = select(ConversationSession).where(ConversationSession.student_id == current_user.id)
+    assignments = db.exec(assignments_statement).all()
+
+    return assignments

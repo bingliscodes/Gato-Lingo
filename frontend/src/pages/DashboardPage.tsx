@@ -4,11 +4,9 @@ import { useUser } from "@/contexts/UserContext";
 
 export default function DashboardPage() {
   const { userData } = useUser();
-  console.log(userData);
-  return <TeacherDashboard />;
-  //   return userData?.role === "teacher" ? (
-  //     <TeacherDashboard />
-  //   ) : (
-  //     <StudentDashboard />
-  //   );
+  return userData?.role === "teacher" ? (
+    <TeacherDashboard />
+  ) : (
+    <StudentDashboard />
+  );
 }
