@@ -5,7 +5,15 @@ import { debounce } from "lodash";
 import { getStudents, type StudentResponse } from "@/utils/apiCalls";
 import StudentCard from "./StudentSearchCard";
 
-export default function StudentSearch() {
+export interface StudentSearchProps {
+  assignedStudentIds: string[];
+  setAssignedStudentIds: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+export default function StudentSearch({
+  assignedStudentIds,
+  setAssignedStudentIds,
+}: StudentSearchProps) {
   const [inputValue, setInputValue] = useState("");
   const [searchResults, setSearchResults] = useState<StudentResponse[]>([]);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -105,7 +113,11 @@ export default function StudentSearch() {
                 bg: "bg.secondaryBtnHover",
               }}
             >
-              <StudentCard studentData={usr} />
+              <StudentCard
+                studentData={usr}
+                assignedStudentIds={assignedStudentIds}
+                setAssignedStudentIds={setAssignedStudentIds}
+              />
             </Box>
           ))}
         </Flex>
