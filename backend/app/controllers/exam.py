@@ -167,6 +167,7 @@ def teacher_dashboard(
     
     return dashboard_data
 
+
 @router.get("/assignments", response_model=List[StudentAssignmentResponse])
 def student_dashboard(
     db: Session = Depends(get_db),
@@ -174,7 +175,6 @@ def student_dashboard(
 ):
     assignments_statement = select(ConversationSession).where(ConversationSession.student_id == current_user.id)
     assignments = db.exec(assignments_statement).all()
-
     results = []
 
     for session in assignments:

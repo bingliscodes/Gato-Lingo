@@ -141,7 +141,8 @@ export interface ExamSummary {
     cultural_context: string | null;
     tenses: string | null;
 }
-export interface StudentAssignment {
+
+export interface StudentAssignmentResponse {
     id: string;
     status: SessionStatus;
     due_date: string | null;
@@ -149,16 +150,15 @@ export interface StudentAssignment {
     ended_at: string | null;
     created_at: string;
     student_id: string | null;
-    exam: ExamSummary | null;
+    exam: ExamSummary;
 } 
 
-export const getMyAssignments = async (): Promise<StudentAssignment[]> =>{
+export const getMyAssignments = async (): Promise<StudentAssignmentResponse[]> => {
     try{
-        const res = await axios.get<StudentAssignment[]>(
-            `${import.meta.env.API_BASE_URL}exams/assignments`,
+        const res = await axios.get<StudentAssignmentResponse[]>(
+            `${import.meta.env.VITE_API_BASE_URL}exams/assignments`,
             {withCredentials: true}
         )
-
         return res.data;
     }catch (err){
         throw new Error(getErrorMessage(err));
