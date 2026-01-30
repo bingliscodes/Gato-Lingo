@@ -54,4 +54,4 @@ class ExamCreate(SQLModel):
     vocabulary_list_id: Optional[uuid.UUID] = None
     difficulty_level: str
 
-from ..schemas.responses import ExamResponse, DashboardExamResponse, StudentAssignmentResponse, ExamSummary
+from ..schemas.responses import ExamResponse, DashboardExamResponse, StudentAssignmentResponse

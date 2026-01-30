@@ -131,16 +131,6 @@ export const assignExamToStudents = async (examAssignmentRequest: ExamAssignment
 
 }
 
-export interface ExamSummary {
-    id: string;
-    title: string;
-    topic: string;
-    target_language: string;
-    difficulty_level: string;
-    vocabulary_list_manual: string | null;
-    cultural_context: string | null;
-    tenses: string | null;
-}
 
 export interface StudentAssignmentResponse {
     id: string;
@@ -150,7 +140,7 @@ export interface StudentAssignmentResponse {
     ended_at: string | null;
     created_at: string;
     student_id: string | null;
-    exam: ExamSummary;
+    exam: ExamResponse;
 } 
 
 export const getMyAssignments = async (): Promise<StudentAssignmentResponse[]> => {

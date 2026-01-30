@@ -7,7 +7,7 @@ import json
 from ..config import settings
 from ..services.conversation_engine import ConversationEngine
 from ..database.database import get_db
-from ..models.exam import Exam, ExamCreate, ExamResponse, DashboardExamResponse, StudentAssignmentResponse, ExamSummary
+from ..models.exam import Exam, ExamCreate, ExamResponse, DashboardExamResponse, StudentAssignmentResponse
 from ..models.conversation_session import ConversationSession, SessionStatus, SessionAssignment, ConversationSessionResponse
 from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
@@ -182,9 +182,12 @@ def student_dashboard(
 
         exam_summary = None
         if exam:
-            exam_summary = ExamSummary(
+            exam_summary = ExamResponse(
                 id=exam.id,
                 title=exam.title,
+                description=exam.description,
+                vocabulary_list_id=exam.vocabulary_list_id,
+                conversation_prompt=exam.conversation_prompt,
                 topic=exam.topic,
                 target_language=exam.target_language,
                 difficulty_level=exam.difficulty_level,

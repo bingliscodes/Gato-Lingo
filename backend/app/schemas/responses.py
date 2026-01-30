@@ -44,15 +44,6 @@ class DashboardExamResponse(SQLModel):
     completed: int
     sessions: List[ConversationSessionResponse]
 
-class ExamSummary(SQLModel):
-    id: UUID
-    title: str
-    topic: str
-    target_language: str
-    difficulty_level: str
-    vocabulary_list_manual: Optional[str] = None
-    tenses: Optional[str] = None
-    cultural_context: Optional[str] = None
 
 
 class StudentAssignmentResponse(SQLModel):
@@ -64,4 +55,4 @@ class StudentAssignmentResponse(SQLModel):
     created_at: datetime
     student_id: Optional[UUID]
 
-    exam: Optional[ExamSummary] = None
+    exam: Optional[ExamResponse] = None
