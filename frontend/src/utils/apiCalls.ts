@@ -130,3 +130,37 @@ export const assignExamToStudents = async (examAssignmentRequest: ExamAssignment
         }
 
 }
+
+export interface ExamSummary {
+    id: string;
+    title: string;
+    topic: string;
+    target_language: string;
+    difficulty_level: string;
+    vocabulary_list_manual: string | null;
+    cultural_context: string | null;
+    tenses: string | null;
+}
+export interface StudentAssignment {
+    id: string;
+    status: SessionStatus;
+    due_date: string | null;
+    started_at: string | null;
+    ended_at: string | null;
+    created_at: string;
+    student_id: string | null;
+    exam: ExamSummary | null;
+} 
+
+export const getMyAssignments = async (): Promise<StudentAssignment[]> =>{
+    try{
+        const res = await axios.get<StudentAssignment[]>(
+            `${import.meta.env.API_BASE_URL}exams/assignments`,
+            {withCredentials: true}
+        )
+
+        return res.data;
+    }catch (err){
+        throw new Error(getErrorMessage(err));
+    }
+}

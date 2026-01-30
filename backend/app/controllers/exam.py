@@ -189,6 +189,7 @@ def student_dashboard(
                 target_language=exam.target_language,
                 difficulty_level=exam.difficulty_level,
                 vocabulary_list_manual=exam.vocabulary_list_manual,
+                cultural_context=exam.cultural_context,
                 tenses=exam.tenses,
             )
         results.append(StudentAssignmentResponse(
