@@ -5,6 +5,7 @@ import { useWebSocket } from "@/hooks/useWebSocket";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { MessageList } from "@/components/MessageList";
+import type { StudentAssignmentResponse } from "@/utils/apiCalls";
 
 interface Message {
   speaker: "student" | "tutor";
@@ -12,13 +13,8 @@ interface Message {
   timestamp: Date;
 }
 
-interface ConversationConfig {
-  targetLanguage: string;
-  level: string;
-  topic: string;
-  vocabulary: string[];
-  verbTenses: string[];
-  regionVariant?: string;
+interface ConversationInterfaceProps {
+  examData: StudentAssignmentResponse;
 }
 
 const MicrophoneIcon = () => (
@@ -28,7 +24,9 @@ const MicrophoneIcon = () => (
   </svg>
 );
 
-export default function ConversationInterface() {
+export default function ConversationInterface({
+  examData,
+}: ConversationInterfaceProps) {
   const nav = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTutorSpeaking, setIsTutorSpeaking] = useState(false);
@@ -112,11 +110,11 @@ export default function ConversationInterface() {
   }, [audioBlob, sendMessage]);
 
   const handleStartConversation = useCallback(
-    (config: ConversationConfig) => {
+    (examData: StudentAssignmentResponse) => {
       sendMessage(
         JSON.stringify({
           type: "config",
-          ...config,
+          ...examData,
         }),
       );
     },
@@ -140,7 +138,7 @@ export default function ConversationInterface() {
   }, [stopRecording]);
 
   return (
-    <Box display="flex" flexDirection="column" h="100vh">
+    <Box display="flex" flexDirection="column" h="100vh" flex="1">
       {/* Header */}
       <Box
         as="header"
