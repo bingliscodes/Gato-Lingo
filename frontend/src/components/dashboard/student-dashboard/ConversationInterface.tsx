@@ -27,6 +27,7 @@ const MicrophoneIcon = () => (
 export default function ConversationInterface({
   examData,
 }: ConversationInterfaceProps) {
+  console.log(examData);
   const nav = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTutorSpeaking, setIsTutorSpeaking] = useState(false);
@@ -138,7 +139,7 @@ export default function ConversationInterface({
   }, [stopRecording]);
 
   return (
-    <Box display="flex" flexDirection="column" h="100vh" flex="1">
+    <Box flex="1" display="flex" flexDirection="column" h="100vh">
       {/* Header */}
       <Box
         as="header"
