@@ -194,6 +194,8 @@ def student_dashboard(
                 vocabulary_list_manual=exam.vocabulary_list_manual,
                 cultural_context=exam.cultural_context,
                 tenses=exam.tenses,
+                created_by_id=exam.created_by_id,
+                created_at=exam.created_at
             )
         results.append(StudentAssignmentResponse(
             id=session.id,

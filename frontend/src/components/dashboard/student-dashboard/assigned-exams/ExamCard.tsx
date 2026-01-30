@@ -6,7 +6,9 @@ interface ExamCardProps {
 }
 
 export default function ExamCard({ examData }: ExamCardProps) {
-  const handleClick = () => {};
+  const handleStart = () => {
+    examData.exam;
+  };
 
   return (
     <Flex direction="column" flex="1">
@@ -16,7 +18,7 @@ export default function ExamCard({ examData }: ExamCardProps) {
       <Text>Vocab: {examData.exam.vocabulary_list_manual}</Text>
       <Text>Status: {examData.status}</Text>
       <Text>Due Date: {examData.due_date} </Text>
-      <Button onClick={handleClick}>
+      <Button onClick={handleStart}>
         {examData.status != "in_progress" && "Start Exam"}
       </Button>
     </Flex>
