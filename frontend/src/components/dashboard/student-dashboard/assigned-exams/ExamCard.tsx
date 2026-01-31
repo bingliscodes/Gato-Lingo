@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button, Flex, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router";
 
+import { useWebSocket } from "@/hooks/useWebSocket";
 import { type StudentAssignmentResponse } from "@/utils/apiCalls";
 import ConversationInterface from "../ConversationInterface";
 
@@ -11,7 +12,23 @@ interface ExamCardProps {
 
 export default function ExamCard({ examData }: ExamCardProps) {
   const [examInProgress, setExamInProgress] = useState(false);
+  const { sendMessage, lastMessage, connectionStatus } = useWebSocket(
+    //TODO: Make this use an env variable
+    "ws://localhost:8000/ws/conversation",
+  );
 
+  const handleStartConversation = useCallback(
+    (examData: StudentAssignmentResponse) => {
+      sendMessage(
+        JSON.stringify({
+          type: "config",
+          ...examData,
+        }),
+      );
+      setExamInProgress(true);
+    },
+    [sendMessage],
+  );
   return (
     <Flex flex="1" w="100vw" px={1}>
       {!examInProgress && (
@@ -27,7 +44,7 @@ export default function ExamCard({ examData }: ExamCardProps) {
         {examData.status != "in_progress" && "Start Exam"}
       </NavLink> */}
           {/* For now let's use a toggle instead of a separate route */}
-          <Button onClick={(): void => setExamInProgress(true)}>
+          <Button onClick={(): void => handleStartConversation(examData)}>
             Start exam
           </Button>
         </Flex>

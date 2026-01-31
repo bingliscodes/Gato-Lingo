@@ -1,5 +1,11 @@
-import { Box, Button, Text, VStack, HStack, Icon } from "@chakra-ui/react";
-import { useState, useEffect, useCallback, type SetStateAction } from "react";
+import { Box, Button, Text, VStack } from "@chakra-ui/react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  type SetStateAction,
+  type Dispatch,
+} from "react";
 import { useNavigate } from "react-router";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
@@ -15,7 +21,7 @@ interface Message {
 
 interface ConversationInterfaceProps {
   examData: StudentAssignmentResponse;
-  setExamInProgress: React.Dispatch<React.SetStateAction<boolean>>;
+  setExamInProgress: Dispatch<SetStateAction<boolean>>;
 }
 
 const MicrophoneIcon = () => (
