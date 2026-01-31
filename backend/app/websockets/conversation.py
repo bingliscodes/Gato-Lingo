@@ -40,15 +40,10 @@ class ConversationHandler:
                 
                 if data["type"] == "config":
                     # Initialize conversation with config
+                    # Modify this to take in a system prompt from the exam data
                     target_language = data.get("targetLanguage", "spanish")
-                    system_prompt = self.conversation_engine.build_system_prompt(
-                        target_language=target_language,
-                        student_level=data.get("level", "beginner"),
-                        vocabulary=data.get("vocabulary", []),
-                        topic=data.get("topic", "general conversation"),
-                        verb_tenses=data.get("verbTenses", []),
-                        region_variant=data.get("regionVariant")
-                    )
+                    exam_data = data.get("exam")
+                    system_prompt = exam_data.get("conversation_prompt")
                     
                     # Generate opening
                     opening = await self.conversation_engine.generate_opening(system_prompt)
