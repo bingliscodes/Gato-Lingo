@@ -1,5 +1,5 @@
 import { Box, Button, Text, VStack, HStack, Icon } from "@chakra-ui/react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, type SetStateAction } from "react";
 import { useNavigate } from "react-router";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
@@ -15,6 +15,7 @@ interface Message {
 
 interface ConversationInterfaceProps {
   examData: StudentAssignmentResponse;
+  setExamInProgress: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const MicrophoneIcon = () => (
@@ -26,6 +27,7 @@ const MicrophoneIcon = () => (
 
 export default function ConversationInterface({
   examData,
+  setExamInProgress,
 }: ConversationInterfaceProps) {
   console.log(examData);
   const nav = useNavigate();
@@ -125,6 +127,7 @@ export default function ConversationInterface({
   const handleEndSession = useCallback(() => {
     sendMessage(JSON.stringify({ type: "end_session" }));
     setMessages([]);
+    setExamInProgress(false);
     nav("/dashboard");
   }, [sendMessage]);
 

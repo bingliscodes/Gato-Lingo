@@ -33,7 +33,12 @@ export default function ExamCard({ examData }: ExamCardProps) {
         </Flex>
       )}
 
-      {examInProgress && <ConversationInterface examData={examData} />}
+      {examInProgress && (
+        <ConversationInterface
+          examData={examData}
+          setExamInProgress={setExamInProgress}
+        />
+      )}
     </Flex>
   );
 }
