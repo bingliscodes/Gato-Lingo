@@ -161,6 +161,7 @@ class ConversationHandler:
                         "turns": turn_number
                     })
                     print(f"Session {session_id} ended with {turn_number} turns")
+                    #TODO: Trigger score generation
                     break
         
         except WebSocketDisconnect:

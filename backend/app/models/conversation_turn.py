@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING
 import uuid
 
@@ -11,9 +11,9 @@ class ConversationTurn(SQLModel, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     
-    timestamp: Optional[datetime] = Field(default_factory=lambda: datetime.now(datetime.timezone.utc))
+    timestamp: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
     speaker: str 
-    audio_url: str
+    audio_url: Optional[str] = None
     transcript: str
     turn_number: int
     target_language: str

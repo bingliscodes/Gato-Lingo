@@ -10,6 +10,7 @@ from .controllers import auth as auth_controller
 from .controllers import conversation_session as conversation_session_controller
 from .controllers import exam as exam_controller
 from .websockets.conversation import ConversationHandler
+from .utils.score_session import generate_session_score
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,6 +44,7 @@ app.include_router(conversation_session_controller.router)
 
 # WebSocket handler
 conversation_handler = ConversationHandler()
+generate_session_score("d9a15a41-2215-493b-a1a0-4ad371e5f002")
 
 @app.get("/health")
 async def health_check():
