@@ -1,6 +1,7 @@
 from sqlmodel import Session, select
 from datetime import datetime, timezone
 from uuid import UUID
+import re
 
 from ..database.database import engine
 from ..models.conversation_session import ConversationSession
@@ -17,18 +18,18 @@ def generate_session_score(conversation_session_id: str):
 
         student_turns = [t for t in turns if t.speaker == "student"]
         student_text = " ".join([t.transcript for t in student_turns])
-        student_words = student_text.split()
+        # Remove punctuation from student text before splitting
+        clean_text = re.sub(r'[^\w\s]', '', student_text.lower())
+        student_words = set(clean_text.split())
 
         expected_vocab = set([word.strip().lower() for word in exam.vocabulary_list_manual.split(",")])
 
         vocabulary_used = set()
         for word in student_words:
-            if word.lower() in expected_vocab:
+            if word in expected_vocab:
                 vocabulary_used.add(word)
 
-        vocabulary_score = len(vocabulary_used) / len(expected_vocab)
-        print(vocabulary_score)
-        print("student_turns:", student_turns, "\n")
-        print("student_text:", student_text, "\n")
-        print("expected_vocab", expected_vocab, "\n")
+        vocabulary_missed = expected_vocab - vocabulary_used
+
+        vocabulary_score = len(vocabulary_used) / len(expected_vocab) if expected_vocab else 0
     return
