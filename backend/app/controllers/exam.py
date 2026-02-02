@@ -201,12 +201,12 @@ def student_dashboard(
             )
 
 
-        session_score = db.get(SessionScore, session.session_score.id) if session.session_score.id else None
+        session_score = session.session_score
         score_summary = None
 
         if session_score:
             score_summary = SessionScoreResponse(
-                id= score_summary.id,
+                id=session_score.id,
                 vocabulary_usage_score=session_score.vocabulary_usage_score,
                 grammar_accuracy_score=session_score.grammar_accuracy_score,
                 verb_tense_accuracy_score=session_score.verb_tense_accuracy_score,
