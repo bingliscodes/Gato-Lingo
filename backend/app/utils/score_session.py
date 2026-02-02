@@ -58,8 +58,6 @@ def generate_session_score(conversation_session_id: str):
 def create_session_score(scores_dict: dict, conversation_session_id: str) -> None:
     with Session(engine) as db:
         conversation_session = db.get(ConversationSession, UUID(conversation_session_id))
-        #TODO: Fix data type issues between model and session score for vocab used and vocab missed.
-        # They should be sets, so basically need them to be processed into a form usable by SQLModel from the set
         new_score = SessionScore(
             session_id=conversation_session.id,
             vocabulary_usage_score=scores_dict["vocabulary_score"],
@@ -68,10 +66,22 @@ def create_session_score(scores_dict: dict, conversation_session_id: str) -> Non
             fluency_score=scores_dict["fluency_score"],
             overall_score=scores_dict["overall_score"],
             grammar_feedback=scores_dict["grammar_feedback"],
-            vocabulary_used="", #list(scores_dict["vocabulary_used"]),
-            vocabulary_missed="" #list(scores_dict["vocabulary_missed"]),
+            vocabulary_used=parse_vocabulary(scores_dict.get("vocabulary_used")),
+            vocabulary_missed=parse_vocabulary(scores_dict.get("vocabulary_missed"))
         )
         
         db.add(new_score)
         db.commit()
         db.refresh(new_score)
+
+def parse_vocabulary(vocabulary: set) -> str:
+    """
+    :param vocabulary: Description
+    :type vocabulary: set
+    :return: a list of vocabular items, separated by commas. Returns an empty string if vocabulary set is empty
+    :rtype: str
+    """
+    if vocabulary:
+        return ",".join([word for word in vocabulary])
+    
+    return ''
