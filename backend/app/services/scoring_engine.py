@@ -6,7 +6,7 @@ class ScoringEngine:
     def __init__(self, api_key: str):
         self.client = anthropic.Anthropic(api_key=api_key)
 
-    async def analyze_with_ai(
+    def analyze_with_ai(
             self,
             target_language: str,
             conversation_turns: list,

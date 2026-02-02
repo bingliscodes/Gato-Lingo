@@ -19,7 +19,6 @@ def generate_session_score(conversation_session_id: str):
 
         statement = select(ConversationTurn).where(ConversationTurn.session_id == conversation_session.id)
         turns = db.exec(statement).all()
-        print(turns)
 
         student_turns = [t for t in turns if t.speaker == "student"]
         student_text = " ".join([t.transcript for t in student_turns])
@@ -38,5 +37,19 @@ def generate_session_score(conversation_session_id: str):
 
         vocabulary_score = len(vocabulary_used) / len(expected_vocab) if expected_vocab else 0
 
-        # scoring_engine.(conversation_turns=turns, target_language=exam.target_language, expected_tenses=exam.tenses)
-    return
+        try:
+            scores_dict = scoring_engine.analyze_with_ai(conversation_turns=turns, target_language=exam.target_language, expected_tenses=exam.tenses)
+        except ValueError as e:
+            print(f"An error has occurred generating the score: {e}")
+            return None
+        
+        scores_dict["vocabulary_score"] = vocabulary_score
+        scores_dict["vocabulary_missed"] = vocabulary_missed
+
+        # Get overall score
+        overall_score = (scores_dict["grammar_accuracy_score"] + scores_dict["tense_accuracy_score"] + scores_dict["fluency_score"] + vocabulary_score) / 4
+        scores_dict["overall_score"] = overall_score
+
+    print(scores_dict)
+
+    return scores_dict
