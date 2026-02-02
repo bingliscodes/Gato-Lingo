@@ -4,7 +4,7 @@ import { getErrorMessage } from "./helperFunctions";
 
 export interface ExamFormData {
     title: string;
-    description?: string;
+    description: string;
     target_language: string;
     difficulty_level: string;
     topic: string;

@@ -49,6 +49,7 @@ export default function CreateExam() {
       title: examTitle,
       cultural_context: culturalContext,
       target_language: targetLanguage,
+      description: description,
       topic,
       tenses: verbTenses,
       difficulty_level: level,

@@ -23,7 +23,7 @@ class Exam(SQLModel, table=True):
     target_language: str
     topic: str
     tenses: Optional[str] = None  # JSON array as string
-    vocabulary_list_manual: Optional[str] = None #Use this field until set up vocab list uploads
+    vocabulary_list_manual: Optional[str] = None # Use this field until set up vocab list uploads
     difficulty_level: str
     
     created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
