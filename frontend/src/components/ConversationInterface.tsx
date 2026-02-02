@@ -4,21 +4,11 @@ import { useWebSocket } from "../hooks/useWebSocket";
 import { useAudioRecorder } from "../hooks/useAudioRecorder";
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
 import { MessageList } from "./MessageList";
-import { ConfigPanel } from "./ConfigPanel";
 
 interface Message {
   speaker: "student" | "tutor";
   text: string;
   timestamp: Date;
-}
-
-interface ConversationConfig {
-  targetLanguage: string;
-  level: string;
-  topic: string;
-  vocabulary: string[];
-  verbTenses: string[];
-  regionVariant?: string;
 }
 
 const MicrophoneIcon = () => (
@@ -32,7 +22,6 @@ export const ConversationInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConfigured, setIsConfigured] = useState(false);
   const [isTutorSpeaking, setIsTutorSpeaking] = useState(false);
-
   const { sendMessage, lastMessage, connectionStatus } = useWebSocket(
     "ws://localhost:8000/ws/conversation",
   );
@@ -110,19 +99,6 @@ export const ConversationInterface = () => {
     }
   }, [audioBlob, sendMessage]);
 
-  const handleStartConversation = useCallback(
-    (config: ConversationConfig) => {
-      sendMessage(
-        JSON.stringify({
-          type: "config",
-          ...config,
-        }),
-      );
-      setIsConfigured(true);
-    },
-    [sendMessage],
-  );
-
   const handleEndSession = useCallback(() => {
     sendMessage(JSON.stringify({ type: "end_session" }));
     setIsConfigured(false);
@@ -138,17 +114,6 @@ export const ConversationInterface = () => {
   const handleMouseUp = useCallback(() => {
     stopRecording();
   }, [stopRecording]);
-
-  if (!isConfigured) {
-    return (
-      <Box minH="100vh" py={8} px={4}>
-        <ConfigPanel
-          onStart={handleStartConversation}
-          isConnected={connectionStatus === "connected"}
-        />
-      </Box>
-    );
-  }
 
   return (
     <Box display="flex" flexDirection="column" h="100vh">

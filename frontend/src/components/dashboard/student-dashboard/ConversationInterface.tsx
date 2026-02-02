@@ -7,7 +7,6 @@ import {
   type Dispatch,
 } from "react";
 import { useNavigate } from "react-router";
-import { useWebSocket } from "@/hooks/useWebSocket";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { MessageList } from "@/components/MessageList";
@@ -19,9 +18,12 @@ interface Message {
   timestamp: Date;
 }
 
-interface ConversationInterfaceProps {
+export interface ConversationInterfaceProps {
   examData: StudentAssignmentResponse;
   setExamInProgress: Dispatch<SetStateAction<boolean>>;
+  sendMessage: (message: string) => void;
+  lastMessage: MessageEvent | null;
+  connectionStatus: "connecting" | "connected" | "disconnected";
 }
 
 const MicrophoneIcon = () => (
@@ -34,16 +36,14 @@ const MicrophoneIcon = () => (
 export default function ConversationInterface({
   examData,
   setExamInProgress,
+  sendMessage,
+  lastMessage,
+  connectionStatus,
 }: ConversationInterfaceProps) {
-  console.log(examData);
   const nav = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTutorSpeaking, setIsTutorSpeaking] = useState(false);
 
-  const { sendMessage, lastMessage, connectionStatus } = useWebSocket(
-    //TODO: Make this use an env variable
-    "ws://localhost:8000/ws/conversation",
-  );
   const {
     isRecording,
     startRecording,
@@ -54,6 +54,7 @@ export default function ConversationInterface({
   const { playAudio, isPlaying } = useAudioPlayer();
 
   // Handle incoming WebSocket messages
+  console.log(lastMessage);
   useEffect(() => {
     if (!lastMessage) return;
 
@@ -117,18 +118,6 @@ export default function ConversationInterface({
       reader.readAsDataURL(audioBlob);
     }
   }, [audioBlob, sendMessage]);
-
-  const handleStartConversation = useCallback(
-    (examData: StudentAssignmentResponse) => {
-      sendMessage(
-        JSON.stringify({
-          type: "config",
-          ...examData,
-        }),
-      );
-    },
-    [sendMessage],
-  );
 
   const handleEndSession = useCallback(() => {
     sendMessage(JSON.stringify({ type: "end_session" }));

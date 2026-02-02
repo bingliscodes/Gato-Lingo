@@ -54,6 +54,9 @@ export default function ExamCard({ examData }: ExamCardProps) {
         <ConversationInterface
           examData={examData}
           setExamInProgress={setExamInProgress}
+          sendMessage={sendMessage}
+          lastMessage={lastMessage}
+          connectionStatus={connectionStatus}
         />
       )}
     </Flex>

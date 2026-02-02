@@ -41,10 +41,15 @@ class ConversationHandler:
                 if data["type"] == "config":
                     # Initialize conversation with config
                     # Modify this to take in a system prompt from the exam data
+                    print("config received!", data)
+                    await websocket.send_json({
+                        "type": "tutor_message",
+                        "text": "Testing connection"
+                    })
                     target_language = data.get("targetLanguage", "spanish")
                     exam_data = data.get("exam")
                     system_prompt = exam_data.get("conversation_prompt")
-                    
+
                     # Generate opening
                     opening = await self.conversation_engine.generate_opening(system_prompt)
                     opening_audio = await self.tts_service.synthesize(opening)

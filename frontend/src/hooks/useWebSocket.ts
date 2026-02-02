@@ -22,6 +22,7 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
 
     ws.onmessage = (event) => {
       setLastMessage(event)
+      console.log("message received!");
     }
 
     ws.onclose = () => {
