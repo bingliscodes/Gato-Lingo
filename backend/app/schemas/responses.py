@@ -1,6 +1,7 @@
 from sqlmodel import SQLModel
 from datetime import datetime
 from typing import Optional, List
+from decimal import Decimal
 from uuid import UUID
 from enum import Enum
 
@@ -35,6 +36,17 @@ class ExamResponse(SQLModel):
     created_by_id: Optional[UUID]
     created_at: datetime
 
+class SessionScoreResponse(SQLModel):
+    id: UUID
+    vocabulary_usage_score: Decimal 
+    grammar_accuracy_score: Decimal 
+    verb_tense_accuracy_score: Decimal
+    fluency_score: Decimal
+    overall_score: Decimal 
+    vocabulary_used: Optional[str]
+    vocabulary_missed: Optional[str]
+    grammar_feedback: Optional[str]
+
 
 class DashboardExamResponse(SQLModel):
     exam: ExamResponse
@@ -43,7 +55,6 @@ class DashboardExamResponse(SQLModel):
     in_progress: int
     completed: int
     sessions: List[ConversationSessionResponse]
-
 
 
 class StudentAssignmentResponse(SQLModel):
@@ -56,3 +67,4 @@ class StudentAssignmentResponse(SQLModel):
     student_id: Optional[UUID]
 
     exam: Optional[ExamResponse] = None
+    session_score: Optional[SessionScoreResponse] = None

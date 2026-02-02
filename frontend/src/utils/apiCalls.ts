@@ -30,6 +30,17 @@ export interface ExamResponse {
     created_at: string;
 }
 
+export interface SessionScoreResponse {
+    id: string;
+    vocabulary_usage_score: number;
+    grammar_accuracy_score: number; 
+    verb_tense_accuracy_score: number,
+    fluency_score: number;
+    overall_score: number; 
+    vocabulary_used: string | null;
+    vocabulary_missed: string | null;
+    grammar_feedback: string | null;
+}
 
 
 export const createExam = async(formData: ExamFormData): Promise<ExamResponse> => {
