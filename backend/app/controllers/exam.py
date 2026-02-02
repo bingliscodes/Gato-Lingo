@@ -9,6 +9,8 @@ from ..services.conversation_engine import ConversationEngine
 from ..database.database import get_db
 from ..models.exam import Exam, ExamCreate, ExamResponse, DashboardExamResponse, StudentAssignmentResponse
 from ..models.conversation_session import ConversationSession, SessionStatus, SessionAssignment, ConversationSessionResponse
+from ..models.session_score import SessionScore
+from ..schemas.responses import SessionScoreResponse
 from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
 
@@ -197,6 +199,23 @@ def student_dashboard(
                 created_by_id=exam.created_by_id,
                 created_at=exam.created_at
             )
+
+
+        session_score = db.get(SessionScore, session.session_score.id) if session.session_score.id else None
+        score_summary = None
+
+        if session_score:
+            score_summary = SessionScoreResponse(
+                id= score_summary.id,
+                vocabulary_usage_score=session_score.vocabulary_usage_score,
+                grammar_accuracy_score=session_score.grammar_accuracy_score,
+                verb_tense_accuracy_score=session_score.verb_tense_accuracy_score,
+                fluency_score=session_score.fluency_score,
+                vocabulary_used=session_score.vocabulary_used,
+                vocabulary_missed=session_score.vocabulary_missed,
+                grammar_feedback=session_score.grammar_feedback
+            )
+
         results.append(StudentAssignmentResponse(
             id=session.id,
             status=session.status,
@@ -206,6 +225,8 @@ def student_dashboard(
             created_at=session.created_at,
             student_id=session.student_id,
             exam=exam_summary,
+            session_score=score_summary
         ))
+
 
     return results

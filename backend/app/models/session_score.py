@@ -27,14 +27,3 @@ class SessionScore(SQLModel, table=True):
     
     # Relationships (virtual fields)
     session: Optional["ConversationSession"] = Relationship(back_populates="session_score")
-
-class SessionScoreResponse(SQLModel):
-    id: uuid.UUID
-    vocabulary_usage_score: Decimal 
-    grammar_accuracy_score: Decimal 
-    verb_tense_accuracy_score: Decimal
-    fluency_score: Decimal
-    overall_score: Decimal 
-    vocabulary_used: Optional[str]
-    vocabulary_missed: Optional[str]
-    grammar_feedback: Optional[str]
