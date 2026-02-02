@@ -1,5 +1,4 @@
 import anthropic
-from typing import Optional
 import json
 import re
 
@@ -13,13 +12,19 @@ class ScoringEngine:
             conversation_turns: list,
             expected_tenses: list[str],
     ) -> dict:
+        # Clean turns
+        conversation = ""
+        for turn in conversation_turns:
+            dialogue = f"{turn.speaker}: {turn.transcript}"
+            conversation += dialogue + "\n"
+
         # 1. Build the prompt
         system = "You are a language learning assessment assistant. Always respond with valid JSON only, no other text."
         user_message = f"""
         Analyze this student's language learning conversation in {target_language}.
 
         Conversation:
-        {student_text}
+        {conversation}
 
         Expected verb tenses to practice: {expected_tenses}
 
@@ -48,10 +53,10 @@ class ScoringEngine:
         
         extracted_text = extract_json_from_markdown(response_text)
         
-        if extracted_text:
-            return extracted_text
-        else:
-            return "No JSON block found"
+        if extracted_text is None:
+            raise ValueError("Failed to parse scoring response from AI")
+
+        return extracted_text
     
 
 def extract_json_from_markdown(response_text: str) -> dict | None:

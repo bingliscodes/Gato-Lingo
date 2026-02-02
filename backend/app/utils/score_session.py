@@ -19,6 +19,7 @@ def generate_session_score(conversation_session_id: str):
 
         statement = select(ConversationTurn).where(ConversationTurn.session_id == conversation_session.id)
         turns = db.exec(statement).all()
+        print(turns)
 
         student_turns = [t for t in turns if t.speaker == "student"]
         student_text = " ".join([t.transcript for t in student_turns])
@@ -37,5 +38,5 @@ def generate_session_score(conversation_session_id: str):
 
         vocabulary_score = len(vocabulary_used) / len(expected_vocab) if expected_vocab else 0
 
-        scoring_engine.build_scoring_prompt(student_text=student_text, target_language=exam.target_language, expected_tenses=exam.tenses)
+        # scoring_engine.(conversation_turns=turns, target_language=exam.target_language, expected_tenses=exam.tenses)
     return
