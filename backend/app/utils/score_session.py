@@ -3,10 +3,14 @@ from datetime import datetime, timezone
 from uuid import UUID
 import re
 
+from ..config import settings
 from ..database.database import engine
+from ..services.scoring_engine import ScoringEngine
 from ..models.conversation_session import ConversationSession
 from ..models.conversation_turn import ConversationTurn
 from ..models.exam import Exam
+
+scoring_engine = ScoringEngine(settings.anthropic_api_key)
 
 def generate_session_score(conversation_session_id: str):
     with Session(engine) as db:
@@ -32,4 +36,6 @@ def generate_session_score(conversation_session_id: str):
         vocabulary_missed = expected_vocab - vocabulary_used
 
         vocabulary_score = len(vocabulary_used) / len(expected_vocab) if expected_vocab else 0
+
+        scoring_engine.build_scoring_prompt(student_text=student_text, target_language=exam.target_language, expected_tenses=exam.tenses)
     return
