@@ -17,12 +17,10 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
 
     ws.onopen = () => {
       setConnectionStatus('connected')
-      console.log('WebSocket connected')
     }
 
     ws.onmessage = (event) => {
       setLastMessage(event)
-      console.log("message received!");
     }
 
     ws.onclose = () => {

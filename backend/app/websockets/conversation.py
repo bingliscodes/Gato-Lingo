@@ -1,9 +1,18 @@
 from fastapi import WebSocket, WebSocketDisconnect
+from sqlmodel import Session, select
+from datetime import datetime, timezone
+from uuid import UUID
+import json
+import base64
+
 from ..services.conversation_engine import ConversationEngine
 from ..services.speech_to_text import SpeechToTextService
 from ..services.text_to_speech import TextToSpeechService
 from ..config import settings
-import base64
+from ..database.database import engine
+from ..models.conversation_session import ConversationSession, SessionStatus
+from ..models.conversation_turn import ConversationTurn
+
 
 if settings.use_mock_services:
     from ..services.mock_services import (
@@ -33,6 +42,8 @@ class ConversationHandler:
         conversation_history = []
         system_prompt = None
         target_language = "spanish"
+        session_id = None
+        turn_number = 0
         
         try:
             while True:
@@ -40,20 +51,34 @@ class ConversationHandler:
                 
                 if data["type"] == "config":
                     # Initialize conversation with config
-                    # Modify this to take in a system prompt from the exam data
-                    print("config received!", data)
-                    await websocket.send_json({
-                        "type": "tutor_message",
-                        "text": "Testing connection"
-                    })
                     target_language = data.get("targetLanguage", "spanish")
                     exam_data = data.get("exam")
+                    session_id = data.get("id")
                     system_prompt = exam_data.get("conversation_prompt")
+
+                    if session_id:
+                        with Session(engine) as db:
+                            session = db.get(ConversationSession, UUID(session_id))
+                            if session:
+                                session.status = SessionStatus.in_progress
+                                session.started_at = datetime.now(timezone.utc)
+                                db.add(session)
+                                db.commit()
 
                     # Generate opening
                     opening = await self.conversation_engine.generate_opening(system_prompt)
                     opening_audio = await self.tts_service.synthesize(opening)
                     
+                    if session_id:
+                        turn_number += 1
+                        self._save_turn(
+                            session_id=session_id,
+                            turn_number=turn_number,
+                            speaker="tutor",
+                            transcript=opening,
+                            target_language=target_language
+                        )
+
                     await websocket.send_json({
                         "type": "tutor_message",
                         "text": opening,
@@ -73,6 +98,16 @@ class ConversationHandler:
                     # Decode and transcribe
                     audio_bytes = base64.b64decode(data["audio"])
                     transcript = await self.stt_service.transcribe(audio_bytes, target_language)
+
+                    if session_id:
+                        turn_number += 1
+                        self._save_turn(
+                            session_id=session_id,
+                            turn_number=turn_number,
+                            speaker="student",
+                            transcript=transcript,
+                            target_language=target_language
+                        )
                     
                     # Send transcript back
                     await websocket.send_json({
@@ -86,6 +121,16 @@ class ConversationHandler:
                         conversation_history,
                         transcript
                     )
+
+                    if session_id:
+                        turn_number += 1
+                        self._save_turn(
+                            session_id=session_id,
+                            turn_number=turn_number,
+                            speaker="tutor",
+                            transcript=response,
+                            target_language=target_language
+                        )
                     
                     # Convert to speech
                     response_audio = await self.tts_service.synthesize(response)
@@ -102,10 +147,20 @@ class ConversationHandler:
                     conversation_history.append({"role": "assistant", "content": response})
                 
                 elif data["type"] == "end_session":
+                    if session_id:
+                        with Session(engine) as db:
+                            session = db.get(ConversationSession, UUID(session_id))
+                            if session:
+                                session.status = SessionStatus.completed
+                                session.ended_at = datetime.now(timezone.utc)
+                                db.add(session)
+                                db.commit()
+
                     await websocket.send_json({
                         "type": "session_ended",
-                        "turns": len(conversation_history) // 2
+                        "turns": turn_number
                     })
+                    print(f"Session {session_id} ended with {turn_number} turns")
                     break
         
         except WebSocketDisconnect:
@@ -116,3 +171,24 @@ class ConversationHandler:
                 "type": "error", 
                 "message": str(e)
             })
+
+    def _save_turn(
+            self,
+            session_id: str,
+            turn_number: int,
+            speaker: str,
+            transcript: str,
+            target_language: str,
+            audio_url: str = None
+    ):
+        with Session(engine) as db:
+            turn = ConversationTurn(
+                session_id=UUID(session_id),
+                turn_number = turn_number,
+                speaker=speaker,
+                transcript=transcript,
+                target_language=target_language,
+                audio_url=audio_url
+            )
+            db.add(turn)
+            db.commit()

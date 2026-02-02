@@ -43,7 +43,7 @@ export default function ConversationInterface({
   const nav = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTutorSpeaking, setIsTutorSpeaking] = useState(false);
-
+  console.log(messages);
   const {
     isRecording,
     startRecording,
@@ -54,7 +54,6 @@ export default function ConversationInterface({
   const { playAudio, isPlaying } = useAudioPlayer();
 
   // Handle incoming WebSocket messages
-  console.log(lastMessage);
   useEffect(() => {
     if (!lastMessage) return;
 

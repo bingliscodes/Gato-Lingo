@@ -27,6 +27,7 @@ class ConversationSession(SQLModel, table=True):
     started_at: Optional[datetime] = Field(default=None)
     ended_at: Optional[datetime] = Field(default=None)
     created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
+    transcript: Optional[str] = Field(default=None)
     
 
     # Foreign Keys – should be on the "many" side of relationship
