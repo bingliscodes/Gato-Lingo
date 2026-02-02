@@ -1,7 +1,7 @@
 from decimal import Decimal
 from sqlmodel import SQLModel, Field, Relationship
-from datetime import datetime
-from typing import Optional, TYPE_CHECKING
+from datetime import datetime, timezone
+from typing import Optional, TYPE_CHECKING, List
 import uuid
 
 if TYPE_CHECKING:
@@ -17,10 +17,10 @@ class SessionScore(SQLModel, table=True):
     verb_tense_accuracy_score: Decimal = Field(default=0, max_digits=5, decimal_places=2)
     fluency_score: Decimal = Field(default=0, max_digits=5, decimal_places=2)
     overall_score: Decimal = Field(default=0, max_digits=5, decimal_places=2) 
-    vocabulary_used: str
-    vocabulary_missed: str
-    grammar_feedback: str
-    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(datetime.timezone.utc))
+    vocabulary_used: Optional[str]
+    vocabulary_missed: Optional[str]
+    grammar_feedback: Optional[str]
+    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
     
     # Foreign Keys
     session_id: Optional[uuid.UUID] = Field(default=None, foreign_key="conversation_sessions.id")
@@ -35,6 +35,6 @@ class SessionScoreResponse(SQLModel):
     verb_tense_accuracy_score: Decimal
     fluency_score: Decimal
     overall_score: Decimal 
-    vocabulary_used: str
-    vocabulary_missed: str
-    grammar_feedback: str
+    vocabulary_used: Optional[str]
+    vocabulary_missed: Optional[str]
+    grammar_feedback: Optional[str]
