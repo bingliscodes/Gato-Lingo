@@ -12,6 +12,7 @@ from ..config import settings
 from ..database.database import engine
 from ..models.conversation_session import ConversationSession, SessionStatus
 from ..models.conversation_turn import ConversationTurn
+from ..utils.score_session import generate_session_score
 
 
 if settings.use_mock_services:
@@ -161,7 +162,7 @@ class ConversationHandler:
                         "turns": turn_number
                     })
                     print(f"Session {session_id} ended with {turn_number} turns")
-                    #TODO: Trigger score generation
+                    generate_session_score(conversation_session_id=session_id)
                     break
         
         except WebSocketDisconnect:
