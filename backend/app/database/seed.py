@@ -71,6 +71,31 @@ def seed_vocabulary(db:Session):
         example_sentence="mis postres favoritos son cannolis.",
         vocabulary_lists=[list_1]
         )
+    
+    word_2 = VocabularyItem(
+        word="mesero",
+        translation="waiter",
+        part_of_speech="noun",
+        example_sentence="Tienes que hablar con el mesero para ordenar comida",
+        vocabulary_lists=[list_1]
+    )
+
+    word_3 = VocabularyItem(
+        word="menu",
+        translation="menu",
+        part_of_speech="noun",
+        example_sentence="Hay que leer el menu antes de pedir comida",
+        vocabulary_lists=[list_1]
+    )
+
+    db.add(word_1)
+    db.add(word_2)
+    db.add(word_3)
+    db.commit()
+
+    db.refresh(word_1)
+    db.refresh(word_2)
+    db.refresh(word_3)
 
 def seed_all(db: Session):
     """Run all seed functions."""
