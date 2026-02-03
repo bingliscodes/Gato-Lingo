@@ -1,4 +1,4 @@
-import { Flex, Separator, Text, VStack } from "@chakra-ui/react";
+import { Flex, HStack, Separator, Text, VStack } from "@chakra-ui/react";
 import { type SessionScoreResponse } from "@/utils/apiCalls";
 
 interface ExamScoreCardProps {
@@ -32,6 +32,14 @@ export default function ExamScoreCard({ examScoreData }: ExamScoreCardProps) {
           <Text>{examScoreData.overall_score * 100}</Text>
         </VStack>
       </Flex>
+      <HStack fontSize="sm">
+        <Text fontWeight="bold">Exam Feedback:</Text>
+        <Text>{examScoreData.grammar_feedback}</Text>
+      </HStack>
+      <HStack fontSize="sm">
+        <Text fontWeight="bold">Missed vocabulary items:</Text>
+        <Text>{examScoreData.vocabulary_missed}</Text>
+      </HStack>
     </VStack>
   );
 }

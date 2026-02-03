@@ -52,17 +52,19 @@ export default function ExamCard({ examData }: ExamCardProps) {
                 <Text fontSize="sm">{examData.exam.tenses}</Text>
               </HStack>
               <HStack>
-                <Text>Vocab:</Text>
+                <Text>Vocabulary:</Text>
                 <Text fontSize="sm">
                   {examData.exam.vocabulary_list_manual}
                 </Text>
               </HStack>
               <HStack>
                 <Text>Status:</Text>
-                <Text fontSize="sm">{examData.status}</Text>
+                <Text>{examData.status}</Text>
               </HStack>
-              <Text fontSize="sm">Due Date: {examData.due_date} </Text>
-
+              <HStack>
+                <Text>Due Date:</Text>
+                <Text fontSize="sm">{examData.due_date}</Text>
+              </HStack>
               {/* <NavLink to="/dashboard/exam">
         {examData.status != "in_progress" && "Start Exam"}
       </NavLink> */}
