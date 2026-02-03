@@ -5,6 +5,7 @@ import { NavLink } from "react-router";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { type StudentAssignmentResponse } from "@/utils/apiCalls";
 import ConversationInterface from "../ConversationInterface";
+import ExamScoreCard from "./ExamScoreCard";
 
 interface ExamCardProps {
   examData: StudentAssignmentResponse;
@@ -44,9 +45,14 @@ export default function ExamCard({ examData }: ExamCardProps) {
         {examData.status != "in_progress" && "Start Exam"}
       </NavLink> */}
           {/* For now let's use a toggle instead of a separate route */}
-          <Button onClick={(): void => handleStartConversation(examData)}>
-            Start exam
-          </Button>
+          {examData.session_score && (
+            <ExamScoreCard examScoreData={examData.session_score} />
+          )}
+          {!examData.session_score && (
+            <Button onClick={(): void => handleStartConversation(examData)}>
+              Start exam
+            </Button>
+          )}
         </Flex>
       )}
 
