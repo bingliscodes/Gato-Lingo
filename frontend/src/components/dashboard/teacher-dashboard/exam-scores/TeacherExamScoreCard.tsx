@@ -8,14 +8,12 @@ interface ExamScoreCardProps {
 export default function TeacherExamScoreCard({
   examScoreData,
 }: ExamScoreCardProps) {
-  console.log(examScoreData);
   return (
-    <Card.Root>
+    <Card.Root my={2} mx={1} px={4} h="20%">
       <VStack>
         <Text fontSize="2xl" fontWeight="bold">
-          Student
+          {examScoreData.student_name}
         </Text>
-        <Text>{examScoreData.student_name}</Text>
         <Flex gap={4}>
           <VStack>
             <Text fontWeight="bold">Vocabulary Usage Score</Text>
