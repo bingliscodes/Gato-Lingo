@@ -204,16 +204,7 @@ def student_dashboard(
         score_summary = None
 
         if session_score:
-            score_summary = SessionScoreResponse(
-                id=session_score.id,
-                vocabulary_usage_score=session_score.vocabulary_usage_score,
-                grammar_accuracy_score=session_score.grammar_accuracy_score,
-                verb_tense_accuracy_score=session_score.verb_tense_accuracy_score,
-                fluency_score=session_score.fluency_score,
-                vocabulary_used=session_score.vocabulary_used,
-                vocabulary_missed=session_score.vocabulary_missed,
-                grammar_feedback=session_score.grammar_feedback
-            )
+            score_summary = SessionScoreResponse.model_validate(session_score)
 
         results.append(StudentAssignmentResponse(
             id=session.id,
