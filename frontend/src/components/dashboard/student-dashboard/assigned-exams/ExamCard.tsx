@@ -38,7 +38,7 @@ export default function ExamCard({ examData }: ExamCardProps) {
             <Card.Header fontSize="2xl" fontWeight="bold">
               {examData.exam.title}
             </Card.Header>
-            <Card.Body>
+            <Card.Body gap={1}>
               <Text>Topic: {examData.exam.topic}</Text>
               <Text>Description: {examData.exam.description}</Text>
               <Text>Tenses: {examData.exam.tenses}</Text>

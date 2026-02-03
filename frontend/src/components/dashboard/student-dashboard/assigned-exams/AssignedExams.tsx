@@ -41,9 +41,7 @@ export default function AssignedExams() {
         My exams
       </Text>
       {assignmentData.map((item) => (
-        <Flex direction="column" key={item.id}>
-          <ExamCard examData={item} />
-        </Flex>
+        <ExamCard examData={item} />
       ))}
     </Flex>
   );
