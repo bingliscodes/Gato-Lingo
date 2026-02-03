@@ -10,6 +10,17 @@ class SessionStatus(str, Enum):
     in_progress = "in_progress"
     completed = "completed"
 
+class SessionScoreResponse(SQLModel):
+    id: UUID
+    vocabulary_usage_score: Decimal 
+    grammar_accuracy_score: Decimal 
+    verb_tense_accuracy_score: Decimal
+    fluency_score: Decimal
+    overall_score: Decimal 
+    vocabulary_used: Optional[str]
+    vocabulary_missed: Optional[str]
+    grammar_feedback: Optional[str]
+
 class ConversationSessionResponse(SQLModel):
     id: UUID
     status: str
@@ -19,6 +30,7 @@ class ConversationSessionResponse(SQLModel):
     created_at: datetime
     exam_id: Optional[UUID]
     student_id: Optional[UUID]
+    session_score: Optional[SessionScoreResponse]
 
 
 class ExamResponse(SQLModel):
@@ -35,17 +47,6 @@ class ExamResponse(SQLModel):
     conversation_prompt: Optional[str]
     created_by_id: Optional[UUID]
     created_at: datetime
-
-class SessionScoreResponse(SQLModel):
-    id: UUID
-    vocabulary_usage_score: Decimal 
-    grammar_accuracy_score: Decimal 
-    verb_tense_accuracy_score: Decimal
-    fluency_score: Decimal
-    overall_score: Decimal 
-    vocabulary_used: Optional[str]
-    vocabulary_missed: Optional[str]
-    grammar_feedback: Optional[str]
 
 
 class DashboardExamResponse(SQLModel):

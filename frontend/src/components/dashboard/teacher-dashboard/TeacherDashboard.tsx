@@ -1,12 +1,12 @@
 import { Flex, Text } from "@chakra-ui/react";
-import CreateExam from "./CreateExam";
 import CreatedExams from "./CreatedExams";
+import { NavLink } from "react-router";
 
 export default function TeacherDashboard() {
   return (
     <Flex direction="column" flex="1">
       <Text>Teacher dashboard</Text>
-      <CreateExam />
+      <NavLink to="createExam">Create new exam</NavLink>
       <CreatedExams />
     </Flex>
   );

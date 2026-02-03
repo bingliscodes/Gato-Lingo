@@ -10,7 +10,7 @@ import {
   Textarea,
   Heading,
 } from "@chakra-ui/react";
-import { NavLink, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 import { toaster } from "@/components/ui/toaster";
 import { useUser } from "@/contexts/UserContext";
@@ -94,8 +94,8 @@ export default function CreateExam() {
       borderWidth="1px"
       borderRadius="lg"
       bg="bg.panel"
-      maxW="500px"
       mx="auto"
+      flex="1"
     >
       <Heading size="lg" mb={6}>
         Configure exam details

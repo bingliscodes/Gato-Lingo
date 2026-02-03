@@ -26,6 +26,7 @@ export default function CreatedExams() {
   if (isLoading) return <div>Loading exams...</div>;
   if (error) return <div>Error: {error}</div>;
 
+  console.log(examData);
   return (
     <div>
       <h1>My Exams</h1>
