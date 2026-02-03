@@ -1,7 +1,9 @@
-import { type ExamScoresResponse } from "@/utils/apiCalls";
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
-import { getExamScores } from "@/utils/apiCalls";
+import { Flex } from "@chakra-ui/react";
+
+import { type ExamScoresResponse, getExamScores } from "@/utils/apiCalls";
+import TeacherExamScoreCard from "./TeacherExamScoreCard";
 
 export default function ExamScoresDisplay() {
   const { examId } = useParams();
@@ -28,5 +30,14 @@ export default function ExamScoresDisplay() {
   if (!examScoreData) return <div>Exam not found</div>;
 
   console.log(examScoreData);
-  return <h1>woooo</h1>;
+  return (
+    <Flex>
+      {examScoreData.sessions.map((session) => (
+        <TeacherExamScoreCard
+          key={session.session_id}
+          examScoreData={session.score}
+        />
+      ))}
+    </Flex>
+  );
 }

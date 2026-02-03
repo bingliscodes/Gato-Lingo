@@ -5,7 +5,9 @@ interface ExamScoreCardProps {
   examScoreData: SessionScoreResponse;
 }
 
-export default function ExamScoreCard({ examScoreData }: ExamScoreCardProps) {
+export default function StudentExamScoreCard({
+  examScoreData,
+}: ExamScoreCardProps) {
   return (
     <VStack>
       <Text fontSize="2xl" fontWeight="bold">
