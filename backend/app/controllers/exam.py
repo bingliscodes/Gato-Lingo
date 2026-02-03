@@ -218,5 +218,37 @@ def student_dashboard(
             session_score=score_summary
         ))
 
-
     return results
+
+router.get("/{exam_id}/scores")
+def get_exam_scores(
+        exam_id: UUID,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(require_roles("teacher"))
+):
+    exam = db.get(Exam, exam_id)
+    if not exam or exam.created_by_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Exam not found")
+    
+    statement = select(ConversationSession).where(
+        ConversationSession.exam_id == exam_id
+    )
+    sessions = db.exec(statement).all()
+
+    results = []
+    for session in sessions:
+        student = db.get(User, session.student_id)
+        score = session.session_score
+
+        results.append({
+            "session_id": session.id,
+            "student_name": f"{student.first_name} {student.last_name}" if student else "Unknown",
+            "status": session.status,
+            "completed_at": session.ended_at,
+            "score": SessionScoreResponse.model_validate(score) if score else None
+        })
+
+    return {
+        "exam": ExamResponse.model_validate(exam),
+        "sessions": results
+    }

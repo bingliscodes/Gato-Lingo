@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import CreateExamPage from "./pages/CreateExamPage";
 import ConversationInterfacePage from "./pages/ConversationInterfacePage";
+import ExamScorePage from "./pages/ExamScorePage";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/dashboard/createExam" element={<CreateExamPage />} />
+        <Route path="/dashboard/scores/:examId" element={<ExamScorePage />} />
         <Route path="/dashboard/exam" element={<ConversationInterfacePage />} />
       </Route>
     </Routes>

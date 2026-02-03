@@ -6,8 +6,9 @@ export default function TeacherDashboard() {
   return (
     <Flex direction="column" flex="1">
       <Text>Teacher dashboard</Text>
-      <NavLink to="createExam">Create new exam</NavLink>
       <CreatedExams />
+
+      <NavLink to="createExam">Create new exam</NavLink>
     </Flex>
   );
 }

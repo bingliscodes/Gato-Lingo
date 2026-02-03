@@ -10,7 +10,7 @@ export interface ExamFormData {
     topic: string;
     tenses: string[];                    // Array of tense names
     vocabulary_list_manual: string;      // Comma-separated string from textarea
-    cultural_context?: string;           
+    cultural_context: string | null;           
 }
 
 // What the API returns
@@ -73,6 +73,7 @@ export interface ConversationSession {
     created_at: string | null
     exam_id: string | null;
     student_id: string | null
+    session_score: SessionScoreResponse | null;
 }
 
 export interface DashboardExamResponse {
@@ -142,7 +143,6 @@ export const assignExamToStudents = async (examAssignmentRequest: ExamAssignment
 
 }
 
-
 export interface StudentAssignmentResponse {
     id: string;
     status: SessionStatus;
@@ -163,6 +163,31 @@ export const getMyAssignments = async (): Promise<StudentAssignmentResponse[]> =
         )
         return res.data;
     }catch (err){
+        throw new Error(getErrorMessage(err));
+    }
+}
+
+export interface ExamScoreSummary {
+    session_id: string;
+    student_name: string;
+    status: SessionStatus;
+    completed_at: string;
+    score: SessionScoreResponse
+}
+
+export interface ExamScoresResponse {
+    exam: ExamResponse;
+    sessions: ExamScoreSummary [];
+} 
+
+export const getExamScores = async(examId: string): Promise<ExamScoresResponse> => {
+    try{
+        const res = await axios.get<ExamScoresResponse>(
+            `${import.meta.env.VITE_API_BASE_URL}exams/scores/${examId}`,
+            {withCredentials: true}
+        )
+        return res.data;
+    } catch(err){
         throw new Error(getErrorMessage(err));
     }
 }
