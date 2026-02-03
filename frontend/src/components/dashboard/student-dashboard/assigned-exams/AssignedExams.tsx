@@ -6,6 +6,7 @@ import {
   getMyAssignments,
   type StudentAssignmentResponse,
 } from "@/utils/apiCalls";
+import ExamScoreCard from "./ExamScoreCard";
 
 export default function AssignedExams() {
   const [assignmentData, setAssignmentData] = useState<
@@ -33,11 +34,18 @@ export default function AssignedExams() {
   if (isLoading) return <div>Loading assignments...</div>;
   if (error) return <div>Error: {error} </div>;
 
+  console.log(assignmentData);
+
   return (
     <Flex direction="column">
       <Text> My exams</Text>
       {assignmentData.map((item) => (
-        <ExamCard examData={item} />
+        <Flex direction="column" key={item.id}>
+          <ExamCard examData={item} />
+          {item.session_score && (
+            <ExamScoreCard examScoreData={item.session_score} />
+          )}
+        </Flex>
       ))}
     </Flex>
   );

@@ -152,7 +152,7 @@ export interface StudentAssignmentResponse {
     created_at: string;
     student_id: string | null;
     exam: ExamResponse;
-    session_score: SessionScoreResponse;
+    session_score: SessionScoreResponse | null;
 } 
 
 export const getMyAssignments = async (): Promise<StudentAssignmentResponse[]> => {
