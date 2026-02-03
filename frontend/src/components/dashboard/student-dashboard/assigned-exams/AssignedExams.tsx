@@ -37,7 +37,9 @@ export default function AssignedExams() {
 
   return (
     <Flex direction="column">
-      <Text> My exams</Text>
+      <Text fontSize="3xl" fontWeight="bolder">
+        My exams
+      </Text>
       {assignmentData.map((item) => (
         <Flex direction="column" key={item.id}>
           <ExamCard examData={item} />

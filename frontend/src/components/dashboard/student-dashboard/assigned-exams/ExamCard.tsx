@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Button, Flex, HStack, Text, Card } from "@chakra-ui/react";
 import { NavLink } from "react-router";
 
 import { useWebSocket } from "@/hooks/useWebSocket";
@@ -33,27 +33,51 @@ export default function ExamCard({ examData }: ExamCardProps) {
   return (
     <Flex flex="1" w="100vw" px={1}>
       {!examInProgress && (
-        <Flex direction="column" flex="1">
-          <Text fontSize="xl">{examData.exam.title}</Text>
-          <Text>Topic: {examData.exam.topic}</Text>
-          <Text>Description: {examData.exam.description}</Text>
-          <Text>Tenses: {examData.exam.tenses}</Text>
-          <Text>Vocab: {examData.exam.vocabulary_list_manual}</Text>
-          <Text>Status: {examData.status}</Text>
-          <Text>Due Date: {examData.due_date} </Text>
-          {/* <NavLink to="/dashboard/exam">
+        <Card.Root variant="elevated">
+          <Flex direction="column" flex="1">
+            <Card.Header fontSize="2xl" fontWeight="bold">
+              {examData.exam.title}
+            </Card.Header>
+            <Card.Body>
+              <HStack>
+                <Text>Topic:</Text>
+                <Text fontSize="sm"> {examData.exam.topic}</Text>
+              </HStack>
+              <HStack>
+                <Text>Description:</Text>
+                <Text fontSize="sm">{examData.exam.description}</Text>
+              </HStack>
+              <HStack>
+                <Text>Tenses:</Text>
+                <Text fontSize="sm">{examData.exam.tenses}</Text>
+              </HStack>
+              <HStack>
+                <Text>Vocab:</Text>
+                <Text fontSize="sm">
+                  {examData.exam.vocabulary_list_manual}
+                </Text>
+              </HStack>
+              <HStack>
+                <Text>Status:</Text>
+                <Text fontSize="sm">{examData.status}</Text>
+              </HStack>
+              <Text fontSize="sm">Due Date: {examData.due_date} </Text>
+
+              {/* <NavLink to="/dashboard/exam">
         {examData.status != "in_progress" && "Start Exam"}
       </NavLink> */}
-          {/* For now let's use a toggle instead of a separate route */}
-          {examData.session_score && (
-            <ExamScoreCard examScoreData={examData.session_score} />
-          )}
-          {!examData.session_score && (
-            <Button onClick={(): void => handleStartConversation(examData)}>
-              Start exam
-            </Button>
-          )}
-        </Flex>
+              {/* For now let's use a toggle instead of a separate route */}
+              {examData.session_score && (
+                <ExamScoreCard examScoreData={examData.session_score} />
+              )}
+              {!examData.session_score && (
+                <Button onClick={(): void => handleStartConversation(examData)}>
+                  Start exam
+                </Button>
+              )}
+            </Card.Body>
+          </Flex>
+        </Card.Root>
       )}
 
       {examInProgress && (
