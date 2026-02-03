@@ -50,3 +50,16 @@ class VocabularyList(SQLModel, table=True):
         link_model=VocabularyListItem
     )
     exams: List["Exam"] = Relationship(back_populates="vocabulary_list")
+
+class VocabularyItemCreate(SQLModel):
+    word: str
+    translation: str
+    part_of_speech: Optional[str] = None
+    example_sentence: Optional[str] = None
+    regional_notes: Optional[str] = None
+
+class VocabularyListCreate(SQLModel):
+    title: str
+    description: Optional[str] = None
+    target_language: str
+    items: List[VocabularyItemCreate]
