@@ -220,12 +220,13 @@ def student_dashboard(
 
     return results
 
-router.get("/{exam_id}/scores")
+@router.get("/{exam_id}/scores")
 def get_exam_scores(
         exam_id: UUID,
         db: Session = Depends(get_db),
         current_user: User = Depends(require_roles("teacher"))
 ):
+    print("here")
     exam = db.get(Exam, exam_id)
     if not exam or exam.created_by_id != current_user.id:
         raise HTTPException(status_code=404, detail="Exam not found")

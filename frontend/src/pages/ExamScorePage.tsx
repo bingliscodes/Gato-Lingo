@@ -1,3 +1,5 @@
+import ExamScoresDisplay from "@/components/dashboard/teacher-dashboard/exam-scores/ExamScoresDisplay";
+
 export default function ExamScorePage() {
-  return <h1>Exam scores page</h1>;
+  return <ExamScoresDisplay />;
 }

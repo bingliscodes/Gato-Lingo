@@ -180,10 +180,10 @@ export interface ExamScoresResponse {
     sessions: ExamScoreSummary [];
 } 
 
-export const getExamScores = async(examId: string): Promise<ExamScoresResponse> => {
+export const getExamScores = async(examId: string | undefined): Promise<ExamScoresResponse> => {
     try{
         const res = await axios.get<ExamScoresResponse>(
-            `${import.meta.env.VITE_API_BASE_URL}exams/scores/${examId}`,
+            `${import.meta.env.VITE_API_BASE_URL}exams/${examId}/scores`,
             {withCredentials: true}
         )
         return res.data;
