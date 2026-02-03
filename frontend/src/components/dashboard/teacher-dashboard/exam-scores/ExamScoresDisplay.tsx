@@ -35,7 +35,7 @@ export default function ExamScoresDisplay() {
       {examScoreData.sessions.map((session) => (
         <TeacherExamScoreCard
           key={session.session_id}
-          examScoreData={session.score}
+          examScoreData={session}
         />
       ))}
     </Flex>
