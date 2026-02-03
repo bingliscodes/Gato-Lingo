@@ -6,5 +6,5 @@ from .conversation_turn import ConversationTurn
 from .session_score import SessionScore
 
 from ..schemas.responses import (
-    ExamResponse, DashboardExamResponse, ConversationSessionResponse, StudentAssignmentResponse
+    ExamResponse, DashboardExamResponse, ConversationSessionResponse, StudentAssignmentResponse, SessionScoreResponse
 )

@@ -45,11 +45,12 @@ def generate_session_score(conversation_session_id: str):
             print(f"An error has occurred generating the score: {e}")
             return None
         
-        scores_dict["vocabulary_score"] = vocabulary_score
+        scores_dict["vocabulary_usage_score"] = vocabulary_score
+        scores_dict["vocabulary_used"] = vocabulary_used
         scores_dict["vocabulary_missed"] = vocabulary_missed
 
         # Get overall score
-        overall_score = (scores_dict["grammar_accuracy_score"] + scores_dict["tense_accuracy_score"] + scores_dict["fluency_score"] + vocabulary_score) / 4
+        overall_score = (scores_dict["grammar_accuracy_score"] + scores_dict["verb_tense_accuracy_score"] + scores_dict["fluency_score"] + vocabulary_score) / 4
         scores_dict["overall_score"] = overall_score
 
         create_session_score(scores_dict=scores_dict, conversation_session_id=conversation_session_id)
@@ -60,9 +61,9 @@ def create_session_score(scores_dict: dict, conversation_session_id: str) -> Non
         conversation_session = db.get(ConversationSession, UUID(conversation_session_id))
         new_score = SessionScore(
             session_id=conversation_session.id,
-            vocabulary_usage_score=scores_dict["vocabulary_score"],
+            vocabulary_usage_score=scores_dict["vocabulary_usage_score"],
             grammar_accuracy_score=scores_dict["grammar_accuracy_score"],
-            verb_tense_accuracy_score=scores_dict["tense_accuracy_score"],
+            verb_tense_accuracy_score=scores_dict["verb_tense_accuracy_score"],
             fluency_score=scores_dict["fluency_score"],
             overall_score=scores_dict["overall_score"],
             grammar_feedback=scores_dict["grammar_feedback"],
@@ -74,7 +75,7 @@ def create_session_score(scores_dict: dict, conversation_session_id: str) -> Non
         db.commit()
         db.refresh(new_score)
 
-def parse_vocabulary(vocabulary: set) -> str:
+def parse_vocabulary(vocabulary: set | None) -> str:
     """
     :param vocabulary: Description
     :type vocabulary: set

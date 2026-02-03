@@ -34,7 +34,7 @@ class ScoringEngine:
             "grammar_errors": [<list of specific errors>],
             "grammar_feedback": "<brief summary of grammar performance>",
             "tenses_used": [<list of tenses student actually used>],
-            "tense_accuracy_score": <0.0-1.0>,
+            "verb_tense_accuracy_score": <0.0-1.0>,
             "fluency_score": <0.0-1.0>,
             "fluency_feedback": "<brief assessment of natural flow>"
         }}

@@ -23,7 +23,7 @@ class SessionScore(SQLModel, table=True):
     created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
     
     # Foreign Keys
-    session_id: Optional[uuid.UUID] = Field(default=None, foreign_key="conversation_sessions.id")
+    session_id: uuid.UUID = Field(foreign_key="conversation_sessions.id")
     
     # Relationships (virtual fields)
     session: Optional["ConversationSession"] = Relationship(back_populates="session_score")
