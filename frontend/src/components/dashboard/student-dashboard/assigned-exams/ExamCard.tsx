@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Button, Flex, HStack, Text, Card } from "@chakra-ui/react";
+import { Button, Flex, Text, Card } from "@chakra-ui/react";
 import { NavLink } from "react-router";
 
 import { useWebSocket } from "@/hooks/useWebSocket";
@@ -39,32 +39,12 @@ export default function ExamCard({ examData }: ExamCardProps) {
               {examData.exam.title}
             </Card.Header>
             <Card.Body>
-              <HStack>
-                <Text>Topic:</Text>
-                <Text fontSize="sm"> {examData.exam.topic}</Text>
-              </HStack>
-              <HStack>
-                <Text>Description:</Text>
-                <Text fontSize="sm">{examData.exam.description}</Text>
-              </HStack>
-              <HStack>
-                <Text>Tenses:</Text>
-                <Text fontSize="sm">{examData.exam.tenses}</Text>
-              </HStack>
-              <HStack>
-                <Text>Vocabulary:</Text>
-                <Text fontSize="sm">
-                  {examData.exam.vocabulary_list_manual}
-                </Text>
-              </HStack>
-              <HStack>
-                <Text>Status:</Text>
-                <Text>{examData.status}</Text>
-              </HStack>
-              <HStack>
-                <Text>Due Date:</Text>
-                <Text fontSize="sm">{examData.due_date}</Text>
-              </HStack>
+              <Text>Topic: {examData.exam.topic}</Text>
+              <Text>Description: {examData.exam.description}</Text>
+              <Text>Tenses: {examData.exam.tenses}</Text>
+              <Text>Vocabulary: {examData.exam.vocabulary_list_manual}</Text>
+              <Text>Status: {examData.status}</Text>
+              <Text>Due Date:</Text>
               {/* <NavLink to="/dashboard/exam">
         {examData.status != "in_progress" && "Start Exam"}
       </NavLink> */}

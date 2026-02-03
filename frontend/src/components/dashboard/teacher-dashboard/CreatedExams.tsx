@@ -1,7 +1,6 @@
 import { getCreatedExams, type DashboardExamResponse } from "@/utils/apiCalls";
 import { useEffect, useState } from "react";
-import AssignToStudentButton from "./exam-assignment/AssignToStudentButton";
-import { NavLink } from "react-router";
+import CreatedExamCard from "./CreatedExamCard";
 
 export default function CreatedExams() {
   const [examData, setExamData] = useState<DashboardExamResponse[]>([]);
@@ -31,26 +30,7 @@ export default function CreatedExams() {
     <div>
       <h1>My Exams</h1>
       {examData.map((item) => (
-        <div key={item.exam.id}>
-          <h2>{item.exam.title}</h2>
-          <p>Topic: {item.exam.topic}</p>
-          <p>
-            Status: {item.completed}/{item.total_assigned} completed,
-            {item.in_progress} in progress,
-            {item.pending} pending
-          </p>
-
-          {/* List individual sessions if needed */}
-          <ul>
-            {item.sessions.map((session) => (
-              <li key={session.id}>
-                Student: {session.student_id} - {session.status}
-              </li>
-            ))}
-          </ul>
-          <AssignToStudentButton examId={item.exam.id} />
-          <NavLink to={`scores/${item.exam.id}`}>Scores</NavLink>
-        </div>
+        <CreatedExamCard key={item.exam.id} examData={item} />
       ))}
     </div>
   );
