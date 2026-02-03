@@ -24,21 +24,33 @@ export default function RightNavContent() {
   return (
     <Flex>
       <Stack direction="row" align="center">
-        <Button borderRadius="lg" size="md" />
-
         {!isLoggedIn && (
-          <Button borderRadius="lg" onClick={() => nav("/login")}>
+          <Button
+            variant="outline"
+            size="sm"
+            borderRadius="lg"
+            onClick={() => nav("/login")}
+          >
             Log In / Sign Up
           </Button>
         )}
 
         {isLoggedIn && (
           <>
-            <Button borderRadius="lg" onClick={handleLogout}>
+            <Button
+              variant="outline"
+              size="sm"
+              borderRadius="lg"
+              onClick={handleLogout}
+            >
               Log Out
             </Button>
 
-            <NavLink to="/dashboard">Dashboard</NavLink>
+            <NavLink to="/dashboard">
+              <Button variant="outline" size="sm" borderRadius="lg">
+                Dashboard
+              </Button>
+            </NavLink>
           </>
         )}
       </Stack>

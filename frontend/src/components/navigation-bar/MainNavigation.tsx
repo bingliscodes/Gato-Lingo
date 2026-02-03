@@ -12,7 +12,7 @@ export default function MainNavigation() {
       borderBottom="solid 2px"
       borderColor="borders"
     >
-      <HStack justify="space-between" mx={4}>
+      <HStack py={1} justify="right" mx={4}>
         <RightNavContent />
       </HStack>
     </Box>
