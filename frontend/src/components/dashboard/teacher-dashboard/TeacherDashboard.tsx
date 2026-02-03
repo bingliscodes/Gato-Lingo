@@ -1,4 +1,4 @@
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Button, Flex, HStack, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router";
 
 import CreatedExams from "./CreatedExams";
@@ -10,12 +10,16 @@ export default function TeacherDashboard() {
         Welcome to your Dashboard
       </Text>
       <CreatedExams />
-
-      <NavLink to="createExam">
-        <Button variant="outline" size="2xl">
-          Create new exam
+      <HStack>
+        <NavLink to="createExam">
+          <Button variant="outline" size="xl">
+            Create new exam
+          </Button>
+        </NavLink>
+        <Button variant="outline" size="xl">
+          Upload vocabulary list
         </Button>
-      </NavLink>
+      </HStack>
     </Flex>
   );
 }
