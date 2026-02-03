@@ -1,5 +1,7 @@
 import { getCreatedExams, type DashboardExamResponse } from "@/utils/apiCalls";
 import { useEffect, useState } from "react";
+import { Text } from "@chakra-ui/react";
+
 import CreatedExamCard from "./CreatedExamCard";
 
 export default function CreatedExams() {
@@ -28,7 +30,9 @@ export default function CreatedExams() {
 
   return (
     <div>
-      <h1>My Exams</h1>
+      <Text fontWeight="bold" fontSize="2xl">
+        My Exams
+      </Text>
       {examData.map((item) => (
         <CreatedExamCard key={item.exam.id} examData={item} />
       ))}

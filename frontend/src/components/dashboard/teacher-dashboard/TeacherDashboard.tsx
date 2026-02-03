@@ -5,12 +5,16 @@ import CreatedExams from "./CreatedExams";
 
 export default function TeacherDashboard() {
   return (
-    <Flex direction="column" flex="1" gap={1} px={1}>
-      <Text>Teacher dashboard</Text>
+    <Flex direction="column" flex="1" gap={2} px={1}>
+      <Text fontWeight="bolder" fontSize="3xl" textAlign="center">
+        Welcome to your Dashboard
+      </Text>
       <CreatedExams />
 
       <NavLink to="createExam">
-        <Button variant="outline">Create new exam</Button>
+        <Button variant="outline" size="2xl">
+          Create new exam
+        </Button>
       </NavLink>
     </Flex>
   );

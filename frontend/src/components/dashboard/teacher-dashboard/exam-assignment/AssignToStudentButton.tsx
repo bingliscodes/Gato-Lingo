@@ -68,20 +68,21 @@ export default function AssignToStudentButton({
             </Dialog.Body>
             <Dialog.Footer>
               <Dialog.ActionTrigger asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline" borderRadius="lg">
+                  Cancel
+                </Button>
               </Dialog.ActionTrigger>
-              <Button>Save</Button>
+              {addedStudents > 0 && (
+                <Button
+                  variant="outline"
+                  borderRadius="lg"
+                  onClick={handleExamAssignment}
+                >{`Assign to ${assignedStudentIds.length} student${addedStudents > 1 ? "s" : ""}`}</Button>
+              )}
             </Dialog.Footer>
           </Dialog.Content>
         </Dialog.Positioner>
       </Dialog.Root>
-      {addedStudents > 0 && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleExamAssignment}
-        >{`Assign to ${assignedStudentIds.length} student${addedStudents > 1 ? "s" : ""}`}</Button>
-      )}
     </Flex>
   );
 }

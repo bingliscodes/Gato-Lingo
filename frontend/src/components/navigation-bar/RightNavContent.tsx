@@ -24,6 +24,11 @@ export default function RightNavContent() {
   return (
     <Flex>
       <Stack direction="row" align="center">
+        <NavLink to="/dashboard">
+          <Button variant="outline" size="sm" borderRadius="lg">
+            Dashboard
+          </Button>
+        </NavLink>
         {!isLoggedIn && (
           <Button
             variant="outline"
@@ -45,12 +50,6 @@ export default function RightNavContent() {
             >
               Log Out
             </Button>
-
-            <NavLink to="/dashboard">
-              <Button variant="outline" size="sm" borderRadius="lg">
-                Dashboard
-              </Button>
-            </NavLink>
           </>
         )}
       </Stack>

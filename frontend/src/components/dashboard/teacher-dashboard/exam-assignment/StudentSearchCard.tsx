@@ -18,11 +18,16 @@ export default function StudentCard({
   };
 
   return (
-    <Flex>
+    <Flex gap={4} align="center">
       <Text>
         {studentData.first_name} {studentData.last_name}
       </Text>
-      <Button onClick={handleClick}>
+      <Button
+        onClick={handleClick}
+        variant="outline"
+        size="sm"
+        borderRadius="lg"
+      >
         {assignedStudentIds.includes(studentData.id)
           ? "added"
           : "Add student to list"}
