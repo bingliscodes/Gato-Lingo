@@ -250,3 +250,15 @@ export const createVocabularyList = async(vocabListData: VocabListCreate): Promi
         throw new Error(getErrorMessage(err));
     }
 }
+
+export const getCreatedVocabularyLists = async(): Promise<VocabularyListResponse[]> => {
+    try{
+        const res = await axios.get<VocabularyListResponse[]>(
+            `${import.meta.env.VITE_API_BASE_URL}vocabulary-lists`,
+            {withCredentials: true}
+        )
+        return res.data;
+    }catch(err){
+        throw new Error(getErrorMessage(err));
+    }
+}
