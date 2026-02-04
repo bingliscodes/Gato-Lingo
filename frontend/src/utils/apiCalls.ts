@@ -9,7 +9,7 @@ export interface ExamFormData {
     difficulty_level: string;
     topic: string;
     tenses: string[];                    // Array of tense names
-    vocabulary_list_manual: string;      // Comma-separated string from textarea
+    vocabulary_list_id: string;      // Comma-separated string from textarea
     cultural_context: string | null;           
 }
 

@@ -28,7 +28,7 @@ export default function CreateExam() {
   const [targetLanguage, setTargetLanguage] = useState("spanish");
   const [level, setLevel] = useState("beginner");
   const [topic, setTopic] = useState("Ordering food at a restaurant");
-  const [vocabularyList, setVocabularyList] = useState("");
+  const [vocabularyListId, setVocabularyListId] = useState("");
   const [verbTenses, setVerbTenses] = useState(["present", "preterite"]);
   const [culturalContext, setCulturalContext] = useState("");
 
@@ -55,7 +55,7 @@ export default function CreateExam() {
       topic,
       tenses: verbTenses,
       difficulty_level: level,
-      vocabulary_list_manual: vocabularyList,
+      vocabulary_list_id: vocabularyListId,
     };
 
     const examCreatePromise = createExam(formData);
@@ -177,8 +177,8 @@ export default function CreateExam() {
           <Field.Label>Vocabulary List</Field.Label>
           <NativeSelect.Root>
             <NativeSelect.Field
-              value={vocabularyList}
-              onChange={(e) => setVocabularyList(e.target.value)}
+              value={vocabularyListId}
+              onChange={(e) => setVocabularyListId(e.target.value)}
             >
               {vocabLists.map((list) => (
                 <option value={list.id}>{list.title}</option>
