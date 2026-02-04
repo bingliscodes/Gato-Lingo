@@ -1,3 +1,4 @@
+import { Button } from "@chakra-ui/react";
 import React, { useRef } from "react";
 
 export interface FileUploaderProps {
@@ -41,9 +42,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         multiple={multiple}
         style={{ display: "none" }} // Hide the actual input
       />
-      <button type="button" onClick={handleButtonClick}>
+      <Button variant="outline" type="button" onClick={handleButtonClick}>
         {label}
-      </button>
+      </Button>
     </div>
   );
 };

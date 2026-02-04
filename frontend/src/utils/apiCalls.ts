@@ -209,10 +209,6 @@ export interface VocabularyListResponse{
     items: VocabItem[] | null;
 }
 
-export interface VocabularyListPreviewCreate{
-    file: File
-}
-
 export interface VocabularyListPreviewResponse{
     items: VocabItem[];
     total: number;
@@ -226,7 +222,7 @@ interface VocabListCreate{
     items: VocabItem[];
 }
 
-export const previewVocabularyList = async(formData: VocabularyListPreviewCreate): Promise<VocabularyListPreviewResponse> => {
+export const previewVocabularyList = async(formData: FormData): Promise<VocabularyListPreviewResponse> => {
     try{
         const res = await axios.post<VocabularyListPreviewResponse>(
             `${import.meta.env.VITE_API_BASE_URL}vocabulary-lists/preview`,

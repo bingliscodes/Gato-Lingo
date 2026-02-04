@@ -181,7 +181,9 @@ export default function CreateExam() {
               onChange={(e) => setVocabularyListId(e.target.value)}
             >
               {vocabLists.map((list) => (
-                <option value={list.id}>{list.title}</option>
+                <option key={list.id} value={list.id}>
+                  {list.title}
+                </option>
               ))}
             </NativeSelect.Field>
           </NativeSelect.Root>

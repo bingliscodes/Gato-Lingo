@@ -21,7 +21,6 @@ export default function VocabularyUpload() {
   const [targetLanguage, setTargetLanguage] = useState("spanish");
 
   async function handleFileUpload(file: File) {
-    console.log("selected file:", file);
     setFile(file);
 
     // Upload for preview

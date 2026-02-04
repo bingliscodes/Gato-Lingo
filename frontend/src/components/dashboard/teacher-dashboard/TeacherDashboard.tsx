@@ -16,9 +16,9 @@ export default function TeacherDashboard() {
             Create new exam
           </Button>
         </NavLink>
-        <NavLink to="uploadVocabulary">
+        <NavLink to="vocabulary">
           <Button variant="outline" size="xl">
-            Upload vocabulary list
+            Manage Vocabulary Lists
           </Button>
         </NavLink>
       </HStack>
