@@ -206,6 +206,7 @@ export interface VocabularyListResponse{
     description: string | null;
     target_language: string | null;
     teacher_id: string | null;
+    items: VocabItem[] | null;
 }
 
 export interface VocabularyListPreviewCreate{

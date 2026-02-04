@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from sqlmodel import Session, select
+from typing import List
 import csv
 import io
 
@@ -9,6 +10,24 @@ from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
 
 router = APIRouter(prefix="/vocabulary-lists", tags=["vocabulary-lists"])
+
+
+@router.get("/", response_model=List[VocabularyList])
+async def get_created_lists(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles("teacher")),
+):
+    statement = select(VocabularyList).where(VocabularyList.teacher_id == current_user.id)
+    vocab_lists = db.exec(statement).all()
+    
+    if not vocab_lists:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Lists for user with id {current_user.id} not found"
+        )
+    
+    return vocab_lists
+
 
 @router.post("/preview")
 async def preview_vocabulary_upload(
