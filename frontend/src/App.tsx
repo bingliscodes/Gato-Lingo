@@ -7,6 +7,7 @@ import DashboardPage from "./pages/DashboardPage";
 import CreateExamPage from "./pages/CreateExamPage";
 import ConversationInterfacePage from "./pages/ConversationInterfacePage";
 import ExamScorePage from "./pages/ExamScorePage";
+import VocabularyUpload from "./components/dashboard/teacher-dashboard/VocabularyUpload";
 
 function App() {
   return (
@@ -18,6 +19,10 @@ function App() {
         <Route path="/dashboard/createExam" element={<CreateExamPage />} />
         <Route path="/dashboard/scores/:examId" element={<ExamScorePage />} />
         <Route path="/dashboard/exam" element={<ConversationInterfacePage />} />
+        <Route
+          path="/dashboard/uploadVocabulary"
+          element={<VocabularyUpload />}
+        />
       </Route>
     </Routes>
   );

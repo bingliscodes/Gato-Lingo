@@ -1,15 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, UploadFile, File
 from sqlmodel import Session, select
-from typing import List, Optional
-from uuid import UUID
 import csv
 import io
-import json
 
-from ..config import settings
-from ..services.conversation_engine import ConversationEngine
 from ..database.database import get_db
-from ..models.vocabulary import VocabularyItem, VocabularyList, VocabularyListItem
+from ..models.vocabulary import VocabularyItem, VocabularyList, VocabularyListItem, VocabularyListCreate
 from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
 
