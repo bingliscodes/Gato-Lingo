@@ -15,6 +15,7 @@ import { useNavigate } from "react-router";
 import { toaster } from "@/components/ui/toaster";
 import { useUser } from "@/contexts/UserContext";
 import { createExam, type ExamFormData } from "@/utils/apiCalls";
+import { useVocabularyLists } from "@/hooks/useVocabularyLists";
 
 interface ExamCreationError {
   message: string;
@@ -27,15 +28,16 @@ export default function CreateExam() {
   const [targetLanguage, setTargetLanguage] = useState("spanish");
   const [level, setLevel] = useState("beginner");
   const [topic, setTopic] = useState("Ordering food at a restaurant");
-  const [vocabularyList, setVocabularyList] = useState(
-    "menu, cuenta, mesero, propina, reservación, plato, bebida, postre",
-  );
+  const [vocabularyList, setVocabularyList] = useState("");
   const [verbTenses, setVerbTenses] = useState(["present", "preterite"]);
   const [culturalContext, setCulturalContext] = useState("");
+
+  const { vocabLists, isLoading, error: vocabListError } = useVocabularyLists();
 
   const { refreshUserData } = useUser();
 
   const nav = useNavigate();
+
   const toggleTense = (tense: string) => {
     setVerbTenses((prev) =>
       prev.includes(tense) ? prev.filter((t) => t !== tense) : [...prev, tense],
@@ -172,14 +174,17 @@ export default function CreateExam() {
         </Field.Root>
 
         <Field.Root>
-          <Field.Label>Vocabulary to Practice</Field.Label>
-          <Textarea
-            value={vocabularyList}
-            onChange={(e) => setVocabularyList(e.target.value)}
-            placeholder="Enter words separated by commas"
-            rows={3}
-          />
-          <Field.HelperText>Separate words with commas</Field.HelperText>
+          <Field.Label>Vocabulary List</Field.Label>
+          <NativeSelect.Root>
+            <NativeSelect.Field
+              value={vocabularyList}
+              onChange={(e) => setVocabularyList(e.target.value)}
+            >
+              {vocabLists.map((list) => (
+                <option value={list.id}>{list.title}</option>
+              ))}
+            </NativeSelect.Field>
+          </NativeSelect.Root>
         </Field.Root>
 
         <Field.Root>
