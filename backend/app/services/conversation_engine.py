@@ -14,7 +14,7 @@ class ConversationEngine:
         verb_tenses: list[str],
         region_variant: Optional[str] = None
     ) -> str:
-        vocab_formatted = ", ".join(vocabulary) if vocabulary else "general vocabulary"
+        vocabulary_section = "\n".join([f"-{item}" for item in vocabulary])
         tenses_formatted = ", ".join(verb_tenses) if verb_tenses else "any appropriate tenses"
         region_note = f"Use {region_variant} regional vocabulary and expressions." if region_variant else ""
         
@@ -36,7 +36,7 @@ For advanced: Use sophisticated vocabulary, complex grammar, cultural nuances.
 
 ## Target Vocabulary to Practice
 Naturally incorporate opportunities for the student to use these words (don't force them all at once):
-{vocab_formatted}
+{vocabulary_section}
 
 ## Target Verb Tenses
 Focus on eliciting these tenses: {tenses_formatted}
