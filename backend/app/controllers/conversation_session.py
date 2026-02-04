@@ -51,7 +51,7 @@ def complete_session(
         raise HTTPException(status_code=403, detail="This session is not assigned to you.")
 
     if session.status != SessionStatus.in_progress:
-        raise HTTPException(status_code=400, detail="Session is not im progress")
+        raise HTTPException(status_code=400, detail="Session is not in progress")
 
     session.status = SessionStatus.completed
     session.ended_at = datetime.now(datetime.UTC)
@@ -59,8 +59,6 @@ def complete_session(
     db.add(session)
     db.commit()
     db.refresh(session)
-    
-    # TODO: Trigger score generation here
     
     return session
 

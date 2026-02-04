@@ -20,12 +20,6 @@ async def get_created_lists(
     statement = select(VocabularyList).where(VocabularyList.teacher_id == current_user.id)
     vocab_lists = db.exec(statement).all()
     
-    if not vocab_lists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Lists for user with id {current_user.id} not found"
-        )
-    
     return vocab_lists
 
 
