@@ -23,7 +23,8 @@ export default function VocabularyUpload() {
   const [description, setDescription] = useState("");
   const [targetLanguage, setTargetLanguage] = useState("spanish");
 
-  async function handleFileSelect(file: File) {
+  async function handleFileUpload(file: File) {
+    console.log("selected files:", file);
     setFile(file);
 
     // Upload for preview
@@ -50,7 +51,14 @@ export default function VocabularyUpload() {
 
   return (
     <div>
-      {step === "upload" && <FileUploader onSelect={handleFileSelect} />}
+      {step === "upload" && (
+        <FileUploader
+          onFileUpload={handleFileUpload}
+          acceptedFileTypes=".csv"
+          multiple={false}
+          label="Upload Vocabulary List"
+        />
+      )}
 
       {step === "preview" && (
         <div>

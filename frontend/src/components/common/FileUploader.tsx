@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 
-interface FileUploaderProps {
-  onFileUpload: (files: FileList | null) => void;
+export interface FileUploaderProps {
+  onFileUpload: (files: File) => void;
   acceptedFileTypes?: string;
   multiple?: boolean;
   label?: string;
@@ -15,8 +15,12 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onFileUpload(event.target.files);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onFileUpload(file);
+    }
+
     // Optional: reset the input value to allow the same file to be uploaded again
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
