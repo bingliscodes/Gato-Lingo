@@ -7,6 +7,7 @@ import {
   previewVocabularyList,
 } from "@/utils/apiCalls";
 import FileUploader from "@/components/common/FileUploader";
+import { Table } from "@chakra-ui/react";
 
 export default function VocabularyUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -60,15 +61,22 @@ export default function VocabularyUpload() {
         <div>
           <h2>Preview ({previewItems.length} items)</h2>
           {errors.length > 0 && <div>Errors: {errors.join(", ")}</div>}
-          <table>
+          <Table.Root>
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeader>Word</Table.ColumnHeader>
+                <Table.ColumnHeader>Translation</Table.ColumnHeader>
+                <Table.ColumnHeader>Part of Speech</Table.ColumnHeader>
+              </Table.Row>
+            </Table.Header>
             {previewItems.map((item, i) => (
-              <tr key={i}>
-                <td>{item.word}</td>
-                <td>{item.translation}</td>
-                <td>{item.part_of_speech}</td>
-              </tr>
+              <Table.Row key={i}>
+                <Table.Cell>{item.word}</Table.Cell>
+                <Table.Cell>{item.translation}</Table.Cell>
+                <Table.Cell>{item.part_of_speech}</Table.Cell>
+              </Table.Row>
             ))}
-          </table>
+          </Table.Root>
           <Button onClick={() => setStep("metadata")}>Continue</Button>
         </div>
       )}
