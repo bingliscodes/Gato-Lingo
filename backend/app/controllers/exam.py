@@ -9,6 +9,7 @@ from ..services.conversation_engine import ConversationEngine
 from ..database.database import get_db
 from ..models.exam import Exam, ExamCreate, ExamResponse, DashboardExamResponse, StudentAssignmentResponse
 from ..models.conversation_session import ConversationSession, SessionStatus, SessionAssignment, ConversationSessionResponse
+from ..models.vocabulary import VocabularyList, VocabularyItem
 from ..schemas.responses import SessionScoreResponse
 from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
@@ -26,10 +27,24 @@ def parse_tenses(tenses_json: Optional[str]) -> List[str]:
     except json.JSONDecodeError:
         return []
     
-def parse_vocabulary(vocab_string: Optional[str]) -> List[str]:
-    if not vocab_string:
+def parse_vocabulary(vocabulary_list: VocabularyList) -> List[str]:
+    if not vocabulary_list or not vocabulary_list.items:
         return []
-    return [word.strip() for word in vocab_string.split(",") if word.strip()]
+    
+    formatted = []
+
+    for item in vocabulary_list.items:
+        parts = [f"word: {item.word}", f"translation: {item.translation}"]
+        if item.part_of_speech:
+            parts.append(f"part of speech: {item.part_of_speech}")
+        if item.example_sentence:
+            parts.append(f"example sentence: {item.example_sentence}")
+        if item.regional_notes:
+            parts.append(f"regional notes: {item.regional_notes}")
+
+        formatted.append(", ".join(parts))
+
+    return formatted
 
 @router.post("/", response_model=ExamResponse, status_code=status.HTTP_201_CREATED)
 def create_exam(
@@ -40,13 +55,14 @@ def create_exam(
     """Teacher creates a new exam template."""
     
     # Parse the incoming data for prompt generation
-    vocabulary_list = parse_vocabulary(exam_data.vocabulary_list_manual)
+    vocabulary_list = db.get(VocabularyList, exam_data.vocabulary_list_id)
+    vocab_parsed = parse_vocabulary(vocabulary_list)
     tenses_list = parse_tenses(exam_data.tenses)
     
     conversation_prompt = conversation_engine.build_system_prompt(
         target_language=exam_data.target_language,
         student_level=exam_data.difficulty_level,
-        vocabulary=vocabulary_list,
+        vocabulary=vocab_parsed,
         topic=exam_data.topic,
         verb_tenses=tenses_list,
         region_variant=exam_data.cultural_context
@@ -60,7 +76,6 @@ def create_exam(
         difficulty_level=exam_data.difficulty_level,
         topic=exam_data.topic,
         tenses=exam_data.tenses,  # Store as JSON string
-        vocabulary_list_manual=exam_data.vocabulary_list_manual,  # Store as comma-separated
         vocabulary_list_id=exam_data.vocabulary_list_id,
         cultural_context=exam_data.cultural_context,
         conversation_prompt=conversation_prompt,
