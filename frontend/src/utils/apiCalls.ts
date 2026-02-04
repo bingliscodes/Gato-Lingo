@@ -191,3 +191,62 @@ export const getExamScores = async(examId: string | undefined): Promise<ExamScor
         throw new Error(getErrorMessage(err));
     }
 }
+
+export interface VocabItem {
+  word: string;
+  translation: string;
+  part_of_speech: string | null;
+  example_sentence: string | null;
+  regional_notes: string | null;
+}
+
+export interface VocabularyListResponse{
+    id: string;
+    title: string;
+    description: string | null;
+    target_language: string | null;
+    teacher_id: string | null;
+}
+
+export interface VocabularyListPreviewCreate{
+    file: File
+}
+
+export interface VocabularyListPreviewResponse{
+    items: VocabItem[];
+    total: number;
+    errors: string[];
+}
+
+interface VocabListCreate{
+    title: string;
+    description: string | null;
+    target_language: string | null;
+    items: VocabItem[];
+}
+
+export const previewVocabularyList = async(formData: VocabularyListPreviewCreate): Promise<VocabularyListPreviewResponse> => {
+    try{
+        const res = await axios.post<VocabularyListPreviewResponse>(
+            `${import.meta.env.VITE_API_BASE_URL}vocabulary-lists/preview`,
+            formData,
+            {withCredentials: true}
+        )
+        return res.data;
+    }catch(err){
+        throw new Error(getErrorMessage(err));
+    }
+}
+
+export const createVocabularyList = async(vocabListData: VocabListCreate): Promise<VocabularyListResponse> => {
+    try{
+        const res = await axios.post<VocabularyListResponse>(
+            `${import.meta.env.VITE_API_BASE_URL}vocabulary-lists/save`,
+            vocabListData,
+            {withCredentials: true}
+        )
+        return res.data;
+    }catch(err){
+        throw new Error(getErrorMessage(err));
+    }
+}

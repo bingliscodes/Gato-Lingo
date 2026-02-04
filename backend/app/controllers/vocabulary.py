@@ -10,7 +10,7 @@ from ..dependencies.auth import get_current_user, require_roles
 
 router = APIRouter(prefix="/vocabulary-lists", tags=["vocabulary-lists"])
 
-@router.post("/vocabulary-lists/preview")
+@router.post("/preview")
 async def preview_vocabulary_upload(
     file: UploadFile = File(...),
     current_user: User = Depends(require_roles("teacher"))
@@ -41,7 +41,7 @@ async def preview_vocabulary_upload(
         "errors": errors
     }
 
-@router.post("/vocabulary-lists")
+@router.post("/save")
 def create_vocabulary_list(
     data: VocabularyListCreate,
     db: Session = Depends(get_db),
@@ -69,15 +69,10 @@ def create_vocabulary_list(
             item = existing_item
         else:
             item = VocabularyItem(**item_data.model_dump())
+            vocab_list.items.append(item)
             db.add(item)
             db.commit()
             db.refresh(item)
-
-        link = VocabularyListItem(
-            vocabulary_list_id=vocab_list.id,
-            vocabulary_item_id=item.id
-        )
-        db.add(link())
 
     db.commit()
 

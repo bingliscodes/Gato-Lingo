@@ -1,16 +1,12 @@
 import { useState } from "react";
-import axios from "axios";
-import { Input, Select, Button } from "@chakra-ui/react";
+import { Input, Button, NativeSelect } from "@chakra-ui/react";
 
+import {
+  type VocabItem,
+  createVocabularyList,
+  previewVocabularyList,
+} from "@/utils/apiCalls";
 import FileUploader from "@/components/common/FileUploader";
-
-interface VocabItem {
-  word: string;
-  translation: string;
-  part_of_speech: string | null;
-  example_sentence: string | null;
-  regional_notes: string | null;
-}
 
 export default function VocabularyUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -24,17 +20,17 @@ export default function VocabularyUpload() {
   const [targetLanguage, setTargetLanguage] = useState("spanish");
 
   async function handleFileUpload(file: File) {
-    console.log("selected files:", file);
+    console.log("selected file:", file);
     setFile(file);
 
     // Upload for preview
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await axios.post("/vocabulary-lists/preview", formData);
+    const response = await previewVocabularyList(formData);
 
-    setPreviewItems(response.data.items);
-    setErrors(response.data.errors);
+    setPreviewItems(response.items);
+    setErrors(response.errors);
     setStep("preview");
   }
 
@@ -89,13 +85,16 @@ export default function VocabularyUpload() {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Description"
           />
-          <Select
-            value={targetLanguage}
-            onChange={(e) => setTargetLanguage(e.target.value)}
-          >
-            <option value="spanish">Spanish</option>
-            {/* ... */}
-          </Select>
+
+          <NativeSelect.Root>
+            <NativeSelect.Field
+              value={targetLanguage}
+              onChange={(e) => setTargetLanguage(e.target.value)}
+            >
+              <option value="spanish">Spanish</option>
+              {/* ... */}
+            </NativeSelect.Field>
+          </NativeSelect.Root>
           <Button onClick={handleSave}>Save List</Button>
         </div>
       )}
