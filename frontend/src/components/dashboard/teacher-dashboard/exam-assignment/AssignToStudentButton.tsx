@@ -50,7 +50,7 @@ export default function AssignToStudentButton({
     <Flex gap={2} py={2}>
       <Dialog.Root>
         <Dialog.Trigger asChild>
-          <Button variant="solid" size="sm">
+          <Button variant="outline" size="sm">
             Assign to students
           </Button>
         </Dialog.Trigger>
