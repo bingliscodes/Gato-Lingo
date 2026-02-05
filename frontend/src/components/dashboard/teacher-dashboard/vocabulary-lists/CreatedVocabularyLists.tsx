@@ -23,7 +23,7 @@ export default function CreatedVocabularyLists() {
 
   return (
     <Flex gap={2} mx={1} justify="center">
-      <Flex flexDir="column">
+      <Flex flexDir="column" gap={3}>
         <Text mb={2} textAlign="center" fontWeight="bolder" fontSize="3xl">
           Vocabulary Lists
         </Text>
@@ -65,7 +65,10 @@ export default function CreatedVocabularyLists() {
             </Carousel.NextTrigger>
           </Carousel.Control>
         </Carousel.Root>
-        <Input onChange={(e) => setSearch(e.target.value)} />
+        <Input
+          placeholder="Search for keywords in title or description"
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </Flex>
     </Flex>
   );
