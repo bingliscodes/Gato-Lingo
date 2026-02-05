@@ -35,14 +35,15 @@ export default function ExamCard({ examData }: ExamCardProps) {
       {!examInProgress && (
         <Card.Root variant="elevated">
           <Flex direction="column" flex="1">
-            <Card.Header fontSize="2xl" fontWeight="bold">
+            <Card.Header textStyle="heading.lg">
               {examData.exam.title}
             </Card.Header>
             <Card.Body gap={1}>
               <Text>Topic: {examData.exam.topic}</Text>
               <Text>Description: {examData.exam.description}</Text>
               <Text>Tenses: {examData.exam.tenses}</Text>
-              <Text>Vocabulary: {examData.exam.vocabulary_list_manual}</Text>
+              {/* //TODO: display vocab for student exam ?*/}
+              {/* <Text>Vocabulary: {examData.exam.vocabulary_list_manual}</Text> */}
               <Text>Status: {examData.status}</Text>
               <Text>Due Date:</Text>
               {/* <NavLink to="/dashboard/exam">

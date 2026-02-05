@@ -17,7 +17,7 @@ export default function VocabularyListCard({
       rounded="xl"
       shadow="sm"
     >
-      <Card.Header textAlign="center" fontSize="lg" fontWeight="bold">
+      <Card.Header textStyle="heading.lg">
         {vocabularyListData.title}
       </Card.Header>
       <Card.Body>

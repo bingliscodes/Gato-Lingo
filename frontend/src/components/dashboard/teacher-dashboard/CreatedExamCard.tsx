@@ -11,9 +11,7 @@ interface CreatedExamCardProps {
 export default function CreatedExamCard({ examData }: CreatedExamCardProps) {
   return (
     <Card.Root w="60%">
-      <Card.Header fontSize="lg" fontWeight="bold">
-        {examData.exam.title}
-      </Card.Header>
+      <Card.Header textStyle="heading.lg">{examData.exam.title}</Card.Header>
       <Card.Body gap={1}>
         <Text>Topic: {examData.exam.topic}</Text>
         <Text>Description: {examData.exam.description}</Text>
