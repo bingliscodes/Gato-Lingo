@@ -35,13 +35,20 @@ export default function CreatedVocabularyLists() {
           page={page}
           onPageChange={(e) => setPage(e.page)}
         >
-          <Carousel.ItemGroup>
-            {vocabularyListsFiltered?.map((list, idx) => (
-              <Carousel.Item key={list.id} index={idx}>
-                <VocabularyListCard vocabularyListData={list} />
-              </Carousel.Item>
-            ))}
-          </Carousel.ItemGroup>
+          {vocabularyListsFiltered && (
+            <Carousel.ItemGroup>
+              {vocabularyListsFiltered?.map((list, idx) => (
+                <Carousel.Item key={list.id} index={idx}>
+                  <VocabularyListCard vocabularyListData={list} />
+                </Carousel.Item>
+              ))}
+            </Carousel.ItemGroup>
+          )}
+          {vocabularyListsFiltered.length == 0 && (
+            <div>
+              No vocabulary list found. Please try different search terms.
+            </div>
+          )}
 
           <Carousel.Control justifyContent="center" gap="4">
             <Carousel.PrevTrigger asChild>
