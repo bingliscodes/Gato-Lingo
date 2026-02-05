@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Input, Button, NativeSelect } from "@chakra-ui/react";
 
 import {
-  type VocabularyItem,
+  type VocabularyItemCreate,
   createVocabularyList,
   previewVocabularyList,
 } from "@/utils/apiCalls";
@@ -11,7 +11,7 @@ import { Table } from "@chakra-ui/react";
 
 export default function VocabularyUpload() {
   const [file, setFile] = useState<File | null>(null);
-  const [previewItems, setPreviewItems] = useState<VocabularyItem[]>([]);
+  const [previewItems, setPreviewItems] = useState<VocabularyItemCreate[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
   const [step, setStep] = useState<"upload" | "preview" | "metadata">("upload");
 

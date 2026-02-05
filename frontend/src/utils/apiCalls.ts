@@ -192,7 +192,7 @@ export const getExamScores = async(examId: string | undefined): Promise<ExamScor
     }
 }
 
-export interface VocabularyItem {
+export interface VocabularyItemCreate {
   word: string;
   translation: string;
   part_of_speech: string | null;
@@ -200,13 +200,15 @@ export interface VocabularyItem {
   regional_notes: string | null;
 }
 
-export interface VocabularyItemResponse{
+export interface VocabularyItemResponse extends VocabularyItemCreate{
     id: string;
-    word: string;
-    translation: string;
-    part_of_speech: string | null;
-    example_sentence: string | null;
-    regional_notes: string | null;
+}
+
+export interface VocabularyListCreate{
+    title: string;
+    description: string | null;
+    target_language: string | null;
+    items: VocabularyItemCreate[];
 }
 
 export interface VocabularyListResponse{
@@ -219,17 +221,12 @@ export interface VocabularyListResponse{
 }
 
 export interface VocabularyListPreviewResponse{
-    items: VocabularyItem[];
+    items: VocabularyItemCreate[];
     total: number;
     errors: string[];
 }
 
-interface VocabListCreate{
-    title: string;
-    description: string | null;
-    target_language: string | null;
-    items: VocabularyItem[];
-}
+
 
 export const previewVocabularyList = async(formData: FormData): Promise<VocabularyListPreviewResponse> => {
     try{
@@ -244,7 +241,7 @@ export const previewVocabularyList = async(formData: FormData): Promise<Vocabula
     }
 }
 
-export const createVocabularyList = async(vocabListData: VocabListCreate): Promise<VocabularyListResponse> => {
+export const createVocabularyList = async(vocabListData: VocabularyListCreate): Promise<VocabularyListResponse> => {
     try{
         const res = await axios.post<VocabularyListResponse>(
             `${import.meta.env.VITE_API_BASE_URL}vocabulary-lists/save`,
