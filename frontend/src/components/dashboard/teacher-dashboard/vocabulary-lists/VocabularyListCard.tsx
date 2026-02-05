@@ -30,15 +30,17 @@ export default function VocabularyListCard({
               <Table.ColumnHeader>Regional Notes</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
-          {vocabularyListData.items.map((item) => (
-            <Table.Row key={item.id}>
-              <Table.Cell>{item.word}</Table.Cell>
-              <Table.Cell>{item.translation}</Table.Cell>
-              <Table.Cell>{item.part_of_speech}</Table.Cell>
-              <Table.Cell>{item.example_sentence}</Table.Cell>
-              <Table.Cell>{item.regional_notes}</Table.Cell>
-            </Table.Row>
-          ))}
+          <Table.Body>
+            {vocabularyListData.items.map((item) => (
+              <Table.Row key={item.id}>
+                <Table.Cell>{item.word}</Table.Cell>
+                <Table.Cell>{item.translation}</Table.Cell>
+                <Table.Cell>{item.part_of_speech}</Table.Cell>
+                <Table.Cell>{item.example_sentence}</Table.Cell>
+                <Table.Cell>{item.regional_notes}</Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
         </Table.Root>
       </Card.Body>
       <Card.Footer></Card.Footer>

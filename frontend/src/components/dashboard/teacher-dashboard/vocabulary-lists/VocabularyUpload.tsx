@@ -68,13 +68,15 @@ export default function VocabularyUpload() {
                 <Table.ColumnHeader>Part of Speech</Table.ColumnHeader>
               </Table.Row>
             </Table.Header>
-            {previewItems.map((item, i) => (
-              <Table.Row key={i}>
-                <Table.Cell>{item.word}</Table.Cell>
-                <Table.Cell>{item.translation}</Table.Cell>
-                <Table.Cell>{item.part_of_speech}</Table.Cell>
-              </Table.Row>
-            ))}
+            <Table.Body>
+              {previewItems.map((item, i) => (
+                <Table.Row key={i}>
+                  <Table.Cell>{item.word}</Table.Cell>
+                  <Table.Cell>{item.translation}</Table.Cell>
+                  <Table.Cell>{item.part_of_speech}</Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
           </Table.Root>
           <Button onClick={() => setStep("metadata")}>Continue</Button>
         </div>
