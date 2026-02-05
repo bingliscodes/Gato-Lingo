@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from "react-router";
 import { logout } from "@/utils/authentication";
 
 import { useUser } from "@/contexts/UserContext";
+import { ColorModeButton } from "../ui/color-mode";
 
 export default function RightNavContent() {
   const { isLoggedIn, refreshUserData } = useUser();
@@ -24,6 +25,7 @@ export default function RightNavContent() {
   return (
     <Flex>
       <Stack direction="row" align="center">
+        <ColorModeButton />
         <NavLink to="/dashboard">
           <Button variant="solid" size="sm">
             Dashboard
