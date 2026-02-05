@@ -17,7 +17,7 @@ export default function VocabularyListCard({
       <Card.Body>
         <Text fontWeight="bold">Description:</Text>
         <Text>{vocabularyListData.description}</Text>
-        <Text my={2} textAlign="center" fontWeight="bold">
+        <Text my={2} fontWeight="bold">
           Vocabulary
         </Text>
         <Table.Root>

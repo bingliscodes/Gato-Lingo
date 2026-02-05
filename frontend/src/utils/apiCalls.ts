@@ -22,7 +22,6 @@ export interface ExamResponse {
     difficulty_level: string;
     topic: string;
     tenses: string;                      // JSON string in DB
-    vocabulary_list_manual: string | null;
     vocabulary_list_id: string | null;
     cultural_context: string | null;
     conversation_prompt: string;
@@ -83,6 +82,7 @@ export interface DashboardExamResponse {
     in_progress: number;
     completed: number;
     sessions: ConversationSession [];
+    vocabulary_list: VocabularyListResponse | null;
 }
 
 export const getCreatedExams = async(): Promise<DashboardExamResponse[]> => {

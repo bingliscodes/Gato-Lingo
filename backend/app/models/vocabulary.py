@@ -64,18 +64,4 @@ class VocabularyListCreate(SQLModel):
     target_language: str
     items: List[VocabularyItemCreate]
 
-class VocabularyItemResponse(SQLModel):
-    id: uuid.UUID
-    word: str
-    translation: str
-    part_of_speech: Optional[str] = None
-    example_sentence: Optional[str] = None
-    regional_notes: Optional[str] = None
-
-class VocabularyListResponse(SQLModel):
-    id: uuid.UUID
-    title: str
-    description: Optional[str] = None
-    target_language: str
-    teacher_id: Optional[uuid.UUID] = None
-    items: List[VocabularyItem] = []
+from ..schemas.responses import VocabularyListResponse, VocabularyItemResponse

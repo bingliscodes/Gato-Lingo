@@ -1,5 +1,5 @@
 from .user import User
-from .vocabulary import VocabularyList, VocabularyItem, VocabularyListItem
+from .vocabulary import VocabularyListCreate, VocabularyItemCreate, VocabularyListItem
 from .exam import Exam, ExamCreate
 from .conversation_session import ConversationSession, SessionAssignment, SessionStatus
 from .conversation_turn import ConversationTurn

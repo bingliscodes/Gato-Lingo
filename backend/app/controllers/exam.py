@@ -9,7 +9,7 @@ from ..services.conversation_engine import ConversationEngine
 from ..database.database import get_db
 from ..models.exam import Exam, ExamCreate, ExamResponse, DashboardExamResponse, StudentAssignmentResponse
 from ..models.conversation_session import ConversationSession, SessionStatus, SessionAssignment, ConversationSessionResponse
-from ..models.vocabulary import VocabularyList, VocabularyItem
+from ..models.vocabulary import VocabularyList, VocabularyItem, VocabularyListResponse
 from ..schemas.responses import SessionScoreResponse
 from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
@@ -178,7 +178,8 @@ def teacher_dashboard(
             "pending": len([s for s in sessions if s.status == SessionStatus.assigned]),
             "in_progress": len([s for s in sessions if s.status == SessionStatus.in_progress]),
             "completed": len([s for s in sessions if s.status == SessionStatus.completed]),
-            "sessions": sessions
+            "sessions": sessions,
+            "vocabulary_list": exam.vocabulary_list
         })
     
     return dashboard_data

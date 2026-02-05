@@ -10,6 +10,22 @@ class SessionStatus(str, Enum):
     in_progress = "in_progress"
     completed = "completed"
 
+class VocabularyItemResponse(SQLModel):
+    id: UUID
+    word: str
+    translation: str
+    part_of_speech: Optional[str] = None
+    example_sentence: Optional[str] = None
+    regional_notes: Optional[str] = None
+
+class VocabularyListResponse(SQLModel):
+    id: UUID
+    title: str
+    description: Optional[str] = None
+    target_language: str
+    teacher_id: Optional[UUID] = None
+    items: List[VocabularyItemResponse] = []
+
 class SessionScoreResponse(SQLModel):
     id: UUID
     vocabulary_usage_score: Decimal 
@@ -41,7 +57,6 @@ class ExamResponse(SQLModel):
     difficulty_level: str
     topic: str
     tenses: Optional[str]
-    vocabulary_list_manual: Optional[str]
     vocabulary_list_id: Optional[UUID]
     cultural_context: Optional[str]
     conversation_prompt: Optional[str]
@@ -56,6 +71,7 @@ class DashboardExamResponse(SQLModel):
     in_progress: int
     completed: int
     sessions: List[ConversationSessionResponse]
+    vocabulary_list: Optional[VocabularyListResponse]
 
 
 class StudentAssignmentResponse(SQLModel):

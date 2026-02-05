@@ -9,6 +9,7 @@ export default function CreatedExams() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  console.log(examData);
   useEffect(() => {
     async function loadDashboard() {
       try {
