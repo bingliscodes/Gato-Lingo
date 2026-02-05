@@ -5,22 +5,30 @@ import csv
 import io
 
 from ..database.database import get_db
-from ..models.vocabulary import VocabularyItem, VocabularyList, VocabularyListItem, VocabularyListCreate
+from ..models.vocabulary import VocabularyItem, VocabularyList, VocabularyListCreate
 from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
 
 router = APIRouter(prefix="/vocabulary-lists", tags=["vocabulary-lists"])
 
 
-@router.get("/", response_model=List[VocabularyList])
+@router.get("/")
 async def get_created_lists(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_roles("teacher")),
 ):
     statement = select(VocabularyList).where(VocabularyList.teacher_id == current_user.id)
     vocab_lists = db.exec(statement).all()
+    res = []
+    for list in vocab_lists:
+        res.append(list + list.items)
     
-    return vocab_lists
+
+    # for list in vocab_lists:
+    #     res.append({"list": [list], "items": list.items})
+    print("vocab_lists:")
+    print(res)
+    return res
 
 
 @router.post("/preview")

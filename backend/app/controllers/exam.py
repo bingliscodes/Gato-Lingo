@@ -53,9 +53,7 @@ def create_exam(
     current_user: User = Depends(require_roles("teacher"))
 ):
     """Teacher creates a new exam template."""
-    
-    print("creating new exam...")
-    print(exam_data)
+
     # Parse the incoming data for prompt generation
     vocabulary_list = db.get(VocabularyList, exam_data.vocabulary_list_id)
     vocab_parsed = parse_vocabulary(vocabulary_list)

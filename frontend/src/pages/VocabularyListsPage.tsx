@@ -1,5 +1,5 @@
-import CreatedVocabularyLists from "@/components/dashboard/teacher-dashboard/CreatedVocabularyLists";
-import VocabularyUpload from "@/components/dashboard/teacher-dashboard/VocabularyUpload";
+import CreatedVocabularyLists from "@/components/dashboard/teacher-dashboard/vocabulary-lists/CreatedVocabularyLists";
+import VocabularyUpload from "@/components/dashboard/teacher-dashboard/vocabulary-lists/VocabularyUpload";
 import { Flex } from "@chakra-ui/react";
 
 export default function VocabularyListsPage() {

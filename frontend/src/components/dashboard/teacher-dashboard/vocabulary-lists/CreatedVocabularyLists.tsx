@@ -6,9 +6,12 @@ export default function CreatedVocabularyLists() {
 
   if (isLoading) return <div>Loading vocabulary lists... </div>;
   if (error) return <div>An error has occurred: {error} </div>;
+  console.log(vocabLists);
   return (
-    <Flex>
-      <Text>Vocabulary Lists</Text>
+    <Flex gap={2} mx={1} flex="1" justify="center">
+      <Text fontWeight="bolder" fontSize="3xl">
+        Vocabulary Lists
+      </Text>
     </Flex>
   );
 }
