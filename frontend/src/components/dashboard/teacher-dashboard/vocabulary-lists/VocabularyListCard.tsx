@@ -1,4 +1,4 @@
-import { Card, Flex, Text, Table } from "@chakra-ui/react";
+import { Card, Text, Table } from "@chakra-ui/react";
 
 import { type VocabularyListResponse } from "@/utils/apiCalls";
 

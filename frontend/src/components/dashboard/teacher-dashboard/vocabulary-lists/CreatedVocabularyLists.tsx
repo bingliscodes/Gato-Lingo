@@ -1,5 +1,5 @@
-import { Flex, Text, Carousel, IconButton } from "@chakra-ui/react";
-import { useState } from "react";
+import { Flex, Text, Carousel, IconButton, Input } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
 import { useVocabularyLists } from "@/hooks/useVocabularyLists";
 import VocabularyListCard from "./VocabularyListCard";
@@ -8,9 +8,19 @@ import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 export default function CreatedVocabularyLists() {
   const { vocabLists, isLoading, error } = useVocabularyLists();
   const [page, setPage] = useState(0);
+
+  const [search, setSearch] = useState("");
+  let vocabularyListsFiltered = [...vocabLists];
+
+  vocabularyListsFiltered = vocabLists.filter(
+    (list) =>
+      list.description?.toLowerCase().includes(search) ||
+      list.title.toLowerCase().includes(search),
+  );
+
   if (isLoading) return <div>Loading vocabulary lists... </div>;
   if (error) return <div>An error has occurred: {error} </div>;
-  console.log(vocabLists);
+
   return (
     <Flex gap={2} mx={1} justify="center">
       <Flex flexDir="column">
@@ -26,7 +36,7 @@ export default function CreatedVocabularyLists() {
           onPageChange={(e) => setPage(e.page)}
         >
           <Carousel.ItemGroup>
-            {vocabLists.map((list, idx) => (
+            {vocabularyListsFiltered?.map((list, idx) => (
               <Carousel.Item key={list.id} index={idx}>
                 <VocabularyListCard vocabularyListData={list} />
               </Carousel.Item>
@@ -48,6 +58,7 @@ export default function CreatedVocabularyLists() {
             </Carousel.NextTrigger>
           </Carousel.Control>
         </Carousel.Root>
+        <Input onChange={(e) => setSearch(e.target.value)} />
       </Flex>
     </Flex>
   );
