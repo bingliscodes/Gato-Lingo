@@ -22,12 +22,7 @@ export default function StudentCard({
       <Text>
         {studentData.first_name} {studentData.last_name}
       </Text>
-      <Button
-        onClick={handleClick}
-        variant="outline"
-        size="sm"
-        borderRadius="lg"
-      >
+      <Button onClick={handleClick} variant="solid" size="sm" borderRadius="lg">
         {assignedStudentIds.includes(studentData.id)
           ? "added"
           : "Add student to list"}

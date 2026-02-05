@@ -50,7 +50,7 @@ export default function AssignToStudentButton({
     <Flex gap={2} py={2}>
       <Dialog.Root>
         <Dialog.Trigger asChild>
-          <Button variant="outline" size="sm">
+          <Button variant="solid" size="sm">
             Assign to students
           </Button>
         </Dialog.Trigger>
@@ -68,13 +68,13 @@ export default function AssignToStudentButton({
             </Dialog.Body>
             <Dialog.Footer>
               <Dialog.ActionTrigger asChild>
-                <Button variant="outline" borderRadius="lg">
+                <Button variant="solid" borderRadius="lg">
                   Cancel
                 </Button>
               </Dialog.ActionTrigger>
               {addedStudents > 0 && (
                 <Button
-                  variant="outline"
+                  variant="solid"
                   borderRadius="lg"
                   onClick={handleExamAssignment}
                 >{`Assign to ${assignedStudentIds.length} student${addedStudents > 1 ? "s" : ""}`}</Button>

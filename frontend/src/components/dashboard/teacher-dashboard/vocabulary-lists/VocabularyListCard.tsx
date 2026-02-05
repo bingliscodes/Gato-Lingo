@@ -10,7 +10,13 @@ export default function VocabularyListCard({
   vocabularyListData,
 }: VocabularyListCardProps) {
   return (
-    <Card.Root>
+    <Card.Root
+      bg="bg"
+      borderWidth="1px"
+      borderColor="border"
+      rounded="xl"
+      shadow="sm"
+    >
       <Card.Header textAlign="center" fontSize="lg" fontWeight="bold">
         {vocabularyListData.title}
       </Card.Header>

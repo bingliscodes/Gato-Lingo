@@ -27,7 +27,7 @@ export default function CreatedExamCard({ examData }: CreatedExamCardProps) {
       <Card.Footer>
         <AssignToStudentButton examId={examData.exam.id} />
         <NavLink to={`scores/${examData.exam.id}`}>
-          <Button variant="outline" size="sm">
+          <Button variant="solid" size="sm">
             Scores
           </Button>
         </NavLink>

@@ -150,7 +150,7 @@ export default function ConversationInterface({
         <Text fontSize="xl" fontWeight="semibold">
           Conversation Practice
         </Text>
-        <Button colorPalette="red" variant="outline" onClick={handleEndSession}>
+        <Button colorPalette="red" variant="solid" onClick={handleEndSession}>
           End Session
         </Button>
       </Box>

@@ -42,7 +42,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         multiple={multiple}
         style={{ display: "none" }} // Hide the actual input
       />
-      <Button variant="outline" type="button" onClick={handleButtonClick}>
+      <Button variant="solid" onClick={handleButtonClick}>
         {label}
       </Button>
     </div>

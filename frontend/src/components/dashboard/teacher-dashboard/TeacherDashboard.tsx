@@ -12,12 +12,12 @@ export default function TeacherDashboard() {
       <CreatedExams />
       <HStack>
         <NavLink to="createExam">
-          <Button variant="outline" size="xl">
+          <Button variant="solid" size="xl">
             Create new exam
           </Button>
         </NavLink>
         <NavLink to="vocabulary">
-          <Button variant="outline" size="xl">
+          <Button variant="solid" size="xl">
             Manage Vocabulary Lists
           </Button>
         </NavLink>
