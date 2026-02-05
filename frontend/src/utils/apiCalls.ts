@@ -192,12 +192,21 @@ export const getExamScores = async(examId: string | undefined): Promise<ExamScor
     }
 }
 
-export interface VocabItem {
+export interface VocabularyItem {
   word: string;
   translation: string;
   part_of_speech: string | null;
   example_sentence: string | null;
   regional_notes: string | null;
+}
+
+export interface VocabularyItemResponse{
+    id: string;
+    word: string;
+    translation: string;
+    part_of_speech: string | null;
+    example_sentence: string | null;
+    regional_notes: string | null;
 }
 
 export interface VocabularyListResponse{
@@ -206,11 +215,11 @@ export interface VocabularyListResponse{
     description: string | null;
     target_language: string | null;
     teacher_id: string | null;
-    items: VocabItem[] | null;
+    items: VocabularyItemResponse[];
 }
 
 export interface VocabularyListPreviewResponse{
-    items: VocabItem[];
+    items: VocabularyItem[];
     total: number;
     errors: string[];
 }
@@ -219,7 +228,7 @@ interface VocabListCreate{
     title: string;
     description: string | null;
     target_language: string | null;
-    items: VocabItem[];
+    items: VocabularyItem[];
 }
 
 export const previewVocabularyList = async(formData: FormData): Promise<VocabularyListPreviewResponse> => {
