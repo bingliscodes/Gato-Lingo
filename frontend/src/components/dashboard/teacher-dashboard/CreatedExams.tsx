@@ -1,6 +1,6 @@
 import { getCreatedExams, type DashboardExamResponse } from "@/utils/apiCalls";
 import { useEffect, useState } from "react";
-import { Text } from "@chakra-ui/react";
+import { Flex, Heading, Text } from "@chakra-ui/react";
 
 import CreatedExamCard from "./CreatedExamCard";
 
@@ -9,7 +9,6 @@ export default function CreatedExams() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  console.log(examData);
   useEffect(() => {
     async function loadDashboard() {
       try {
@@ -30,13 +29,13 @@ export default function CreatedExams() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div>
-      <Text fontWeight="bold" fontSize="2xl">
+    <>
+      <Heading textStyle="heading.xl" mt={2}>
         My Exams
-      </Text>
+      </Heading>
       {examData.map((item) => (
         <CreatedExamCard key={item.exam.id} examData={item} />
       ))}
-    </div>
+    </>
   );
 }

@@ -115,7 +115,76 @@ const config = defineConfig({
         },
       },
     },
+    textStyles: {
+      // Headings
+      "heading.xl": {
+        value: {
+          fontSize: "2.25rem",
+          lineHeight: "2.5rem",
+          fontWeight: "bold",
+          letterSpacing: "-0.025em",
+          color: "fg",
+        },
+      },
+      "heading.lg": {
+        value: {
+          fontSize: "1.5rem",
+          lineHeight: "2rem",
+          fontWeight: "semibold",
+          letterSpacing: "-0.02em",
+          color: "fg",
+        },
+      },
+      "heading.md": {
+        value: {
+          fontSize: "1.125rem",
+          lineHeight: "1.75rem",
+          fontWeight: "semibold",
+          letterSpacing: "-0.01em",
+          color: "fg",
+        },
+      },
+
+      // Body
+      "body.lg": {
+        value: {
+          fontSize: "1.0625rem",
+          lineHeight: "1.75rem",
+          fontWeight: "normal",
+          color: "fg",
+        },
+      },
+      "body.md": {
+        value: {
+          fontSize: "0.9375rem",
+          lineHeight: "1.5rem",
+          fontWeight: "normal",
+          color: "fg",
+        },
+      },
+
+      // Small / supporting text
+      "label.md": {
+        value: {
+          fontSize: "0.8125rem",
+          lineHeight: "1.25rem",
+          fontWeight: "medium",
+          color: "fg.muted",
+        },
+      },
+      "label.sm": {
+        value: {
+          fontSize: "0.6875rem",
+          lineHeight: "1rem",
+          fontWeight: "medium",
+          letterSpacing: "0.025em",
+          textTransform: "uppercase",
+          color: "fg.muted",
+        },
+      },
+    },
   },
+  
 })
 
 export const system = createSystem(defaultConfig, config)
