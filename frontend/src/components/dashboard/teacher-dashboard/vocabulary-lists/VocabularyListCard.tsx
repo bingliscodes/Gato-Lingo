@@ -11,7 +11,7 @@ export default function VocabularyListCard({
 }: VocabularyListCardProps) {
   return (
     <Card.Root>
-      <Card.Header fontSize="lg" fontWeight="bold">
+      <Card.Header textAlign="center" fontSize="lg" fontWeight="bold">
         {vocabularyListData.title}
       </Card.Header>
       <Card.Body>
