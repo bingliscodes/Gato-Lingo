@@ -20,8 +20,8 @@ export default function CreatedVocabularyLists() {
 
         <Carousel.Root
           slideCount={vocabLists.length}
-          maxW="md"
           mx="auto"
+          maxW="2xl"
           page={page}
           onPageChange={(e) => setPage(e.page)}
         >
@@ -48,9 +48,6 @@ export default function CreatedVocabularyLists() {
             </Carousel.NextTrigger>
           </Carousel.Control>
         </Carousel.Root>
-        {/* {vocabLists.map((list) => (
-          <VocabularyListCard key={list.id} vocabularyListData={list} />
-        ))} */}
       </Flex>
     </Flex>
   );
