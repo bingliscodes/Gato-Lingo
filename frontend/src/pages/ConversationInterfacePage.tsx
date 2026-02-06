@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 
 import { type StudentAssignmentResponse, getExamData } from "@/utils/apiCalls";

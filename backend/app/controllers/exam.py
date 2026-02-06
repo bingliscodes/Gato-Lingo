@@ -252,16 +252,4 @@ def get_exam_scores(
         "exam": ExamResponse.model_validate(exam),
         "sessions": results
     }
-
-@router.get("/{exam_id}", response_model=StudentAssignmentResponse)
-
-def get_exam(
-    exam_id: UUID,
-    db: Session = Depends(get_db),
-):
-    exam = db.get(Exam, exam_id)
-    if not exam:
-        raise HTTPException(status_code=404, detail="Exam not found")
-    
-    return exam
     

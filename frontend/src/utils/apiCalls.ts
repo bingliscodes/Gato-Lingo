@@ -266,10 +266,10 @@ export const getCreatedVocabularyLists = async(): Promise<VocabularyListResponse
     }
 }
 
-export const getExamData = async(examId: string | undefined): Promise<StudentAssignmentResponse> => {
+export const getExamData = async(sessionId: string | undefined): Promise<StudentAssignmentResponse> => {
     try{
         const res = await axios.get<StudentAssignmentResponse>(
-            `${import.meta.env.VITE_API_BASE_URL}exams/${examId}`
+            `${import.meta.env.VITE_API_BASE_URL}conversation-sessions/${sessionId}`
         )
 
         return res.data

@@ -33,7 +33,6 @@ export default function AssignedExams() {
   if (isLoading) return <div>Loading assignments...</div>;
   if (error) return <div>Error: {error} </div>;
 
-  console.log(assignmentData);
   return (
     <Flex direction="column">
       <Text fontSize="3xl" fontWeight="bolder">

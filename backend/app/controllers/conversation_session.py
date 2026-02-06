@@ -6,6 +6,7 @@ from uuid import UUID
 
 from ..database.database import get_db
 from ..models.conversation_session import ConversationSession, SessionStatus, ConversationSessionResponse
+from ..schemas.responses import StudentAssignmentResponse
 from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
 
@@ -68,3 +69,15 @@ def get_all_conversation_sessions(db: Session = Depends(get_db)):
     statement = select(ConversationSession)
     conversation_sessions = db.exec(statement).all()
     return conversation_sessions
+
+@router.get("/{session_id}", response_model=StudentAssignmentResponse)
+def get_exam(
+    session_id: UUID,
+    db: Session = Depends(get_db),
+):
+    conversation_session = db.get(ConversationSession, session_id)
+    
+    if not conversation_session:
+        raise HTTPException(status_code=404, detail="Exam not found")
+    
+    return conversation_session
