@@ -6,6 +6,7 @@ import re
 from ..config import settings
 from ..database.database import engine
 from ..services.scoring_engine import ScoringEngine
+from ..controllers.exam import parse_vocabulary
 from ..models.conversation_session import ConversationSession
 from ..models.conversation_turn import ConversationTurn
 from ..models.session_score import SessionScore

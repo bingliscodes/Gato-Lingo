@@ -33,15 +33,13 @@ export default function AssignedExams() {
   if (isLoading) return <div>Loading assignments...</div>;
   if (error) return <div>Error: {error} </div>;
 
-  console.log(assignmentData);
-
   return (
     <Flex direction="column">
       <Text fontSize="3xl" fontWeight="bolder">
         My exams
       </Text>
       {assignmentData.map((item) => (
-        <ExamCard examData={item} />
+        <ExamCard key={item.id} examData={item} />
       ))}
     </Flex>
   );

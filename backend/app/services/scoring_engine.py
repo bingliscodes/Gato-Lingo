@@ -11,6 +11,7 @@ class ScoringEngine:
             target_language: str,
             conversation_turns: list,
             expected_tenses: list[str],
+            vocabulary: list[str],
     ) -> dict:
         # Clean turns
         conversation = ""
@@ -18,6 +19,7 @@ class ScoringEngine:
             dialogue = f"{turn.speaker}: {turn.transcript}"
             conversation += dialogue + "\n"
 
+        vocabulary_section = "\n".join([f"-{item}" for item in vocabulary])
         # 1. Build the prompt
         system = "You are a language learning assessment assistant. Always respond with valid JSON only, no other text."
         user_message = f"""
@@ -27,6 +29,8 @@ class ScoringEngine:
         {conversation}
 
         Expected verb tenses to practice: {expected_tenses}
+
+        Expected vocabulary items to practice: {}
 
         Please evaluate and respond in JSON format:
         {{
