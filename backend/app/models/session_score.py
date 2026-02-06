@@ -17,6 +17,7 @@ class SessionScore(SQLModel, table=True):
     verb_tense_accuracy_score: Decimal = Field(default=0, max_digits=5, decimal_places=2)
     fluency_score: Decimal = Field(default=0, max_digits=5, decimal_places=2)
     overall_score: Decimal = Field(default=0, max_digits=5, decimal_places=2) 
+    vocabulary_feedback: Optional[str]
     vocabulary_used: Optional[str]
     vocabulary_missed: Optional[str]
     grammar_feedback: Optional[str]

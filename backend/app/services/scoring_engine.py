@@ -35,7 +35,7 @@ class ScoringEngine:
 
         Please evaluate and respond in JSON format:
         {{
-            "vocabulary_accuracy_score:": <0.0-1.0>,
+            "vocabulary_usage_score:": <0.0-1.0>,
             "vocabulary_errors": [<list of specific errors>],
             "vocabulary_used": [<list of target vocabulary items successfully used>],
             "vocabulary_missed": [<list of target vocabulary items missed or misused>],
