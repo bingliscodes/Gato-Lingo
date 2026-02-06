@@ -57,11 +57,18 @@ class ConversationHandler:
                     session_id = data.get("id")
                     system_prompt = exam_data.get("conversation_prompt")
 
+                # TODO: fix backend handling of resuming conversations. In meantime it will only work restarting
                     if session_id:
                         with Session(engine) as db:
                             session = db.get(ConversationSession, UUID(session_id))
+                            
+                            if session:
+                                session.status = SessionStatus.in_progress
+                                session.started_at = datetime.now(timezone.utc)
+                                db.add(session)
+                                db.commit()
 
-                            if session and session.status == SessionStatus.in_progress:
+                            elif session and session.status == SessionStatus.in_progress:
                                 statement = select(ConversationTurn).where(ConversationTurn.session_id == session.id).order_by(ConversationTurn.turn_number)
                                 existing_turns = db.exec(statement).all()
 
@@ -87,13 +94,8 @@ class ConversationHandler:
                                             for turn in existing_turns
                                         ]
                                     })
-
                                     return
-                                else:
-                                    session.status = SessionStatus.in_progress
-                                    session.started_at = datetime.now(timezone.utc)
-                                    db.add(session)
-                                    db.commit()
+
 
                     # Generate opening
                     opening = await self.conversation_engine.generate_opening(system_prompt)
