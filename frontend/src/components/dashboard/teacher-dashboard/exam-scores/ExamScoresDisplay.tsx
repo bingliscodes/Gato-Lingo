@@ -29,7 +29,6 @@ export default function ExamScoresDisplay() {
   if (isLoading) return <div>Loading exam scores...</div>;
   if (!examScoreData) return <div>Exam not found</div>;
 
-  console.log(examId);
   return (
     <Flex>
       {examScoreData.sessions.map((session) => (

@@ -18,7 +18,7 @@ class SessionScore(SQLModel, table=True):
     fluency_score: Decimal = Field(default=0, max_digits=5, decimal_places=2)
     overall_score: Decimal = Field(default=0, max_digits=5, decimal_places=2) 
     vocabulary_feedback: Optional[str] = None
-    vocabulary_used: Optional[str]
+    vocabulary_used: Optional[str] 
     vocabulary_missed: Optional[str]
     grammar_feedback: Optional[str]
     created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))

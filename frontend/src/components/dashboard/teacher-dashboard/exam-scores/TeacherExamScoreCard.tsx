@@ -12,7 +12,7 @@ export default function TeacherExamScoreCard({
     <Card.Root my={2} mx={1} px={4} h="20%">
       <VStack>
         <Text fontSize="2xl" fontWeight="bold">
-          {examScoreData.student_name}
+          Student: {examScoreData.student_name}
         </Text>
         <Flex gap={4}>
           <VStack>
@@ -35,11 +35,15 @@ export default function TeacherExamScoreCard({
             <Text>{examScoreData.score?.overall_score * 100}</Text>
           </VStack>
         </Flex>
-        <HStack fontSize="sm">
+        <HStack fontStyle="body.sm">
           <Text fontWeight="bold">Exam Feedback:</Text>
           <Text>{examScoreData.score?.grammar_feedback}</Text>
         </HStack>
-        <HStack fontSize="sm">
+        <HStack fontStyle="body.sm">
+          <Text fontWeight="bold">Vocabulary Used:</Text>
+          <Text>{examScoreData.score?.vocabulary_used}</Text>
+        </HStack>
+        <HStack fontStyle="body.sm">
           <Text fontWeight="bold">Missed vocabulary items:</Text>
           <Text>{examScoreData.score?.vocabulary_missed}</Text>
         </HStack>

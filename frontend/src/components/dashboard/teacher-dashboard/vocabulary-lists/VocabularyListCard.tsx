@@ -4,7 +4,7 @@ import { type VocabularyListResponse } from "@/utils/apiCalls";
 import VocabularyTable from "@/components/common/VocabularyTable";
 
 interface VocabularyListCardProps {
-  vocabularyListData: VocabularyListResponse | null;
+  vocabularyListData: VocabularyListResponse;
 }
 
 export default function VocabularyListCard({
@@ -19,11 +19,11 @@ export default function VocabularyListCard({
       shadow="sm"
     >
       <Card.Header textStyle="heading.lg">
-        {vocabularyListData?.title}
+        {vocabularyListData.title}
       </Card.Header>
       <Card.Body>
         <Text fontWeight="bold">Description:</Text>
-        <Text>{vocabularyListData?.description}</Text>
+        <Text>{vocabularyListData.description}</Text>
         <Text my={2} fontWeight="bold">
           Vocabulary
         </Text>
