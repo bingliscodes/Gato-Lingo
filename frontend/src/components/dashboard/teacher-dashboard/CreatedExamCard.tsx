@@ -1,4 +1,4 @@
-import { Flex, Card, Text, Button } from "@chakra-ui/react";
+import { Card, Text, Button } from "@chakra-ui/react";
 import { NavLink } from "react-router";
 
 import AssignToStudentButton from "./exam-assignment/AssignToStudentButton";

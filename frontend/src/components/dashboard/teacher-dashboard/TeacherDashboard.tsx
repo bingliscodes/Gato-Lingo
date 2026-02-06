@@ -1,15 +1,13 @@
-import { Button, Flex, HStack, Heading } from "@chakra-ui/react";
+import { Button, Flex, Heading } from "@chakra-ui/react";
 import { NavLink } from "react-router";
-
-import CreatedExams from "./CreatedExams";
 
 export default function TeacherDashboard() {
   return (
-    <Flex direction="column" flex="1" mt={2} gap={3} px={1} align="center">
+    <Flex direction="column" align="center" flex="1" mt={2} gap={3} px={1}>
       <Heading textStyle="heading.xl" textAlign="center">
         Welcome to your Dashboard
       </Heading>
-      <HStack>
+      <Flex flexDir="column" gap={2}>
         <NavLink to="exams">
           <Button variant="solid" size="lg">
             Manage Exams
@@ -20,7 +18,7 @@ export default function TeacherDashboard() {
             Manage Vocabulary Lists
           </Button>
         </NavLink>
-      </HStack>
+      </Flex>
     </Flex>
   );
 }
