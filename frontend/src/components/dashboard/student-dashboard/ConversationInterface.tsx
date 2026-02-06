@@ -85,6 +85,18 @@ export default function ConversationInterface({
           ]);
           break;
 
+        case "session_resumed":
+          if (data.turns) {
+            const restoredMessages: Message[] = data.turns.map((turn: any) => ({
+              speaker: turn.speaker as "student" | "tutor",
+              text: turn.transcript,
+              timestamp: new Date(turn.timestamp),
+            }));
+            setMessages(restoredMessages);
+          }
+          console.log(`Session resumed with ${data.turns_loaded} turns`);
+          break;
+
         case "error":
           console.error("Server error:", data.message);
           break;

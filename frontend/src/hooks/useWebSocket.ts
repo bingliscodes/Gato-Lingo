@@ -24,7 +24,7 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
         reconnectAttempts.current = 0;
       };
 
-       ws.onmessage = (event) => {
+    ws.onmessage = (event) => {
       setLastMessage(event)
     }
 

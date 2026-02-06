@@ -22,6 +22,31 @@ export default function ConversationInterfacePage() {
 
   const { sessionId } = useParams();
 
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    // Start/restart conversation when connected
+    if (
+      examData &&
+      connectionStatus === "connected" &&
+      examInProgress &&
+      !hasInitialized
+    ) {
+      sendMessage(
+        JSON.stringify({
+          type: "config",
+          ...examData,
+        }),
+      );
+      setHasInitialized(true);
+    }
+
+    // Reset initialization flag on disconnect
+    if (connectionStatus === "disconnected") {
+      setHasInitialized(false);
+    }
+  }, [examData, connectionStatus, examInProgress, hasInitialized, sendMessage]);
+
   // Prevent accidental reload/leaving page
 
   useEffect(() => {

@@ -60,6 +60,35 @@ class ConversationHandler:
                     if session_id:
                         with Session(engine) as db:
                             session = db.get(ConversationSession, UUID(session_id))
+
+                            if session and session.status == SessionStatus.in_progress:
+                                statement = select(ConversationTurn).where(ConversationTurn.session_id == session.id).order_by(ConversationTurn.turn_number)
+                                existing_turns = db.exec(statement).all()
+
+                                for turn in existing_turns:
+                                    role = "user" if turn.speaker == "student" else "assistant"
+                                    conversation_history.append({
+                                        "role": role,
+                                        "content": turn.transcript
+                                    })
+
+                                turn_number = len(existing_turns)
+
+                                await websocket.send_json({
+                                    "type": "session_resumed",
+                                    "turns_loaded": len(existing_turns),
+                                    "turns": [
+                                        {
+                                            "speaker": turn.speaker,
+                                            "transcript": turn.transcript,
+                                            "timestamp": turn.timestamp.isoformat() if turn.timestamp else None
+                                        }
+                                        for turn in existing_turns
+                                    ]
+                                })
+
+                                return
+                            
                             if session:
                                 session.status = SessionStatus.in_progress
                                 session.started_at = datetime.now(timezone.utc)
