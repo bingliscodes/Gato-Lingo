@@ -1,6 +1,11 @@
 // src/app.tsx
-import { Routes, Route } from "react-router";
-
+import {
+  Routes,
+  Route,
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+} from "react-router";
 import HomePage from "./pages/HomePage";
 import RootLayout from "./pages/RootLayout";
 import LoginPage from "./pages/LoginPage";
@@ -11,26 +16,25 @@ import ExamScorePage from "./pages/ExamScorePage";
 import VocabularyListsPage from "./pages/VocabularyListsPage";
 import ExamsPage from "./pages/ExamsPage";
 
-function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<RootLayout />}>
-        <Route index element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="dashboard" element={<DashboardLayout />}>
-          <Route index element={<DashboardPage />} />
-          <Route path="exams" element={<ExamsPage />} />
-          <Route path="exams/createExam" element={<CreateExamPage />} />
-          <Route path="exams/scores/:examId" element={<ExamScorePage />} />
-          <Route
-            path="exam/session/:sessionId"
-            element={<ConversationInterfacePage />}
-          />
-          <Route path="vocabulary" element={<VocabularyListsPage />} />
-        </Route>
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<RootLayout />}>
+      <Route index element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="dashboard" element={<DashboardLayout />}>
+        <Route index element={<DashboardPage />} />
+        <Route path="exams" element={<ExamsPage />} />
+        <Route path="exams/createExam" element={<CreateExamPage />} />
+        <Route path="exams/scores/:examId" element={<ExamScorePage />} />
+        <Route
+          path="exam/session/:sessionId"
+          element={<ConversationInterfacePage />}
+        />
+        <Route path="vocabulary" element={<VocabularyListsPage />} />
       </Route>
-    </Routes>
-  );
+    </Route>,
+  ),
+);
+export default function App() {
+  return <RouterProvider router={router} />;
 }
-
-export default App;
