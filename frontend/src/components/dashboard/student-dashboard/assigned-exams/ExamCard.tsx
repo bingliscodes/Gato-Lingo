@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { Button, Flex, Text, Card } from "@chakra-ui/react";
 import { NavLink } from "react-router";
+import VocabularyTable from "@/components/common/VocabularyTable";
 
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { type StudentAssignmentResponse } from "@/utils/apiCalls";
@@ -42,8 +43,10 @@ export default function ExamCard({ examData }: ExamCardProps) {
               <Text>Topic: {examData.exam.topic}</Text>
               <Text>Description: {examData.exam.description}</Text>
               <Text>Tenses: {examData.exam.tenses}</Text>
-              {/* //TODO: display vocab for student exam ?*/}
-              {/* <Text>Vocabulary: {examData.exam.vocabulary_list_manual}</Text> */}
+              <Text>Vocabulary: {examData.exam.vocabulary_list_id}</Text>
+              <VocabularyTable
+                vocabularyListData={examData.exam.vocabulary_list}
+              />
               <Text>Status: {examData.status}</Text>
               <Text>Due Date:</Text>
               {/* <NavLink to="/dashboard/exam">
