@@ -49,7 +49,6 @@ class ConversationSessionResponse(SQLModel):
     student_id: Optional[UUID]
     session_score: Optional[SessionScoreResponse]
 
-
 class ExamResponse(SQLModel):
     id: UUID
     title: str

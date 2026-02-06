@@ -254,6 +254,7 @@ def get_exam_scores(
     }
 
 @router.get("/{exam_id}", response_model=StudentAssignmentResponse)
+
 def get_exam(
     exam_id: UUID,
     db: Session = Depends(get_db),

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router";
 
-import { type StudentAssignmentResponse } from "@/utils/apiCalls";
+import { type StudentAssignmentResponse, getExamData } from "@/utils/apiCalls";
 import ConversationInterface from "@/components/dashboard/student-dashboard/ConversationInterface";
 import { useWebSocket } from "@/hooks/useWebSocket";
 
@@ -9,6 +9,7 @@ export default function ConversationInterfacePage() {
   const [examData, setExamData] = useState<StudentAssignmentResponse | null>(
     null,
   );
+  const [examInProgress, setExamInProgress] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,12 +17,12 @@ export default function ConversationInterfacePage() {
     `ws://${import.meta.env.VITE_BACKEND_URL}/ws/conversation`,
   );
 
-  const { examId } = useParams();
+  const { sessionId } = useParams();
 
   useEffect(() => {
     const loadExamDataAsync = async () => {
       try {
-        const data = await getExamData(examId);
+        const data = await getExamData(sessionId);
         setExamData(data);
         setError(null);
       } catch (err) {
@@ -33,20 +34,22 @@ export default function ConversationInterfacePage() {
       }
     };
     loadExamDataAsync();
-  }, []);
+  }, [sessionId]);
 
-  const handleStartConversation = useCallback(
-    (examData: StudentAssignmentResponse) => {
-      sendMessage(
-        JSON.stringify({
-          type: "config",
-          ...examData,
-        }),
-      );
+  // Start conversation once data is loaded and Websocket is connected
+  useEffect(() => {
+    if (examData && connectionStatus === "connected" && !examInProgress) {
+      sendMessage(JSON.stringify({ type: "config", ...examData }));
       setExamInProgress(true);
-    },
-    [sendMessage],
-  );
+    }
+  }, [examData, connectionStatus, examInProgress, sendMessage]);
+
+  if (isLoading) return <div>Loading exam...</div>;
+  if (error) return <div>Error: {error} </div>;
+
+  if (connectionStatus === "connecting") {
+    return <div>Connecting to tutor...</div>;
+  }
   return (
     <ConversationInterface
       examData={examData}

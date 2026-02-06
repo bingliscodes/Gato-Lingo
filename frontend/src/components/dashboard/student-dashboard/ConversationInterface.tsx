@@ -19,7 +19,7 @@ interface Message {
 }
 
 export interface ConversationInterfaceProps {
-  examData: StudentAssignmentResponse;
+  examData: StudentAssignmentResponse | null;
   setExamInProgress: Dispatch<SetStateAction<boolean>>;
   sendMessage: (message: string) => void;
   lastMessage: MessageEvent | null;
@@ -43,7 +43,7 @@ export default function ConversationInterface({
   const nav = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTutorSpeaking, setIsTutorSpeaking] = useState(false);
-  console.log(messages);
+
   const {
     isRecording,
     startRecording,
