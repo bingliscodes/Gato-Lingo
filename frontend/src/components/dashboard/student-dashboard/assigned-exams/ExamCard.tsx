@@ -14,22 +14,7 @@ interface ExamCardProps {
 
 export default function ExamCard({ examData }: ExamCardProps) {
   const [examInProgress, setExamInProgress] = useState(false);
-  const { sendMessage, lastMessage, connectionStatus } = useWebSocket(
-    `ws://${import.meta.env.VITE_BACKEND_URL}/ws/conversation`,
-  );
 
-  const handleStartConversation = useCallback(
-    (examData: StudentAssignmentResponse) => {
-      sendMessage(
-        JSON.stringify({
-          type: "config",
-          ...examData,
-        }),
-      );
-      setExamInProgress(true);
-    },
-    [sendMessage],
-  );
   return (
     <Flex flex="1" w="100vw" px={1}>
       {!examInProgress && (

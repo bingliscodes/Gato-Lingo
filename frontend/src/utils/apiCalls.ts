@@ -265,3 +265,15 @@ export const getCreatedVocabularyLists = async(): Promise<VocabularyListResponse
         throw new Error(getErrorMessage(err));
     }
 }
+
+export const getExamData = async(examId: string): Promise<StudentAssignmentResponse> => {
+    try{
+        const res = await axios.get<StudentAssignmentResponse>(
+            `${import.meta.env.VITE_API_BASE_URL}exams/${examId}`
+        )
+
+        return res.data
+    }catch(err){
+        throw new Error(getErrorMessage(err))
+    }
+}

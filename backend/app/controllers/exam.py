@@ -226,7 +226,6 @@ def get_exam_scores(
         db: Session = Depends(get_db),
         current_user: User = Depends(require_roles("teacher"))
 ):
-    print("here")
     exam = db.get(Exam, exam_id)
     if not exam or exam.created_by_id != current_user.id:
         raise HTTPException(status_code=404, detail="Exam not found")
@@ -253,3 +252,15 @@ def get_exam_scores(
         "exam": ExamResponse.model_validate(exam),
         "sessions": results
     }
+
+@router.get("/{exam_id}", response_model=StudentAssignmentResponse)
+def get_exam(
+    exam_id: UUID,
+    db: Session = Depends(get_db),
+):
+    exam = db.get(Exam, exam_id)
+    if not exam:
+        raise HTTPException(status_code=404, detail="Exam not found")
+    
+    return exam
+    

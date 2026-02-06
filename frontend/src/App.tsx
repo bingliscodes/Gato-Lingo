@@ -22,7 +22,10 @@ function App() {
           <Route path="exams" element={<ExamsPage />} />
           <Route path="exams/createExam" element={<CreateExamPage />} />
           <Route path="exams/scores/:examId" element={<ExamScorePage />} />
-          <Route path="exam" element={<ConversationInterfacePage />} />
+          <Route
+            path="exam/session/:examId"
+            element={<ConversationInterfacePage />}
+          />
           <Route path="vocabulary" element={<VocabularyListsPage />} />
         </Route>
       </Route>
