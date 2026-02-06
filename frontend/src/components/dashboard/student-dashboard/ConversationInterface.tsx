@@ -10,7 +10,6 @@ import { useNavigate } from "react-router";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { MessageList } from "@/components/MessageList";
-import type { StudentAssignmentResponse } from "@/utils/apiCalls";
 
 interface Message {
   speaker: "student" | "tutor";
@@ -19,7 +18,6 @@ interface Message {
 }
 
 export interface ConversationInterfaceProps {
-  examData: StudentAssignmentResponse | null;
   setExamInProgress: Dispatch<SetStateAction<boolean>>;
   sendMessage: (message: string) => void;
   lastMessage: MessageEvent | null;
@@ -34,7 +32,6 @@ const MicrophoneIcon = () => (
 );
 
 export default function ConversationInterface({
-  examData,
   setExamInProgress,
   sendMessage,
   lastMessage,
@@ -150,6 +147,21 @@ export default function ConversationInterface({
         <Text fontSize="xl" fontWeight="semibold">
           Conversation Practice
         </Text>
+        {connectionStatus === "disconnected" && (
+          <Box
+            position="fixed"
+            top={0}
+            left={0}
+            right={0}
+            bg="red.500"
+            color="white"
+            p={2}
+            textAlign="center"
+            zIndex={1000}
+          >
+            Connection lost. Attempting to reconnect...
+          </Box>
+        )}
         <Button colorPalette="red" variant="solid" onClick={handleEndSession}>
           End Session
         </Button>

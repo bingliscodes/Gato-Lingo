@@ -90,7 +90,6 @@ export default function ConversationInterfacePage() {
   }
   return (
     <ConversationInterface
-      examData={examData}
       setExamInProgress={setExamInProgress}
       sendMessage={sendMessage}
       lastMessage={lastMessage}
