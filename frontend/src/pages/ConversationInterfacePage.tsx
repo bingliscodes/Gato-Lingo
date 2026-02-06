@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useBlocker } from "react-router";
+import { useParams } from "react-router";
 
 import { type StudentAssignmentResponse, getExamData } from "@/utils/apiCalls";
 import ConversationInterface from "@/components/dashboard/student-dashboard/ConversationInterface";
@@ -12,7 +12,6 @@ export default function ConversationInterfacePage() {
   const [examInProgress, setExamInProgress] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hasInitialized, setHasInitialized] = useState(false);
 
   const { sendMessage, lastMessage, connectionStatus } = useWebSocket(
     `ws://${import.meta.env.VITE_BACKEND_URL}/ws/conversation`,
@@ -20,10 +19,10 @@ export default function ConversationInterfacePage() {
 
   const { sessionId } = useParams();
 
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      examInProgress && currentLocation.pathname !== nextLocation.pathname,
-  );
+  // const blocker = useBlocker(
+  //   ({ currentLocation, nextLocation }) =>
+  //     examInProgress && currentLocation.pathname !== nextLocation.pathname,
+  // );
 
   // 1. Load exam data on mount
   useEffect(() => {
@@ -79,20 +78,20 @@ export default function ConversationInterfacePage() {
   }, [examInProgress]);
 
   // 5. Handle React Router navigation blocking
-  useEffect(() => {
-    if (blocker.state === "blocked") {
-      const confirmLeave = window.confirm(
-        "You have an exam in progress. Are you sure you want to leave? Your progress may be lost",
-      );
+  // useEffect(() => {
+  //   if (blocker.state === "blocked") {
+  //     const confirmLeave = window.confirm(
+  //       "You have an exam in progress. Are you sure you want to leave? Your progress may be lost",
+  //     );
 
-      if (confirmLeave) {
-        sendMessage(JSON.stringify({ type: "end_session" }));
-        blocker.proceed();
-      } else {
-        blocker.reset();
-      }
-    }
-  }, [blocker, sendMessage]);
+  //     if (confirmLeave) {
+  //       sendMessage(JSON.stringify({ type: "end_session" }));
+  //       blocker.proceed();
+  //     } else {
+  //       blocker.reset();
+  //     }
+  //   }
+  // }, [blocker, sendMessage]);
 
   if (isLoading) return <div>Loading exam...</div>;
   if (error) return <div>Error: {error} </div>;
