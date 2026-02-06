@@ -36,7 +36,7 @@ def generate_session_score(conversation_session_id: str):
             return None
 
         # Get overall score
-        overall_score = (scores_dict["grammar_accuracy_score"] + scores_dict["verb_tense_accuracy_score"] + scores_dict["fluency_score"] + scores_dict["vocabulary_score"]) / 4
+        overall_score = (scores_dict["grammar_accuracy_score"] + scores_dict["verb_tense_accuracy_score"] + scores_dict["fluency_score"] + scores_dict["vocabulary_usage_score"]) / 4
         scores_dict["overall_score"] = overall_score
 
         create_session_score(scores_dict=scores_dict, conversation_session_id=conversation_session_id)
@@ -47,7 +47,6 @@ def create_session_score(scores_dict: dict, conversation_session_id: str) -> Non
         conversation_session = db.get(ConversationSession, UUID(conversation_session_id))
         new_score = SessionScore(
             session_id=conversation_session.id,
-            vocabulary_usage_score=scores_dict["vocabulary_usage_score"],
             grammar_accuracy_score=scores_dict["grammar_accuracy_score"],
             verb_tense_accuracy_score=scores_dict["verb_tense_accuracy_score"],
             fluency_score=scores_dict["fluency_score"],

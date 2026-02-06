@@ -43,7 +43,7 @@ export default function ExamCard({ examData }: ExamCardProps) {
               <Text>Topic: {examData.exam.topic}</Text>
               <Text>Description: {examData.exam.description}</Text>
               <Text>Tenses: {examData.exam.tenses}</Text>
-              <Text>Vocabulary: {examData.exam.vocabulary_list_id}</Text>
+              <Text>Target Vocabulary</Text>
               <VocabularyTable
                 vocabularyListData={examData.exam.vocabulary_list}
               />
