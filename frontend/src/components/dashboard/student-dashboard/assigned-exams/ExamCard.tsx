@@ -15,8 +15,7 @@ interface ExamCardProps {
 export default function ExamCard({ examData }: ExamCardProps) {
   const [examInProgress, setExamInProgress] = useState(false);
   const { sendMessage, lastMessage, connectionStatus } = useWebSocket(
-    //TODO: Make this use an env variable
-    "ws://localhost:8000/ws/conversation",
+    `ws://${import.meta.env.VITE_BACKEND_URL}/ws/conversation`,
   );
 
   const handleStartConversation = useCallback(
@@ -42,13 +41,13 @@ export default function ExamCard({ examData }: ExamCardProps) {
             <Card.Body gap={1}>
               <Text>Topic: {examData.exam.topic}</Text>
               <Text>Description: {examData.exam.description}</Text>
-              <Text>Tenses: {examData.exam.tenses}</Text>
+              <Text>Tenses: {JSON.parse(examData.exam.tenses).join(", ")}</Text>
               <Text>Target Vocabulary</Text>
               <VocabularyTable
                 vocabularyListData={examData.exam.vocabulary_list}
               />
               <Text>Status: {examData.status}</Text>
-              <Text>Due Date:</Text>
+              <Text>Due Date: {examData.due_date}</Text>
               {/* <NavLink to="/dashboard/exam">
         {examData.status != "in_progress" && "Start Exam"}
       </NavLink> */}
