@@ -21,7 +21,6 @@ export default function AssignToStudentButton({
   const [error, setError] = useState<string | null>(null);
 
   // TODO: Fix allowing multiple assignments
-
   const handleExamAssignment = async (): Promise<void> => {
     try {
       const requestData: ExamAssignmentRequest = {
@@ -41,9 +40,6 @@ export default function AssignToStudentButton({
       setIsLoading(false);
     }
   };
-
-  console.log(data); // This contains all the sessions created for each student
-
   const addedStudents = assignedStudentIds.length;
 
   return (

@@ -12,76 +12,20 @@ export default function ConversationInterfacePage() {
   const [examInProgress, setExamInProgress] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      examInProgress && currentLocation.pathname !== nextLocation.pathname,
-  );
+  const [hasInitialized, setHasInitialized] = useState(false);
+
   const { sendMessage, lastMessage, connectionStatus } = useWebSocket(
     `ws://${import.meta.env.VITE_BACKEND_URL}/ws/conversation`,
   );
 
   const { sessionId } = useParams();
 
-  const [hasInitialized, setHasInitialized] = useState(false);
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      examInProgress && currentLocation.pathname !== nextLocation.pathname,
+  );
 
-  useEffect(() => {
-    // Start/restart conversation when connected
-    if (
-      examData &&
-      connectionStatus === "connected" &&
-      examInProgress &&
-      !hasInitialized
-    ) {
-      sendMessage(
-        JSON.stringify({
-          type: "config",
-          ...examData,
-        }),
-      );
-      setHasInitialized(true);
-    }
-
-    // Reset initialization flag on disconnect
-    if (connectionStatus === "disconnected") {
-      setHasInitialized(false);
-    }
-  }, [examData, connectionStatus, examInProgress, hasInitialized, sendMessage]);
-
-  // Prevent accidental reload/leaving page
-
-  useEffect(() => {
-    if (!examInProgress) return;
-
-    // Warn on page refresh or close
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue =
-        "You have an exam in progress. Are you sure you want to leave?";
-      return e.returnValue;
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [examInProgress]);
-
-  useEffect(() => {
-    if (blocker.state === "blocked") {
-      const confirmLeave = window.confirm(
-        "You have an exam in progress. Are you sure you want to leave? Your progress may be lost",
-      );
-
-      if (confirmLeave) {
-        sendMessage(JSON.stringify({ type: "end_session" }));
-        blocker.proceed();
-      } else {
-        blocker.reset();
-      }
-    }
-  }, [blocker, sendMessage]);
-
+  // 1. Load exam data on mount
   useEffect(() => {
     const loadExamDataAsync = async () => {
       try {
@@ -99,7 +43,7 @@ export default function ConversationInterfacePage() {
     loadExamDataAsync();
   }, [sessionId]);
 
-  // Start conversation once data is loaded and Websocket is connected
+  // 2. Start conversation when data loaded AND WebSocket is connected
   useEffect(() => {
     if (examData && connectionStatus === "connected" && !examInProgress) {
       sendMessage(JSON.stringify({ type: "config", ...examData }));
@@ -107,12 +51,55 @@ export default function ConversationInterfacePage() {
     }
   }, [examData, connectionStatus, examInProgress, sendMessage]);
 
+  // 3. Handle reconnection - resend config if d/c then reconnected
+  useEffect(() => {
+    if (examData && connectionStatus === "connected" && examInProgress) {
+      // Already in progress, this is a reconnection
+      console.log("Reconnected, resending config...");
+      sendMessage(JSON.stringify({ type: "config", ...examData }));
+    }
+  }, [connectionStatus]);
+
+  // 4. Warn on page refresh/close
+  useEffect(() => {
+    if (!examInProgress) return;
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue =
+        "You have an exam in progress. Are you sure you want to leave?";
+      return e.returnValue;
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [examInProgress]);
+
+  // 5. Handle React Router navigation blocking
+  useEffect(() => {
+    if (blocker.state === "blocked") {
+      const confirmLeave = window.confirm(
+        "You have an exam in progress. Are you sure you want to leave? Your progress may be lost",
+      );
+
+      if (confirmLeave) {
+        sendMessage(JSON.stringify({ type: "end_session" }));
+        blocker.proceed();
+      } else {
+        blocker.reset();
+      }
+    }
+  }, [blocker, sendMessage]);
+
   if (isLoading) return <div>Loading exam...</div>;
   if (error) return <div>Error: {error} </div>;
-
   if (connectionStatus === "connecting") {
     return <div>Connecting to tutor...</div>;
   }
+
   return (
     <ConversationInterface
       setExamInProgress={setExamInProgress}
