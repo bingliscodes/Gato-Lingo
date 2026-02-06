@@ -30,7 +30,7 @@ export default function ExamScoresDisplay() {
   if (!examScoreData) return <div>Exam not found</div>;
 
   return (
-    <Flex>
+    <Flex flexDir="column" align="center" flex="1" gap={2}>
       {examScoreData.sessions.map((session) => (
         <TeacherExamScoreCard
           key={session.session_id}

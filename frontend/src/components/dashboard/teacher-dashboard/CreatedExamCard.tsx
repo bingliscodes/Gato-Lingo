@@ -15,7 +15,7 @@ export default function CreatedExamCard({ examData }: CreatedExamCardProps) {
       <Card.Body gap={1}>
         <Text>Topic: {examData.exam.topic}</Text>
         <Text>Description: {examData.exam.description}</Text>
-        <Text>Tenses: {examData.exam.tenses}</Text>
+        <Text>Tenses: {JSON.parse(examData.exam.tenses).join(", ")}</Text>
         <Text>Vocabulary List: {examData.exam.vocabulary_list?.title}</Text>
         <Text>
           Status: {examData.completed}/{examData.total_assigned} completed,
