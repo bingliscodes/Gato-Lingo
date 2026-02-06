@@ -44,9 +44,24 @@ export default function ConversationInterfacePage() {
 
   // 2. Start conversation when data loaded AND WebSocket is connected
   useEffect(() => {
+    console.log("Config effect check:", {
+      hasExamData: !!examData,
+      connectionStatus,
+      examInProgress,
+    });
+
     if (examData && connectionStatus === "connected" && !examInProgress) {
-      sendMessage(JSON.stringify({ type: "config", ...examData }));
-      setExamInProgress(true);
+      const timer = setTimeout(() => {
+        const configMessage = JSON.stringify({
+          type: "config",
+          ...examData,
+        });
+        console.log(">>> About to send config:", configMessage);
+        sendMessage(configMessage);
+        console.log(">>> Config sent, setting examInProgress to true");
+        setExamInProgress(true);
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [examData, connectionStatus, examInProgress, sendMessage]);
 
