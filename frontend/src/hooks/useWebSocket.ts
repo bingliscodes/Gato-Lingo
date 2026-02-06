@@ -28,18 +28,27 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
       setLastMessage(event)
     }
 
-    ws.onclose = () => {
-      setConnectionStatus('disconnected')
-    }
+    ws.onclose = (event) => {
+      console.log("WebSocket closed:", event.code, event.reason);
+      setConnectionStatus('disconnected');
+      wsRef.current = null;
+
+      // Attempt reconnect if not clean close
+      if (event.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts){
+        reconnectAttempts.current += 1;
+        console.log(`Reconnecting... attempt ${reconnectAttempts.current}`);
+        setTimeout(connect, reconnectDelay);
+      }
+    };
 
     ws.onerror = (err) => {
       setConnectionStatus('disconnected')
       console.error('WebSocket error:', err)
-    }
+    };
 
     wsRef.current = ws;
     }catch(err){
-      console.error("Failed to create WebSocket:", error);
+      console.error("Failed to create WebSocket:", err);
       setConnectionStatus("disconnected");
     }
   }, [url])
