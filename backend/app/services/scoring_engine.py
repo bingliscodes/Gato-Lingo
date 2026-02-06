@@ -13,13 +13,14 @@ class ScoringEngine:
             expected_tenses: list[str],
             vocabulary: list[str],
     ) -> dict:
-        # Clean turns
+        # Clean Data
         conversation = ""
         for turn in conversation_turns:
             dialogue = f"{turn.speaker}: {turn.transcript}"
             conversation += dialogue + "\n"
 
         vocabulary_section = "\n".join([f"-{item}" for item in vocabulary])
+        
         # 1. Build the prompt
         system = "You are a language learning assessment assistant. Always respond with valid JSON only, no other text."
         user_message = f"""
@@ -30,10 +31,14 @@ class ScoringEngine:
 
         Expected verb tenses to practice: {expected_tenses}
 
-        Expected vocabulary items to practice: {}
+        Expected vocabulary items to practice: {vocabulary_section}
 
         Please evaluate and respond in JSON format:
         {{
+            "vocabulary_accuracy_score:": <0.0-1.0>,
+            "vocabulary_errors": [<list of specific errors>],
+            "vocabulary_used": [<list of target vocabulary items successfully used>],
+            "vocabulary_missed": [<list of target vocabulary items missed or misused>],
             "grammar_accuracy_score": <0.0-1.0>,
             "grammar_errors": [<list of specific errors>],
             "grammar_feedback": "<brief summary of grammar performance>",
