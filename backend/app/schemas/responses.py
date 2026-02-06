@@ -58,6 +58,7 @@ class ExamResponse(SQLModel):
     topic: str
     tenses: Optional[str]
     vocabulary_list_id: Optional[UUID]
+    vocabulary_list: Optional[VocabularyListResponse]
     cultural_context: Optional[str]
     conversation_prompt: Optional[str]
     created_by_id: Optional[UUID]
@@ -71,7 +72,6 @@ class DashboardExamResponse(SQLModel):
     in_progress: int
     completed: int
     sessions: List[ConversationSessionResponse]
-    vocabulary_list: Optional[VocabularyListResponse]
 
 
 class StudentAssignmentResponse(SQLModel):

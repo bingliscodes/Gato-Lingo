@@ -173,13 +173,12 @@ def teacher_dashboard(
         sessions = db.exec(sessions_statement).all()
         
         dashboard_data.append({
-            "exam": exam,
+            "exam": ExamResponse.model_validate(exam) if exam else None,
             "total_assigned": len(sessions),
             "pending": len([s for s in sessions if s.status == SessionStatus.assigned]),
             "in_progress": len([s for s in sessions if s.status == SessionStatus.in_progress]),
             "completed": len([s for s in sessions if s.status == SessionStatus.completed]),
             "sessions": sessions,
-            "vocabulary_list": exam.vocabulary_list
         })
     
     return dashboard_data
@@ -199,22 +198,7 @@ def student_dashboard(
 
         exam_summary = None
         if exam:
-            exam_summary = ExamResponse(
-                id=exam.id,
-                title=exam.title,
-                description=exam.description,
-                vocabulary_list_id=exam.vocabulary_list_id,
-                conversation_prompt=exam.conversation_prompt,
-                topic=exam.topic,
-                target_language=exam.target_language,
-                difficulty_level=exam.difficulty_level,
-                vocabulary_list_manual=exam.vocabulary_list_manual,
-                cultural_context=exam.cultural_context,
-                tenses=exam.tenses,
-                created_by_id=exam.created_by_id,
-                created_at=exam.created_at
-            )
-
+            exam_summary = ExamResponse.model_validate(exam)
 
         session_score = session.session_score
         score_summary = None

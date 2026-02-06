@@ -32,7 +32,7 @@ export default function RightNavContent() {
           </Button>
         </NavLink>
         {!isLoggedIn && (
-          <Button variant="solid" onClick={() => nav("/login")}>
+          <Button variant="solid" size="sm" onClick={() => nav("/login")}>
             Log In / Sign Up
           </Button>
         )}

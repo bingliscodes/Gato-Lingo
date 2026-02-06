@@ -16,7 +16,7 @@ export default function CreatedExamCard({ examData }: CreatedExamCardProps) {
         <Text>Topic: {examData.exam.topic}</Text>
         <Text>Description: {examData.exam.description}</Text>
         <Text>Tenses: {examData.exam.tenses}</Text>
-        <Text>Vocabulary List: {examData.vocabulary_list?.title}</Text>
+        <Text>Vocabulary List: {examData.exam.vocabulary_list?.title}</Text>
         <Text>
           Status: {examData.completed}/{examData.total_assigned} completed,
           {examData.in_progress} in progress, {examData.pending} pending
