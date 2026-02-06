@@ -40,6 +40,7 @@ export default function ConversationInterface({
   const nav = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTutorSpeaking, setIsTutorSpeaking] = useState(false);
+  const [wasResumed, setWasResumed] = useState(false);
 
   const {
     isRecording,
@@ -94,7 +95,10 @@ export default function ConversationInterface({
             }));
             setMessages(restoredMessages);
           }
-          console.log(`Session resumed with ${data.turns_loaded} turns`);
+          setWasResumed(true);
+
+          // Clear notification after 3 seconds
+          setTimeout(() => setWasResumed(false), 3000);
           break;
 
         case "error":
@@ -172,6 +176,22 @@ export default function ConversationInterface({
             zIndex={1000}
           >
             Connection lost. Attempting to reconnect...
+          </Box>
+        )}
+        {wasResumed && (
+          <Box
+            position="fixed"
+            top={4}
+            left="50%"
+            transform="translateX(-50%)"
+            bg="green.500"
+            color="white"
+            px={4}
+            py={2}
+            borderRadius="md"
+            zIndex={1000}
+          >
+            Session resumed - {messages.length} previous messages loaded
           </Box>
         )}
         <Button colorPalette="red" variant="solid" onClick={handleEndSession}>

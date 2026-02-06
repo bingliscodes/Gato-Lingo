@@ -89,7 +89,7 @@ class ConversationHandler:
 
                                 return
                             
-                            if session:
+                            if session and session.status == SessionStatus.assigned:
                                 session.status = SessionStatus.in_progress
                                 session.started_at = datetime.now(timezone.utc)
                                 db.add(session)
