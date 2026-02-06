@@ -32,7 +32,8 @@ class SessionScoreResponse(SQLModel):
     grammar_accuracy_score: Decimal 
     verb_tense_accuracy_score: Decimal
     fluency_score: Decimal
-    overall_score: Decimal 
+    overall_score: Decimal
+    vocabulary_feedback: Optional[str]
     vocabulary_used: Optional[str]
     vocabulary_missed: Optional[str]
     grammar_feedback: Optional[str]

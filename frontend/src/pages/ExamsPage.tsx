@@ -1,7 +1,6 @@
 import CreatedExams from "@/components/dashboard/teacher-dashboard/CreatedExams";
-import { Button } from "@chakra-ui/react";
-import { NavLink } from "react-router";
-import { Flex } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
+import { NavLink, Outlet } from "react-router";
 
 export default function ExamsPage() {
   return (
@@ -12,6 +11,7 @@ export default function ExamsPage() {
           Create new exam
         </Button>
       </NavLink>
+      <Outlet />
     </Flex>
   );
 }
