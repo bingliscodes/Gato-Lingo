@@ -1,6 +1,7 @@
 // src/Theme.ts
 import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react"
 
+
 const config = defineConfig({
   theme: {
     tokens: {
@@ -92,18 +93,21 @@ const config = defineConfig({
       },
     },
     slotRecipes: {
-      card: {
-        slots: ["root", "header", "body", "footer"],
+      card:{
+        className: "card",
+        slots: ["root", "header", "body", "footer", "title"],
         base: {
           root: {
             bg: "bg",
-            borderWidth: "1px",
+            borderWidth: "3px",
             borderColor: "border",
             borderRadius: "xl",
-            boxShadow: "sm",
+            boxShadow: "md",
           },
+         
           header: {
             color: "fg",
+            fontWeight:"semibold",
           },
           body: {
             color: "fg",
@@ -113,6 +117,27 @@ const config = defineConfig({
             borderColor: "border",
           },
         },
+        variants: {
+          variant: { elevated: {
+            root: {
+              boxShadow: "lg",
+              bg: "bg.panel",
+              borderColor: "brand.600",
+              borderWidth: "2px",
+              mb: "2",
+            },
+             header: {
+            textStyle: "heading.lg"
+          },
+
+          },
+          outline: {
+            root: {
+              borderWidth: "2px",
+              boxShadow: "none",
+            }
+          }}
+        }
       },
     },
     textStyles: {
