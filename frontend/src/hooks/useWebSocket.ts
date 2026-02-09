@@ -42,9 +42,10 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
         };
 
         ws.onmessage = (event) => {
+          console.log(">>> useWebSocket onmessage RAW:", event.data);
           if (!isUnmounted.current){
-            console.log(">>> Message received");
             setLastMessage(event);
+            console.log(">>> useWebSocket setLastMessage called");
           };
         };
 

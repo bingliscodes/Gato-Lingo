@@ -1,11 +1,5 @@
 import { Box, Button, Text, VStack } from "@chakra-ui/react";
-import {
-  useState,
-  useEffect,
-  useCallback,
-  type SetStateAction,
-  type Dispatch,
-} from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
@@ -18,10 +12,10 @@ interface Message {
 }
 
 export interface ConversationInterfaceProps {
-  setExamInProgress: Dispatch<SetStateAction<boolean>>;
   sendMessage: (message: string) => void;
   lastMessage: MessageEvent | null;
   connectionStatus: "connecting" | "connected" | "disconnected";
+  onEndSession: () => void;
 }
 
 const MicrophoneIcon = () => (
@@ -32,16 +26,19 @@ const MicrophoneIcon = () => (
 );
 
 export default function ConversationInterface({
-  setExamInProgress,
   sendMessage,
   lastMessage,
   connectionStatus,
+  onEndSession,
 }: ConversationInterfaceProps) {
   const nav = useNavigate();
+
+  // UI State
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTutorSpeaking, setIsTutorSpeaking] = useState(false);
   const [wasResumed, setWasResumed] = useState(false);
 
+  // Audio hooks
   const {
     isRecording,
     startRecording,
@@ -116,27 +113,27 @@ export default function ConversationInterface({
 
   // Send recorded audio when available
   useEffect(() => {
-    if (audioBlob) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = (reader.result as string).split(",")[1];
-        sendMessage(
-          JSON.stringify({
-            type: "audio",
-            audio: base64,
-          }),
-        );
-      };
-      reader.readAsDataURL(audioBlob);
-    }
+    if (!audioBlob) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = (reader.result as string).split(",")[1];
+      sendMessage(
+        JSON.stringify({
+          type: "audio",
+          audio: base64,
+        }),
+      );
+    };
+    reader.readAsDataURL(audioBlob);
   }, [audioBlob, sendMessage]);
 
+  // Handlers
   const handleEndSession = useCallback(() => {
-    sendMessage(JSON.stringify({ type: "end_session" }));
+    onEndSession();
     setMessages([]);
-    setExamInProgress(false);
     nav("/dashboard");
-  }, [sendMessage]);
+  }, [onEndSession, nav]);
 
   const handleMouseDown = useCallback(() => {
     if (!isTutorSpeaking && !isPlaying) {

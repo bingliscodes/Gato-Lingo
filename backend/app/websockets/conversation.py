@@ -46,78 +46,76 @@ class ConversationHandler:
         session_id = None
         turn_number = 0
         
+
         try:
             while True:
                 data = await websocket.receive_json()
                 
                 if data["type"] == "config":
-                    # Initialize conversation with config
                     target_language = data.get("targetLanguage", "spanish")
                     exam_data = data.get("exam")
                     session_id = data.get("id")
                     system_prompt = exam_data.get("conversation_prompt")
 
-                # TODO: fix backend handling of resuming conversations. In meantime it will only work restarting
                     if session_id:
                         with Session(engine) as db:
                             session = db.get(ConversationSession, UUID(session_id))
                             
-                            if session:
+                            if session and session.status == SessionStatus.in_progress:
+                                print(">>> Resuming existing session")
+                                statement = select(ConversationTurn).where(ConversationTurn.session_id == session.id).order_by(ConversationTurn.turn_number)
+                                existing_turns = db.exec(statement).all()
+
+                                for turn in existing_turns:
+                                    role = "user" if turn.speaker == "student" else "assistant"
+                                    conversation_history.append({
+                                        "role": role,
+                                        "content": turn.transcript
+                                    })
+
+                                turn_number = len(existing_turns)
+
+                                await websocket.send_json({
+                                    "type": "session_resumed",
+                                    "turns_loaded": len(existing_turns),
+                                    "turns": [
+                                        {
+                                            "speaker": turn.speaker,
+                                            "transcript": turn.transcript,
+                                            "timestamp": turn.timestamp.isoformat() if turn.timestamp else None
+                                        } 
+                                        for turn in existing_turns
+                                    ]
+                                })
+
+                            elif session and session.status == SessionStatus.assigned:
+                                print(">>> Starting new session")
                                 session.status = SessionStatus.in_progress
                                 session.started_at = datetime.now(timezone.utc)
                                 db.add(session)
                                 db.commit()
 
-                            elif session and session.status == SessionStatus.in_progress:
-                                statement = select(ConversationTurn).where(ConversationTurn.session_id == session.id).order_by(ConversationTurn.turn_number)
-                                existing_turns = db.exec(statement).all()
-
-                                if existing_turns:
-                                    for turn in existing_turns:
-                                        role = "user" if turn.speaker == "student" else "assistant"
-                                        conversation_history.append({
-                                            "role": role,
-                                            "content": turn.transcript
-                                        })
-
-                                    turn_number = len(existing_turns)
-
-                                    await websocket.send_json({
-                                        "type": "session_resumed",
-                                        "turns_loaded": len(existing_turns),
-                                        "turns": [
-                                            {
-                                                "speaker": turn.speaker,
-                                                "transcript": turn.transcript,
-                                                "timestamp": turn.timestamp.isoformat() if turn.timestamp else None
-                                            }
-                                            for turn in existing_turns
-                                        ]
-                                    })
-                                    return
-
-
-                    # Generate opening
-                    opening = await self.conversation_engine.generate_opening(system_prompt)
-                    opening_audio = await self.tts_service.synthesize(opening)
+                                # Generate opening
+                                opening = await self.conversation_engine.generate_opening(system_prompt)
+                                opening_audio = await self.tts_service.synthesize(opening)
                     
-                    if session_id:
-                        turn_number += 1
-                        self._save_turn(
-                            session_id=session_id,
-                            turn_number=turn_number,
-                            speaker="tutor",
-                            transcript=opening,
-                            target_language=target_language
-                        )
+                                if session_id:
+                                    turn_number += 1
+                                    self._save_turn(
+                                        session_id=session_id,
+                                        turn_number=turn_number,
+                                        speaker="tutor",
+                                        transcript=opening,
+                                        target_language=target_language
+                                    )
 
-                    await websocket.send_json({
-                        "type": "tutor_message",
-                        "text": opening,
-                        "audio": base64.b64encode(opening_audio).decode()
-                    })
-                    
-                    conversation_history.append({"role": "assistant", "content": opening})
+                                await websocket.send_json({
+                                    "type": "tutor_message",
+                                    "text": opening,
+                                    "audio": base64.b64encode(opening_audio).decode()
+                                })
+                                
+                                conversation_history.append({"role": "assistant", "content": opening})
                 
                 elif data["type"] == "audio":
                     if not system_prompt:
@@ -130,7 +128,6 @@ class ConversationHandler:
                     # Decode and transcribe
                     audio_bytes = base64.b64decode(data["audio"])
                     transcript = await self.stt_service.transcribe(audio_bytes, target_language)
-
                     if session_id:
                         turn_number += 1
                         self._save_turn(
@@ -140,7 +137,7 @@ class ConversationHandler:
                             transcript=transcript,
                             target_language=target_language
                         )
-                    
+                
                     # Send transcript back
                     await websocket.send_json({
                         "type": "transcript",

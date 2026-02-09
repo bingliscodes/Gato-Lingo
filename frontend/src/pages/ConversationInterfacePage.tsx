@@ -1,3 +1,4 @@
+//ConversationInterfacePage.tsx
 import { useState, useEffect } from "react";
 import { useParams, useBlocker } from "react-router";
 
@@ -6,18 +7,18 @@ import ConversationInterface from "@/components/dashboard/student-dashboard/Conv
 import { useWebSocket } from "@/hooks/useWebSocket";
 
 export default function ConversationInterfacePage() {
+  const { sessionId } = useParams();
   const [examData, setExamData] = useState<StudentAssignmentResponse | null>(
     null,
   );
   const [examInProgress, setExamInProgress] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [configSent, setConfigSent] = useState(false);
 
   const { sendMessage, lastMessage, connectionStatus } = useWebSocket(
     `ws://${import.meta.env.VITE_BACKEND_URL}/ws/conversation`,
   );
-
-  const { sessionId } = useParams();
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
@@ -44,32 +45,18 @@ export default function ConversationInterfacePage() {
 
   // 2. Start conversation when data loaded AND WebSocket is connected
   useEffect(() => {
-    console.log("Config effect check:", {
-      hasExamData: !!examData,
-      connectionStatus,
-      examInProgress,
-    });
-
-    if (examData && connectionStatus === "connected" && !examInProgress) {
-      const timer = setTimeout(() => {
-        const configMessage = JSON.stringify({
-          type: "config",
-          ...examData,
-        });
-        sendMessage(configMessage);
-        console.log(">>> Config sent, setting examInProgress to true");
-        setExamInProgress(true);
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [examData, connectionStatus, examInProgress, sendMessage]);
-
-  // 3. Handle reconnection - resend config if d/c then reconnected
-  useEffect(() => {
-    if (examData && connectionStatus === "connected" && examInProgress) {
-      // Already in progress, this is a reconnection
-      console.log("Reconnected, resending config...");
+    if (examData && connectionStatus === "connected" && !configSent) {
+      console.log(">>> Sending config");
       sendMessage(JSON.stringify({ type: "config", ...examData }));
+      setConfigSent(true);
+      setExamInProgress(true);
+    }
+  }, [examData, connectionStatus, configSent, sendMessage]);
+
+  // Reset on disconnect so config resends on reconnect
+  useEffect(() => {
+    if (connectionStatus === "disconnected") {
+      setConfigSent(false);
     }
   }, [connectionStatus]);
 
