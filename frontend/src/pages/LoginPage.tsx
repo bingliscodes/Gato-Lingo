@@ -84,7 +84,7 @@ export default function LoginForm() {
           p={6}
           borderRadius="1rem"
         >
-          <Text fontSize="3xl" fontWeight="bold" color="text.sidebar">
+          <Text textAlign="center" textStyle="heading.xl">
             Login
           </Text>
           <Field.Root px={4} color="text.sidebar">
@@ -136,7 +136,7 @@ export default function LoginForm() {
             Log In
           </Button>
 
-          <Stack pt={3} color="text.sidebar">
+          <Stack mx={4} pt={3} color="text.sidebar">
             Don't have an account yet? <NavLink to="/signup">Signup</NavLink>
             <NavLink to="/forgotPassword">Forgot password?</NavLink>
           </Stack>

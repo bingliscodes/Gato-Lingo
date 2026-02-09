@@ -1,24 +1,26 @@
-import { Button, Flex, Heading } from "@chakra-ui/react";
+import { Button, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
+import { LuFolder, LuSquareCheck } from "react-icons/lu";
 import { NavLink } from "react-router";
 
 export default function TeacherDashboard() {
   return (
-    <Flex direction="column" align="center" flex="1" mt={2} gap={3} px={1}>
+    <Flex direction="column" align="center" mt={2} flex="1" gap={2}>
       <Heading textStyle="heading.xl" textAlign="center">
         Welcome to your Dashboard
       </Heading>
-      <Flex flexDir="column" gap={2}>
+      <SimpleGrid mt={8} rowGap={3}>
         <NavLink to="exams">
-          <Button variant="solid" size="lg">
-            Manage Exams
+          <Button w="full" fontSize="lg">
+            <LuFolder /> Exams
           </Button>
         </NavLink>
         <NavLink to="vocabulary">
-          <Button variant="solid" size="lg">
-            Manage Vocabulary Lists
+          <Button w="full" fontSize="lg">
+            <LuSquareCheck />
+            Vocabulary
           </Button>
         </NavLink>
-      </Flex>
+      </SimpleGrid>
     </Flex>
   );
 }

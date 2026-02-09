@@ -76,7 +76,7 @@ export default function SignupCard() {
       direction="column"
       py={2}
       align="center"
-      mt="-12rem"
+      mt="-8rem"
       flex="1"
       justify="center"
     >
@@ -91,7 +91,7 @@ export default function SignupCard() {
           p={6}
           borderRadius="1rem"
         >
-          <Text fontSize="xl" fontWeight="bold" color="text.sidebar">
+          <Text textAlign="center" textStyle="heading.xl">
             Create an account to get started!
           </Text>
           <Field.Root px={4} color="text.sidebar">
@@ -198,7 +198,7 @@ export default function SignupCard() {
           >
             Sign Up
           </Button>
-          <Stack pt={3} color="text.sidebar">
+          <Stack mx={4} pt={3} color="text.sidebar">
             Already a user? <NavLink to="/login">Login</NavLink>
           </Stack>
         </Flex>
