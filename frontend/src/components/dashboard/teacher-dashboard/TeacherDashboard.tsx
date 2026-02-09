@@ -4,8 +4,8 @@ import { NavLink } from "react-router";
 
 export default function TeacherDashboard() {
   return (
-    <Flex direction="column" align="center" mt={2} flex="1" gap={2}>
-      <Heading textStyle="heading.xl" textAlign="center">
+    <Flex direction="column" align="center" flex="1" gap={2}>
+      <Heading textStyle="heading.xl" mt={2} textAlign="center">
         Welcome to your Dashboard
       </Heading>
       <SimpleGrid mt={8} rowGap={3}>

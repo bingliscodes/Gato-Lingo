@@ -28,7 +28,7 @@ const config = defineConfig({
       colors: {
         bg: {
           DEFAULT: {
-            value: { _light: "{colors.white}", _dark: "{colors.gray.950}" },
+            value: { _light: "{colors.white}", _dark: "#1A1A1D" },
           },
           subtle: {
             value: { _light: "{colors.brand.50}", _dark: "{colors.brand.900}" },
