@@ -9,6 +9,7 @@ import {
 import HomePage from "./pages/HomePage";
 import RootLayout from "./pages/RootLayout";
 import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 import DashboardPage, { DashboardLayout } from "./pages/DashboardPage";
 import CreateExamPage from "./pages/CreateExamPage";
 import ConversationInterfacePage from "./pages/ConversationInterfacePage";
@@ -22,6 +23,7 @@ const router = createBrowserRouter(
     <Route path="/" element={<RootLayout />}>
       <Route index element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
       <Route path="dashboard" element={<DashboardLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="exams" element={<ExamsPage />} />

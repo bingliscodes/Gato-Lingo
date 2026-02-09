@@ -52,24 +52,31 @@ export const login = async(credentials: LoginCredentials): Promise<AuthResponse>
         return res.data;
 
     } catch(err){
-        // Handle Axios-specific errors
         if (axios.isAxiosError(err)) {
             const axiosError = err as AxiosError<ApiError>;
             const message = axiosError.response?.data?.detail || "Login failed";
             throw new Error(message);
         }
-        
-        // Handle other errors
         if (err instanceof Error) {
             throw new Error(err.message);
         }
-        
-        // Fallback for unknown error types
         throw new Error("An unexpected error occurred");
     }
 };
 
-export const signup = async(signupCredentials: UserCreateRequest)
+export const signup = async(signupCredentials: UserCreateRequest): Promise<AuthResponse> => {
+    try{
+        const res = await axios.post<AuthResponse>(
+            `${import.meta.env.VITE_API_BASE_URL}auth/signup`,
+            signupCredentials,
+            {withCredentials: true}
+        );
+
+        return res.data
+    }catch (err){
+        throw new Error(getErrorMessage(err));
+    }
+}
 
 export const verifyJWT = async (): Promise<User>=> {
   try {
