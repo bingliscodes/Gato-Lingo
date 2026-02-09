@@ -13,7 +13,8 @@ interface Message {
 
 export interface ConversationInterfaceProps {
   sendMessage: (message: string) => void;
-  lastMessage: MessageEvent | null;
+  wsMessages: string[];
+  clearMessages: () => void;
   connectionStatus: "connecting" | "connected" | "disconnected";
   onEndSession: () => void;
 }
@@ -27,7 +28,8 @@ const MicrophoneIcon = () => (
 
 export default function ConversationInterface({
   sendMessage,
-  lastMessage,
+  wsMessages,
+  clearMessages,
   connectionStatus,
   onEndSession,
 }: ConversationInterfaceProps) {
@@ -50,66 +52,72 @@ export default function ConversationInterface({
 
   // Handle incoming WebSocket messages
   useEffect(() => {
-    if (!lastMessage) return;
+    if (wsMessages.length === 0) return;
 
-    try {
-      const data = JSON.parse(lastMessage.data);
+    console.log(`>>> Processing ${wsMessages.length} messages`);
 
-      switch (data.type) {
-        case "tutor_message":
-          setMessages((prev) => [
-            ...prev,
-            {
-              speaker: "tutor",
-              text: data.text,
-              timestamp: new Date(),
-            },
-          ]);
+    wsMessages.forEach((rawData) => {
+      try {
+        const data = JSON.parse(rawData);
+        console.log(">>> Processing message type:", data.type);
 
-          setIsTutorSpeaking(true);
-          playAudio(data.audio).finally(() => {
-            setIsTutorSpeaking(false);
-          });
-          break;
+        switch (data.type) {
+          case "tutor_message":
+            setMessages((prev) => [
+              ...prev,
+              {
+                speaker: "tutor",
+                text: data.text,
+                timestamp: new Date(),
+              },
+            ]);
+            setIsTutorSpeaking(true);
+            playAudio(data.audio).finally(() => setIsTutorSpeaking(false));
+            break;
 
-        case "transcript":
-          setMessages((prev) => [
-            ...prev,
-            {
-              speaker: "student",
-              text: data.text,
-              timestamp: new Date(),
-            },
-          ]);
-          break;
+          case "transcript":
+            console.log(">>> Adding student message:", data.text);
+            setMessages((prev) => [
+              ...prev,
+              {
+                speaker: "student",
+                text: data.text,
+                timestamp: new Date(),
+              },
+            ]);
+            break;
 
-        case "session_resumed":
-          if (data.turns) {
-            const restoredMessages: Message[] = data.turns.map((turn: any) => ({
-              speaker: turn.speaker as "student" | "tutor",
-              text: turn.transcript,
-              timestamp: new Date(turn.timestamp),
-            }));
-            setMessages(restoredMessages);
-          }
-          setWasResumed(true);
+          case "session_resumed":
+            if (data.turns) {
+              const restoredMessages: Message[] = data.turns.map(
+                (turn: any) => ({
+                  speaker: turn.speaker as "student" | "tutor",
+                  text: turn.transcript,
+                  timestamp: new Date(turn.timestamp),
+                }),
+              );
+              setMessages(restoredMessages);
+            }
+            setWasResumed(true);
+            setTimeout(() => setWasResumed(false), 3000);
+            break;
 
-          // Clear notification after 3 seconds
-          setTimeout(() => setWasResumed(false), 3000);
-          break;
+          case "error":
+            console.error("Server error:", data.message);
+            break;
 
-        case "error":
-          console.error("Server error:", data.message);
-          break;
-
-        case "session_ended":
-          console.log("Session ended, turns:", data.turns);
-          break;
+          case "session_ended":
+            console.log("Session ended");
+            break;
+        }
+      } catch (e) {
+        console.error("Failed to parse message:", e);
       }
-    } catch (e) {
-      console.error("Failed to parse message:", e);
-    }
-  }, [lastMessage, playAudio]);
+    });
+
+    // Clear processed messages
+    clearMessages();
+  }, [wsMessages, clearMessages, playAudio]);
 
   // Send recorded audio when available
   useEffect(() => {

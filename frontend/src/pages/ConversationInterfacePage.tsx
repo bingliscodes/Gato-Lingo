@@ -8,52 +8,59 @@ import { useWebSocket } from "@/hooks/useWebSocket";
 
 export default function ConversationInterfacePage() {
   const { sessionId } = useParams();
+
+  // Data loading state
   const [examData, setExamData] = useState<StudentAssignmentResponse | null>(
     null,
   );
-  const [examInProgress, setExamInProgress] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Session State
   const [configSent, setConfigSent] = useState(false);
 
-  const { sendMessage, lastMessage, connectionStatus } = useWebSocket(
-    `ws://${import.meta.env.VITE_BACKEND_URL}/ws/conversation`,
-  );
+  // WebSocket
+  const {
+    sendMessage,
+    messages: wsMessages,
+    clearMessages,
+    connectionStatus,
+  } = useWebSocket(`ws://${import.meta.env.VITE_BACKEND_URL}/ws/conversation`);
+
+  // Navigation blocker
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
-      examInProgress && currentLocation.pathname !== nextLocation.pathname,
+      configSent && currentLocation.pathname !== nextLocation.pathname,
   );
 
   // 1. Load exam data on mount
   useEffect(() => {
-    const loadExamDataAsync = async () => {
+    async function loadExamDataAsync() {
       try {
         const data = await getExamData(sessionId);
         setExamData(data);
-        setError(null);
       } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
+        if (err) {
+          setError(err instanceof Error ? err.message : "Failed to load exam");
         }
       } finally {
         setIsLoading(false);
       }
-    };
+    }
     loadExamDataAsync();
   }, [sessionId]);
 
-  // 2. Start conversation when data loaded AND WebSocket is connected
+  // 2. Send config when ready (or on reconnect)
   useEffect(() => {
     if (examData && connectionStatus === "connected" && !configSent) {
       console.log(">>> Sending config");
       sendMessage(JSON.stringify({ type: "config", ...examData }));
       setConfigSent(true);
-      setExamInProgress(true);
     }
   }, [examData, connectionStatus, configSent, sendMessage]);
 
-  // Reset on disconnect so config resends on reconnect
+  // 3. Reset config flag on disconnect so it resends
   useEffect(() => {
     if (connectionStatus === "disconnected") {
       setConfigSent(false);
@@ -62,7 +69,7 @@ export default function ConversationInterfacePage() {
 
   // 4. Warn on page refresh/close
   useEffect(() => {
-    if (!examInProgress) return;
+    if (!configSent) return;
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
@@ -76,7 +83,7 @@ export default function ConversationInterfacePage() {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [examInProgress]);
+  }, [configSent]);
 
   // 5. Handle React Router navigation blocking
   useEffect(() => {
@@ -94,18 +101,24 @@ export default function ConversationInterfacePage() {
     }
   }, [blocker, sendMessage]);
 
+  // Render loading/error states
+
   if (isLoading) return <div>Loading exam...</div>;
   if (error) return <div>Error: {error} </div>;
   if (connectionStatus === "connecting") {
     return <div>Connecting to tutor...</div>;
   }
+  if (!examData) return <div> No exam data found </div>;
 
   return (
     <ConversationInterface
-      setExamInProgress={setExamInProgress}
       sendMessage={sendMessage}
-      lastMessage={lastMessage}
+      wsMessages={wsMessages}
+      clearMessages={clearMessages}
       connectionStatus={connectionStatus}
+      onEndSession={() => {
+        sendMessage(JSON.stringify({ type: "end_session" }));
+      }}
     />
   );
 }

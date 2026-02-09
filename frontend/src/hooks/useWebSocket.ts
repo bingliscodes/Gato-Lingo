@@ -2,12 +2,13 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 
 interface UseWebSocketReturn {
   sendMessage: (message: string) => void
-  lastMessage: MessageEvent | null
+  messages: string[]
+  clearMessages: () => void
   connectionStatus: 'connecting' | 'connected' | 'disconnected'
 }
 
 export const useWebSocket = (url: string): UseWebSocketReturn => {
-  const [lastMessage, setLastMessage] = useState<MessageEvent | null>(null)
+  const [messages, setMessages] = useState<string[]>([])
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting')
   const wsRef = useRef<WebSocket | null>(null)
   const isUnmounted = useRef(false);
@@ -18,16 +19,15 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
 
   const connect = useCallback(() => {
     if (isUnmounted.current){
-      console.log(">>> Component unmounted, skippping connect");
       return;
     }
 
     if (wsRef.current && 
             (wsRef.current.readyState === WebSocket.CONNECTING || 
              wsRef.current.readyState === WebSocket.OPEN)) {
-            console.log(">>> WebSocket already exists, skipping");
             return;
         }
+
     try {
         const ws = new WebSocket(url);
 
@@ -36,22 +36,18 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
             ws.close();
             return;
           }
-            console.log(">>> WebSocket CONNECTED");
             setConnectionStatus("connected");
             reconnectAttempts.current = 0;
         };
 
         ws.onmessage = (event) => {
-          console.log(">>> useWebSocket onmessage RAW:", event.data);
+          console.log(">>> WS onmessage:", event.data.substring(0, 50));
           if (!isUnmounted.current){
-            setLastMessage(event);
-            console.log(">>> useWebSocket setLastMessage called");
+            setMessages(prev => [...prev, event.data]);
           };
         };
 
         ws.onclose = (event) => {
-            console.log(">>> WebSocket CLOSED:", event.code, event.reason);
-            
             if (isUnmounted.current) return;
 
             setConnectionStatus('disconnected');
@@ -59,7 +55,6 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
 
             if (event.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts) {
                 reconnectAttempts.current += 1;
-                console.log(`>>> Reconnecting... attempt ${reconnectAttempts.current}`);
                 setTimeout(connect, reconnectDelay);
             }
         };
@@ -105,5 +100,9 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
     }
   }, [])
 
-  return { sendMessage, lastMessage, connectionStatus }
+  const clearMessages = useCallback(() => {
+    setMessages([]);
+  }, []);
+  
+  return { sendMessage, messages, clearMessages, connectionStatus }
 }
