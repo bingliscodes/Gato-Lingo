@@ -1,10 +1,18 @@
-import { Collapsible, Button, Flex, Text, Card } from "@chakra-ui/react";
+import {
+  Collapsible,
+  Button,
+  Flex,
+  Text,
+  Card,
+  Separator,
+} from "@chakra-ui/react";
 import { NavLink } from "react-router";
 
 import VocabularyTable from "@/components/common/VocabularyTable";
 import { LuChevronRight } from "react-icons/lu";
 import { type StudentAssignmentResponse } from "@/utils/apiCalls";
 import StudentExamScoreCard from "./StudentExamScoreCard";
+import ExamCardItem from "@/components/common/ExamCardItem";
 
 interface ExamCardProps {
   examData: StudentAssignmentResponse;
@@ -32,15 +40,25 @@ export default function ExamCard({ examData }: ExamCardProps) {
           <Flex direction="column" flex="1">
             <Card.Header>{examData.exam.title}</Card.Header>
             <Card.Body gap={1}>
-              <Text>Topic: {examData.exam.topic}</Text>
-              <Text>Description: {examData.exam.description}</Text>
-              <Text>Tenses: {JSON.parse(examData.exam.tenses).join(", ")}</Text>
-              <Text>Target Vocabulary</Text>
+              <ExamCardItem title="Topic" data={examData.exam.topic} />
+              <ExamCardItem
+                title="Description"
+                data={examData.exam.description}
+              />
+              <ExamCardItem
+                title="Tenses"
+                data={JSON.parse(examData.exam.tenses).join(", ")}
+              />
+              <Separator size="md" />
+              <Text textAlign="center" textStyle="heading.md">
+                Target Vocabulary
+              </Text>
               <VocabularyTable
                 vocabularyListData={examData.exam.vocabulary_list}
               />
-              <Text>Status: {examData.status}</Text>
-              <Text>Due Date: {examData.due_date}</Text>
+              <ExamCardItem title="Status" data={examData.status} />
+              <ExamCardItem title="Due Date" data={examData.due_date} />
+              <Separator size="md" />
               {examData.session_score && (
                 <StudentExamScoreCard examScoreData={examData.session_score} />
               )}

@@ -41,7 +41,12 @@ export default function AssignedExams({ mode }: AssignedExamsProps) {
 
   if (isLoading) return <div>Loading assignments...</div>;
   if (error) return <div>Error: {error} </div>;
-  if (!filteredExams) return <div>No {mode} assignments found</div>;
+  if (!filteredExams)
+    return (
+      <Text mt={2} flex="1" textAlign="center" textStyle="heading.md">
+        No assignments found, check back soon!
+      </Text>
+    );
 
   return (
     <Flex direction="column">
