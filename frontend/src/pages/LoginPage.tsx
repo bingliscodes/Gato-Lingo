@@ -13,13 +13,8 @@ import {
 import { NavLink, useNavigate } from "react-router";
 
 import { toaster } from "@/components/ui/toaster";
-import { login } from "../utils/authentication";
+import { login, type LoginCredentials } from "../utils/authentication";
 import { useUser } from "@/contexts/UserContext";
-
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
 
 interface LoginError {
   message: string;

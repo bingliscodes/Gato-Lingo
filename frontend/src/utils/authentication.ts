@@ -1,9 +1,20 @@
 import axios, { AxiosError } from 'axios'
 import { getErrorMessage } from './helperFunctions';
 
-interface LoginCredentials {
+export interface LoginCredentials {
     email: string;
     password: string;
+}
+
+export interface UserCreateRequest {
+  first_name: string;
+  last_name: string;
+  password: string;
+  password_confirm: string;
+  email: string;
+  role: string;
+  target_language: string | null;
+  native_language: string | null
 }
 
 export interface User {
@@ -57,6 +68,8 @@ export const login = async(credentials: LoginCredentials): Promise<AuthResponse>
         throw new Error("An unexpected error occurred");
     }
 };
+
+export const signup = async(signupCredentials: UserCreateRequest)
 
 export const verifyJWT = async (): Promise<User>=> {
   try {

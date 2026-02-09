@@ -6,16 +6,7 @@ import { NavLink, useNavigate } from "react-router";
 import { toaster } from "@/components/ui/toaster";
 
 import { useUser } from "@/contexts/UserContext";
-import { signup } from "../utils/authentication";
-
-interface UserSignupRequest {
-  first_name: string;
-  last_name: string;
-  password: string;
-  password_confirm: string;
-  email: string;
-  role: string;
-}
+import { signup, type UserCreateRequest } from "../utils/authentication";
 
 interface SignupError {
   message: string;
@@ -29,6 +20,8 @@ export default function SignupCard() {
   const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [targetLanguage, setTargetLanguage] = useState("");
+  const [nativeLanguage, setNativeLanguage] = useState("");
   const [checked, setChecked] = useState(false);
   const { refreshUserData } = useUser();
 
@@ -37,12 +30,14 @@ export default function SignupCard() {
   async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
 
-    const signupData: UserSignupRequest = {
+    const signupData: UserCreateRequest = {
       email,
       password,
       password_confirm: passwordConfirm,
       first_name: firstName,
       last_name: lastName,
+      target_language: targetLanguage,
+      native_language: nativeLanguage,
       role,
     };
     const signupPromise = signup(signupData);
@@ -162,6 +157,28 @@ export default function SignupCard() {
               name="role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
+            />
+            <Field.ErrorText></Field.ErrorText>
+          </Field.Root>
+          <Field.Root px={4} color="text.sidebar">
+            <Field.Label>Target Language</Field.Label>
+            <Input
+              type="text"
+              placeholder="Enter your target language"
+              name="targetLanguage"
+              value={targetLanguage}
+              onChange={(e) => setTargetLanguage(e.target.value)}
+            />
+            <Field.ErrorText></Field.ErrorText>
+          </Field.Root>
+          <Field.Root px={4} color="text.sidebar">
+            <Field.Label>Native Language</Field.Label>
+            <Input
+              type="text"
+              placeholder="Enter your native language"
+              name="nativeLanguage"
+              value={nativeLanguage}
+              onChange={(e) => setNativeLanguage(e.target.value)}
             />
             <Field.ErrorText></Field.ErrorText>
           </Field.Root>
