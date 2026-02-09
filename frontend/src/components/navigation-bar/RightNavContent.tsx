@@ -13,7 +13,7 @@ export default function RightNavContent() {
     try {
       await logout();
       await refreshUserData();
-      nav("/");
+      nav("/login");
     } catch (err) {
       if (err instanceof Error) {
         console.error(err.message);

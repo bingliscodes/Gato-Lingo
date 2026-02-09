@@ -62,7 +62,7 @@ export default function LoginForm() {
       if (err instanceof Error) {
         setLoginError({ message: err.message });
       } else {
-        setLoginError({ message: "An unexpected error occurred" });
+        setLoginError({ message: "An unexpected error occurred during login" });
       }
       console.error(err);
     }
@@ -86,7 +86,6 @@ export default function LoginForm() {
           gap={4}
           py={6}
           w="50%"
-          bgGradient="sidebar"
           p={6}
           borderRadius="1rem"
         >

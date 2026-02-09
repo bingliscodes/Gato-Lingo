@@ -2,24 +2,50 @@
 
 import { useState } from "react";
 import { Field, Input, Stack, Button, Flex, Text } from "@chakra-ui/react";
-import { NavLink } from "react-router";
-import { useContext } from "react";
-
-import { UserContext } from "@/contexts/UserContext";
+import { NavLink, useNavigate } from "react-router";
 import { toaster } from "@/components/ui/toaster";
-import { signup } from "../utils/js/authentication";
+
+import { useUser } from "@/contexts/UserContext";
+import { signup } from "../utils/authentication";
+
+interface UserSignupRequest {
+  first_name: string;
+  last_name: string;
+  password: string;
+  password_confirm: string;
+  email: string;
+  role: string;
+}
+
+interface SignupError {
+  message: string;
+}
 
 export default function SignupCard() {
-  const [signupError, setSignupError] = useState(false);
-  const { refreshUserData } = useContext(UserContext);
+  const [signupError, setSignupError] = useState<SignupError | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [checked, setChecked] = useState(false);
+  const { refreshUserData } = useUser();
 
-  async function handleSubmit(e) {
+  const nav = useNavigate();
+
+  async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
 
-    const formData = new FormData(e.target);
-    const entries = Object.fromEntries(formData.entries());
-
-    const signupPromise = signup(entries);
+    const signupData: UserSignupRequest = {
+      email,
+      password,
+      password_confirm: passwordConfirm,
+      first_name: firstName,
+      last_name: lastName,
+      role,
+    };
+    const signupPromise = signup(signupData);
 
     toaster.promise(signupPromise, {
       loading: {
@@ -30,18 +56,22 @@ export default function SignupCard() {
         title: "Signup Successful!",
         description: "Redirecting to homepage.",
       },
-      error: (err) => ({
-        title: "Signup Failed",
-        description: err.message || "An unexpected error occurred!",
-      }),
+      error: { title: "Error", description: "Login failed." },
     });
 
     try {
       await signupPromise;
-      setSignupError(false);
+      setSignupError(null);
       await refreshUserData();
+      nav("/");
     } catch (err) {
-      setSignupError(err);
+      if (err instanceof Error) {
+        setSignupError({ message: err.message });
+      } else {
+        setSignupError({
+          message: "An unexpected error has occurred during signup.",
+        });
+      }
       console.error(err);
     }
   }
@@ -58,13 +88,13 @@ export default function SignupCard() {
       <Flex as="form" onSubmit={handleSubmit} w="100%" justify="center">
         <Flex
           mt={2}
+          justify="center"
           direction="column"
           gap={4}
           py={6}
           w="50%"
           p={6}
           borderRadius="1rem"
-          bgGradient="sidebar"
         >
           <Text fontSize="xl" fontWeight="bold" color="text.sidebar">
             Create an account to get started!
@@ -72,70 +102,66 @@ export default function SignupCard() {
           <Field.Root px={4} color="text.sidebar">
             <Field.Label>First Name</Field.Label>
             <Input
-              borderColor="borders"
               type="text"
               placeholder="first name"
-              _placeholder={{
-                color: "text.sidebar/60",
-              }}
               name="firstName"
-              _focus={{ borderColor: "bg.primaryBtn" }}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
             />
             <Field.ErrorText></Field.ErrorText>
           </Field.Root>
           <Field.Root px={4} color="text.sidebar">
             <Field.Label>Last Name</Field.Label>
             <Input
-              borderColor="borders"
               type="text"
               placeholder="last name"
-              _placeholder={{
-                color: "text.sidebar/60",
-              }}
               name="lastName"
-              _focus={{ borderColor: "bg.primaryBtn" }}
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
             />
             <Field.ErrorText></Field.ErrorText>
           </Field.Root>
           <Field.Root px={4} color="text.sidebar">
             <Field.Label>Email Address</Field.Label>
             <Input
-              borderColor="borders"
               type="email"
               placeholder="email address"
-              _placeholder={{
-                color: "text.sidebar/60",
-              }}
               name="email"
-              _focus={{ borderColor: "bg.primaryBtn" }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <Field.ErrorText></Field.ErrorText>
           </Field.Root>
           <Field.Root px={4} color="text.sidebar">
             <Field.Label> Password</Field.Label>
             <Input
-              borderColor="borders"
               type="text"
               placeholder="password"
-              _placeholder={{
-                color: "text.sidebar/60",
-              }}
               name="password"
-              _focus={{ borderColor: "bg.primaryBtn" }}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <Field.ErrorText></Field.ErrorText>
           </Field.Root>
           <Field.Root px={4} color="text.sidebar">
             <Field.Label>Confirm Password</Field.Label>
             <Input
-              borderColor="borders"
               type="text"
               placeholder="confirm password"
-              _placeholder={{
-                color: "text.sidebar/60",
-              }}
               name="passwordConfirm"
-              _focus={{ borderColor: "bg.primaryBtn" }}
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+            />
+            <Field.ErrorText></Field.ErrorText>
+          </Field.Root>
+          <Field.Root px={4} color="text.sidebar">
+            <Field.Label>Role</Field.Label>
+            <Input
+              type="text"
+              placeholder="Enter role (student or teacher)"
+              name="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
             />
             <Field.ErrorText></Field.ErrorText>
           </Field.Root>
