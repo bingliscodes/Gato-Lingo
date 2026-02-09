@@ -54,12 +54,9 @@ export default function ConversationInterface({
   useEffect(() => {
     if (wsMessages.length === 0) return;
 
-    console.log(`>>> Processing ${wsMessages.length} messages`);
-
     wsMessages.forEach((rawData) => {
       try {
         const data = JSON.parse(rawData);
-        console.log(">>> Processing message type:", data.type);
 
         switch (data.type) {
           case "tutor_message":
@@ -76,7 +73,6 @@ export default function ConversationInterface({
             break;
 
           case "transcript":
-            console.log(">>> Adding student message:", data.text);
             setMessages((prev) => [
               ...prev,
               {
@@ -166,7 +162,7 @@ export default function ConversationInterface({
         alignItems="center"
       >
         <Text fontSize="xl" fontWeight="semibold">
-          Conversation Practice
+          Exam Session in Progress
         </Text>
         {connectionStatus === "disconnected" && (
           <Box

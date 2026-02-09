@@ -54,7 +54,6 @@ export default function ConversationInterfacePage() {
   // 2. Send config when ready (or on reconnect)
   useEffect(() => {
     if (examData && connectionStatus === "connected" && !configSent) {
-      console.log(">>> Sending config");
       sendMessage(JSON.stringify({ type: "config", ...examData }));
       setConfigSent(true);
     }

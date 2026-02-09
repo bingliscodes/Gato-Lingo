@@ -15,6 +15,7 @@ import ConversationInterfacePage from "./pages/ConversationInterfacePage";
 import ExamScorePage from "./pages/ExamScorePage";
 import VocabularyListsPage from "./pages/VocabularyListsPage";
 import ExamsPage from "./pages/ExamsPage";
+import AssignedExams from "./components/dashboard/student-dashboard/assigned-exams/AssignedExams";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,6 +25,14 @@ const router = createBrowserRouter(
       <Route path="dashboard" element={<DashboardLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="exams" element={<ExamsPage />} />
+        <Route
+          path="exams/assigned"
+          element={<AssignedExams mode={"assigned"} />}
+        />
+        <Route
+          path="exams/completed"
+          element={<AssignedExams mode={"completed"} />}
+        />
         <Route path="exams/createExam" element={<CreateExamPage />} />
         <Route path="exams/scores/:examId" element={<ExamScorePage />} />
         <Route

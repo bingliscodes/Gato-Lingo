@@ -7,7 +7,11 @@ import {
   type StudentAssignmentResponse,
 } from "@/utils/apiCalls";
 
-export default function AssignedExams() {
+interface AssignedExamsProps {
+  mode: string;
+}
+
+export default function AssignedExams({ mode }: AssignedExamsProps) {
   const [assignmentData, setAssignmentData] = useState<
     StudentAssignmentResponse[]
   >([]);
@@ -30,15 +34,21 @@ export default function AssignedExams() {
     loadAssignments();
   }, []);
 
+  let filteredExams;
+
+  if (mode === "completed")
+    filteredExams = assignmentData.filter((exam) => exam.status === mode);
+
   if (isLoading) return <div>Loading assignments...</div>;
   if (error) return <div>Error: {error} </div>;
+  if (!filteredExams) return <div>No {mode} assignments found</div>;
 
   return (
     <Flex direction="column">
       <Text fontSize="3xl" fontWeight="bolder">
         My exams
       </Text>
-      {assignmentData.map((item) => (
+      {filteredExams?.map((item) => (
         <ExamCard key={item.id} examData={item} />
       ))}
     </Flex>
