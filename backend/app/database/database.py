@@ -5,7 +5,7 @@ from ..config import settings
 if settings.environment_mode == "development":
     db_url = f"postgresql://{settings.postgres_user}:{settings.postgres_password}@localhost:5432/{settings.db_name}"
 if settings.environment_mode == "production":
-    db_url = f"postgresql://{settings.pguser}:{settings.pgpassword}@{settings.pghost}/{settings.pgdatabase}"
+    db_url = f"postgresql://{settings.pguser}:{settings.pgpassword}@{settings.pghost}/{settings.pgdatabase}?sslmode={settings.pgsslmode}"
 
 # 2. Update backend url variable in netlify once deployed
 # 3. Update CORS settings
