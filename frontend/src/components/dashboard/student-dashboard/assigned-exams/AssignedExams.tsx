@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Flex, Text, Spinner } from "@chakra-ui/react";
+import { Flex, Text, Spinner, Separator } from "@chakra-ui/react";
 
 import ExamCard from "./ExamCard";
 import {
@@ -54,10 +54,16 @@ export default function AssignedExams({ mode }: AssignedExamsProps) {
     );
 
   return (
-    <Flex direction="column">
-      <Text ml={2} fontSize="3xl" fontWeight="bolder">
-        My exams
+    <Flex
+      direction="column"
+      bg="bg.subtle"
+      border="solid {colors.accent} 3px"
+      borderRadius="xl"
+    >
+      <Text mx={2} textAlign="center" ml={2} fontSize="3xl" fontWeight="bolder">
+        {`${mode === "completed" ? "Completed" : "Assigned"} Exams`}
       </Text>
+      <Separator size="md" />
       {filteredExams?.map((item) => (
         <ExamCard key={item.id} examData={item} />
       ))}

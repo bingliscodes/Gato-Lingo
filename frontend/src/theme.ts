@@ -120,7 +120,7 @@ const config = defineConfig({
         variants: {
           variant: { elevated: {
             root: {
-              boxShadow: "lg",
+              boxShadow: "none",
               bg: "bg.panel",
               borderColor: "brand.600",
               borderWidth: "2px",
