@@ -20,12 +20,13 @@ interface ExamCardProps {
 
 export default function ExamCard({ examData }: ExamCardProps) {
   return (
-    <Collapsible.Root>
+    <Collapsible.Root ml={2}>
       <Collapsible.Trigger
         paddingY="3"
         display="flex"
         gap="2"
         alignItems="center"
+        textStyle="body.lg"
       >
         <Collapsible.Indicator
           transition="transform 0.2s"

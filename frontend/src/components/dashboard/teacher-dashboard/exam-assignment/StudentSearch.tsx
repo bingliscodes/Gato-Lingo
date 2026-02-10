@@ -1,4 +1,4 @@
-import { Input, Flex, Box } from "@chakra-ui/react";
+import { Input, Flex, Box, Spinner } from "@chakra-ui/react";
 import { useRef, useState, useEffect } from "react";
 import { debounce } from "lodash";
 
@@ -73,7 +73,12 @@ export default function StudentSearch({
     }
   }, [menuIsOpen]);
 
-  if (isLoading) return <div>Loading students...</div>;
+  if (isLoading)
+    return (
+      <Flex align="center" justify="center" flex="1">
+        <Spinner size="md" />
+      </Flex>
+    );
   if (error) return <div> Error: {error}</div>;
   return (
     <Flex direction="column">

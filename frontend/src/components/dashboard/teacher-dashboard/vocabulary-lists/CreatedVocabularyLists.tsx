@@ -1,5 +1,12 @@
-import { Flex, Text, Carousel, IconButton, Input } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import {
+  Flex,
+  Text,
+  Carousel,
+  IconButton,
+  Input,
+  Spinner,
+} from "@chakra-ui/react";
+import { useState } from "react";
 
 import { useVocabularyLists } from "@/hooks/useVocabularyLists";
 import VocabularyListCard from "./VocabularyListCard";
@@ -18,7 +25,13 @@ export default function CreatedVocabularyLists() {
       list.title.toLowerCase().includes(search),
   );
 
-  if (isLoading) return <div>Loading vocabulary lists... </div>;
+  if (isLoading)
+    return (
+      <Flex align="center" justify="center" flex="1">
+        <Spinner size="md" />
+        Loading vocabulary lists...
+      </Flex>
+    );
   if (error) return <div>An error has occurred: {error} </div>;
 
   return (

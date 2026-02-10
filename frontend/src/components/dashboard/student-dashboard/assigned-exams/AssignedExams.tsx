@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Flex, Text } from "@chakra-ui/react";
+import { Flex, Text, Spinner } from "@chakra-ui/react";
 
 import ExamCard from "./ExamCard";
 import {
@@ -39,7 +39,12 @@ export default function AssignedExams({ mode }: AssignedExamsProps) {
   if (mode === "completed")
     filteredExams = assignmentData.filter((exam) => exam.status === mode);
 
-  if (isLoading) return <div>Loading assignments...</div>;
+  if (isLoading)
+    return (
+      <Flex align="center" justify="center" flex="1">
+        <Spinner size="md" />
+      </Flex>
+    );
   if (error) return <div>Error: {error} </div>;
   if (!filteredExams)
     return (
@@ -50,7 +55,7 @@ export default function AssignedExams({ mode }: AssignedExamsProps) {
 
   return (
     <Flex direction="column">
-      <Text fontSize="3xl" fontWeight="bolder">
+      <Text ml={2} fontSize="3xl" fontWeight="bolder">
         My exams
       </Text>
       {filteredExams?.map((item) => (

@@ -1,6 +1,6 @@
 import { getCreatedExams, type DashboardExamResponse } from "@/utils/apiCalls";
 import { useEffect, useState } from "react";
-import { Flex, Heading, Text } from "@chakra-ui/react";
+import { Flex, Heading, Spinner } from "@chakra-ui/react";
 
 import CreatedExamCard from "./CreatedExamCard";
 
@@ -25,7 +25,12 @@ export default function CreatedExams() {
     loadDashboard();
   }, []);
 
-  if (isLoading) return <div>Loading exams...</div>;
+  if (isLoading)
+    return (
+      <Flex align="center" justify="center" flex="1">
+        <Spinner size="md" />
+      </Flex>
+    );
   if (error) return <div>Error: {error}</div>;
 
   return (

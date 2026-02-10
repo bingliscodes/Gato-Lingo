@@ -43,7 +43,7 @@ export default function LoginForm() {
       },
       success: {
         title: "Login Successful!",
-        description: "Redirecting to homepage.",
+        description: "Redirecting to your dashboard.",
       },
       error: { title: "Error", description: "Login failed." },
     });
@@ -52,7 +52,7 @@ export default function LoginForm() {
       await loginPromise;
       setLoginError(null);
       await refreshUserData();
-      nav("/");
+      nav("/dashboard");
     } catch (err) {
       if (err instanceof Error) {
         setLoginError({ message: err.message });

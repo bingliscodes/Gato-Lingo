@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
-import { Flex } from "@chakra-ui/react";
+import { Flex, Spinner } from "@chakra-ui/react";
 
 import { type ExamScoresResponse, getExamScores } from "@/utils/apiCalls";
 import TeacherExamScoreCard from "./TeacherExamScoreCard";
@@ -26,7 +26,12 @@ export default function ExamScoresDisplay() {
     getExamScoresAsync();
   }, [examId]);
 
-  if (isLoading) return <div>Loading exam scores...</div>;
+  if (isLoading)
+    return (
+      <Flex align="center" justify="center" flex="1">
+        <Spinner size="md" />
+      </Flex>
+    );
   if (!examScoreData) return <div>Exam not found</div>;
 
   return (
