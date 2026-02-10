@@ -7,7 +7,6 @@ import {
   Button,
   Box,
   NativeSelect,
-  Textarea,
   Heading,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router";
@@ -79,7 +78,7 @@ export default function CreateExam() {
       await examCreatePromise;
       setError(null);
       await refreshUserData();
-      nav("/");
+      nav("../");
     } catch (err) {
       if (err instanceof Error) {
         setError({ message: err.message });
@@ -177,6 +176,7 @@ export default function CreateExam() {
           <Field.Label>Vocabulary List</Field.Label>
           <NativeSelect.Root>
             <NativeSelect.Field
+              placeholder="Select a vocabulary list"
               value={vocabularyListId}
               onChange={(e) => setVocabularyListId(e.target.value)}
             >

@@ -60,10 +60,10 @@ export default function AssignedExams({ mode }: AssignedExamsProps) {
       border="solid {colors.accent} 3px"
       borderRadius="xl"
     >
-      <Text mx={2} textAlign="center" ml={2} fontSize="3xl" fontWeight="bolder">
+      <Text mx={2} py={2} textAlign="center" ml={2} textStyle="heading.xl">
         {`${mode === "completed" ? "Completed" : "Assigned"} Exams`}
       </Text>
-      <Separator size="md" />
+      <Separator size="lg" borderColor="fg.muted" />
       {filteredExams?.map((item) => (
         <ExamCard key={item.id} examData={item} />
       ))}
