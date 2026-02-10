@@ -7,6 +7,7 @@ import {
   type ConversationSession,
   assignExamToStudents,
 } from "@/utils/apiCalls";
+import { toaster } from "@/components/ui/toaster";
 
 export interface AssignToStudentButtonProps {
   examId: string;
@@ -23,15 +24,33 @@ export default function AssignToStudentButton({
 
   // TODO: Fix allowing multiple assignments
   const handleExamAssignment = async (): Promise<void> => {
+    const requestData: ExamAssignmentRequest = {
+      student_ids: assignedStudentIds,
+      exam_id: examId,
+      due_date: null,
+    };
+    const assignmentPromise = assignExamToStudents(requestData);
+
+    toaster.promise(assignmentPromise, {
+      loading: {
+        title: "Assigning exam to students...",
+      },
+      success: {
+        title: "Successfully assigned exam to students",
+        description: "Redirecting to exams page.",
+      },
+      error: {
+        title: "Error",
+        description:
+          "An unknown error occurred while assigning student(s). Please try again later.",
+      },
+    });
+
     try {
-      const requestData: ExamAssignmentRequest = {
-        student_ids: assignedStudentIds,
-        exam_id: examId,
-        due_date: null,
-      };
-      const res = await assignExamToStudents(requestData);
-      setData(res);
+      await assignmentPromise;
+      setError(null);
       setIsOpen(false);
+      setAssignedStudentIds([]);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
