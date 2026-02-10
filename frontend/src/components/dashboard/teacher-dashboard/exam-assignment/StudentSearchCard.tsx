@@ -13,8 +13,19 @@ export default function StudentCard({
   setAssignedStudentIds,
 }: StudentCardProps) {
   const handleClick = () => {
-    setAssignedStudentIds([...assignedStudentIds, studentData.id]);
-    console.log(`adding student with id of ${studentData.id} to assignment`);
+    if (!assignedStudentIds.includes(studentData.id)) {
+      setAssignedStudentIds([...assignedStudentIds, studentData.id]);
+      console.log(`adding student with id of ${studentData.id} to assignment`);
+    } else {
+      setAssignedStudentIds((prevIds) =>
+        prevIds.filter((id) => {
+          id !== studentData.id;
+        }),
+      );
+      console.log(
+        `removing student with id of ${studentData.id} from assignment`,
+      );
+    }
   };
 
   return (
@@ -22,7 +33,7 @@ export default function StudentCard({
       <Text>
         {studentData.first_name} {studentData.last_name}
       </Text>
-      <Button onClick={handleClick} variant="solid" size="sm" borderRadius="lg">
+      <Button onClick={handleClick} size="xs">
         {assignedStudentIds.includes(studentData.id)
           ? "added"
           : "Add student to list"}
@@ -30,3 +41,5 @@ export default function StudentCard({
     </Flex>
   );
 }
+
+// TODO: Add indicator of successful assignment
