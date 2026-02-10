@@ -19,6 +19,7 @@ export default function AssignToStudentButton({
   const [data, setData] = useState<ConversationSession[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   // TODO: Fix allowing multiple assignments
   const handleExamAssignment = async (): Promise<void> => {
@@ -30,11 +31,14 @@ export default function AssignToStudentButton({
       };
       const res = await assignExamToStudents(requestData);
       setData(res);
+      setIsOpen(false);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("An unknown error occurred");
+        setError(
+          "An unknown error occurred while assigning student(s). Please try again later.",
+        );
       }
     } finally {
       setIsLoading(false);
@@ -44,12 +48,10 @@ export default function AssignToStudentButton({
 
   return (
     <Flex gap={2} py={2}>
-      <Dialog.Root>
-        <Dialog.Trigger asChild>
-          <Button variant="outline" size="sm">
-            Assign to students
-          </Button>
-        </Dialog.Trigger>
+      <Dialog.Root open={isOpen}>
+        <Button variant="outline" size="sm" onClick={() => setIsOpen(true)}>
+          Assign to students
+        </Button>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
@@ -60,14 +62,17 @@ export default function AssignToStudentButton({
               <StudentSearch
                 assignedStudentIds={assignedStudentIds}
                 setAssignedStudentIds={setAssignedStudentIds}
+                setDialogIsOpen={setIsOpen}
               />
             </Dialog.Body>
             <Dialog.Footer>
-              <Dialog.ActionTrigger asChild>
-                <Button variant="solid" borderRadius="lg">
-                  Cancel
-                </Button>
-              </Dialog.ActionTrigger>
+              <Button
+                variant="solid"
+                borderRadius="lg"
+                onClick={() => setIsOpen(false)}
+              >
+                Cancel
+              </Button>
               {addedStudents > 0 && (
                 <Button
                   variant="solid"

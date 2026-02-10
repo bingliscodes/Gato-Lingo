@@ -1,10 +1,11 @@
 import { Flex, Text, Button } from "@chakra-ui/react";
 import type { StudentResponse } from "@/utils/apiCalls";
+import type { Dispatch, SetStateAction } from "react";
 
 export interface StudentCardProps {
   studentData: StudentResponse;
   assignedStudentIds: string[];
-  setAssignedStudentIds: React.Dispatch<React.SetStateAction<string[]>>;
+  setAssignedStudentIds: Dispatch<SetStateAction<string[]>>;
 }
 
 export default function StudentCard({
@@ -41,5 +42,3 @@ export default function StudentCard({
     </Flex>
   );
 }
-
-// TODO: Add indicator of successful assignment

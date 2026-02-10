@@ -1,5 +1,11 @@
 import { Input, Flex, Box, Spinner } from "@chakra-ui/react";
-import { useRef, useState, useEffect } from "react";
+import {
+  useRef,
+  useState,
+  useEffect,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { debounce } from "lodash";
 
 import { getStudents, type StudentResponse } from "@/utils/apiCalls";
@@ -8,11 +14,13 @@ import StudentCard from "./StudentSearchCard";
 export interface StudentSearchProps {
   assignedStudentIds: string[];
   setAssignedStudentIds: React.Dispatch<React.SetStateAction<string[]>>;
+  setDialogIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function StudentSearch({
   assignedStudentIds,
   setAssignedStudentIds,
+  setDialogIsOpen,
 }: StudentSearchProps) {
   const [inputValue, setInputValue] = useState("");
   const [searchResults, setSearchResults] = useState<StudentResponse[]>([]);
@@ -122,6 +130,7 @@ export default function StudentSearch({
                 studentData={usr}
                 assignedStudentIds={assignedStudentIds}
                 setAssignedStudentIds={setAssignedStudentIds}
+                setDialogIsOpen={setDialogIsOpen}
               />
             </Box>
           ))}
