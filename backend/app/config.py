@@ -8,11 +8,14 @@ class Settings(BaseSettings):
     
     postgres_user: str = "postgres"
     postgres_password: str = "postgres"
+    db_name: str = ""
+    
     pguser: str = ""
     pgpassword: str = ""
     pghost: str = ""
     pgdatabase: str = ""
-    db_name: str = ""
+    pgsslmode: str = "require"
+    pgchannelbinding: str = "require"
 
     environment_mode: str = "development"
 
