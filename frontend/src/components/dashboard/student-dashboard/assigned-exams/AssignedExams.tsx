@@ -36,8 +36,7 @@ export default function AssignedExams({ mode }: AssignedExamsProps) {
 
   let filteredExams;
 
-  if (mode === "completed")
-    filteredExams = assignmentData.filter((exam) => exam.status === mode);
+  filteredExams = assignmentData.filter((exam) => exam.status === mode);
 
   if (isLoading)
     return (
@@ -59,8 +58,9 @@ export default function AssignedExams({ mode }: AssignedExamsProps) {
       bg="bg.subtle"
       border="solid {colors.accent} 3px"
       borderRadius="xl"
+      w="50%"
     >
-      <Text mx={2} py={2} textAlign="center" ml={2} textStyle="heading.xl">
+      <Text mx={2} py={2} textAlign="center" textStyle="heading.xl">
         {`${mode === "completed" ? "Completed" : "Assigned"} Exams`}
       </Text>
       <Separator size="lg" borderColor="fg.muted" />

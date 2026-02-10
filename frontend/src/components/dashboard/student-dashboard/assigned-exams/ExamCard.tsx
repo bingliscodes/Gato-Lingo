@@ -64,7 +64,7 @@ export default function ExamCard({ examData }: ExamCardProps) {
                 <StudentExamScoreCard examScoreData={examData.session_score} />
               )}
               {!examData.session_score && (
-                <NavLink to={`dashboard/exam/session/${examData.id}`}>
+                <NavLink to={`session/${examData.id}`}>
                   <Button>Start exam</Button>
                 </NavLink>
               )}

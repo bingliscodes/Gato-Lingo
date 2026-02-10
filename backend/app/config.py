@@ -8,7 +8,13 @@ class Settings(BaseSettings):
     
     postgres_user: str = "postgres"
     postgres_password: str = "postgres"
+    pguser: str = ""
+    pgpassword: str = ""
+    pghost: str = ""
+    pgdatabase: str = ""
     db_name: str = ""
+
+    environment_mode: str = "development"
 
     jwt_secret: str = "your-super-secret-key-change-in-production"
     jwt_algorithm: str = "HS256"
