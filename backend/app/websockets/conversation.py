@@ -1,6 +1,7 @@
 from fastapi import WebSocket, WebSocketDisconnect
 from sqlmodel import Session, select
 from datetime import datetime, timezone
+import time
 from uuid import UUID
 import json
 import base64
@@ -125,24 +126,24 @@ class ConversationHandler:
                         })
                         continue
                     
-                    receive_time = datetime.now()
+                    receive_time = time.perf_counter()
                     print("Audio received at ", receive_time)
                     
                     # Decode
-                    decode_start = datetime.now()
+                    decode_start = time.perf_counter()
                     print("Decoding audio...") 
                     audio_bytes = base64.b64decode(data["audio"])
-                    decode_end = datetime.now()
-                    print(f"Audio decoding completed. Time elapsed: {(decode_end - decode_start).total_seconds()}seconds")
+                    decode_end = time.perf_counter()
+                    print(f"Audio decoding completed. Time elapsed: {(decode_end - decode_start):.2f}seconds")
                     
                     # Transcribe
                     ##### Bottleneck step
-                    transcribe_start = datetime.now()
+                    transcribe_start = time.perf_counter()
                     transcript = await self.stt_service.transcribe(audio_bytes, target_language)
-                    transcribe_end = datetime.now()
-                    print(f"Audio transcription completed. Time elapsed: {(transcribe_end - transcribe_start).total_seconds()}seconds")
+                    transcribe_end = time.perf_counter()
+                    print(f"Audio transcription completed. Time elapsed: {(transcribe_end - transcribe_start):.2f}seconds")
                     
-                    save_turn_start = datetime.now()
+                    save_turn_start = time.perf_counter()
                     print("Saving turn...")
                     if session_id:
                         turn_number += 1
@@ -154,30 +155,30 @@ class ConversationHandler:
                             target_language=target_language
                         )
 
-                    save_turn_end = datetime.now()
-                    print(f"Save turn completed. Time elapsed: {(save_turn_end - save_turn_start).total_seconds()}seconds")
+                    save_turn_end = time.perf_counter()
+                    print(f"Save turn completed. Time elapsed: {(save_turn_end - save_turn_start):.2f}seconds")
                     
-                    transcript_send_start = datetime.now()
+                    transcript_send_start = time.perf_counter()
                     print("Sending transcript back...")
                     # Send transcript back
                     await websocket.send_json({
                         "type": "transcript",
                         "text": transcript
                     })
-                    transcript_send_end = datetime.now()
-                    print(f"Send transcript back. Time elapsed: {(transcript_send_end - transcript_send_start).total_seconds()}seconds")
+                    transcript_send_end = time.perf_counter()
+                    print(f"Send transcript back. Time elapsed: {(transcript_send_end - transcript_send_start):.2f}seconds")
                     
                     # Generate response
                     ##### Bottleneck step
-                    response_gen_start = datetime.now()
+                    response_gen_start = time.perf_counter()
                     print("Generating response...")
                     response = await self.conversation_engine.generate_response(
                         system_prompt,
                         conversation_history,
                         transcript
                     )
-                    response_gen_stop = datetime.now()
-                    print(f"response generation took {(response_gen_stop - response_gen_start).total_seconds()}seconds")
+                    response_gen_stop = time.perf_counter()
+                    print(f"response generation took {(response_gen_stop - response_gen_start):.2f}seconds")
 
                     if session_id:
                         turn_number += 1
@@ -190,14 +191,14 @@ class ConversationHandler:
                         )
                     
                     # Convert to speech 
-                    ##### Bottleneck step
+                    ##### PRIMARY BOTTLENECK
                     print("Converting audio...")
-                    convert_start = datetime.now()
+                    convert_start = time.perf_counter()
                     response_audio = await self.tts_service.synthesize(response)
-                    convert_end = datetime.now()
-                    print(f"Audio conversion completed. Time elapsed: {(convert_end - convert_start).total_seconds()}seconds")
+                    convert_end = time.perf_counter()
+                    print(f"Audio conversion completed. Time elapsed: {(convert_end - convert_start):.2f}seconds")
 
-                    send_response_start = datetime.now()
+                    send_response_start = time.perf_counter()
                     print("sending response")
                     # Send response
                     await websocket.send_json({
@@ -205,8 +206,8 @@ class ConversationHandler:
                         "text": response,
                         "audio": base64.b64encode(response_audio).decode()
                     })
-                    send_response_end = datetime.now()
-                    print(f"response sent at {send_response_end}. Time elapsed: {(send_response_end - send_response_start).total_seconds()}seconds")
+                    send_response_end = time.perf_counter()
+                    print(f"response sent at {send_response_end}. Time elapsed: {(send_response_end - send_response_start):.2f}seconds")
                     
                     # Update history
                     conversation_history.append({"role": "user", "content": transcript})

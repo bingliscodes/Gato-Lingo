@@ -54,6 +54,7 @@ Focus on eliciting these tenses: {tenses_formatted}
 - Respond ONLY in {target_language}
 - Write ONLY what you would say out loud—no translations, no explanations, no stage directions
 - This will be converted to speech, so write naturally as spoken language
+- Be brief with responses. Try to keep them 25 words or less.
 - Be warm and encouraging"""
 
     async def generate_response(
