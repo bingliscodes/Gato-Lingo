@@ -1,4 +1,4 @@
-import { Box, Button, Text, VStack, HStack, Icon } from "@chakra-ui/react";
+import { Box, Button, Text, VStack } from "@chakra-ui/react";
 import { useState, useEffect, useCallback } from "react";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { useAudioRecorder } from "../hooks/useAudioRecorder";

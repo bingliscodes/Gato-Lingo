@@ -25,7 +25,7 @@ export default function ConversationInterfacePage() {
     messages: wsMessages,
     clearMessages,
     connectionStatus,
-  } = useWebSocket(`ws://${import.meta.env.VITE_BACKEND_URL}/ws/conversation`);
+  } = useWebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}/ws/conversation`);
 
   // Navigation blocker
 
