@@ -1,13 +1,21 @@
 import { useState } from "react";
-import { Input, Button, NativeSelect } from "@chakra-ui/react";
+import {
+  Input,
+  Button,
+  NativeSelect,
+  Flex,
+  VStack,
+  Text,
+} from "@chakra-ui/react";
 
 import {
   type VocabularyItemCreate,
+  type VocabularyListResponse,
   createVocabularyList,
   previewVocabularyList,
 } from "@/utils/apiCalls";
 import FileUploader from "@/components/common/FileUploader";
-import { Table } from "@chakra-ui/react";
+import VocabularyTable from "@/components/common/VocabularyTable";
 
 export default function VocabularyUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -44,9 +52,22 @@ export default function VocabularyUpload() {
 
     // Navigate back to list
   }
+  const cleanedPreviewItems = previewItems.map((item, idx) => ({
+    id: idx,
+    ...item,
+  }));
+
+  const obj: VocabularyListResponse = {
+    id: "0",
+    title: "list preview",
+    description: null,
+    target_language: null,
+    teacher_id: null,
+    items: cleanedPreviewItems,
+  };
 
   return (
-    <div>
+    <Flex flexDir="column" mt={2} flex="1" align="center">
       {step === "upload" && (
         <FileUploader
           onFileUpload={handleFileUpload}
@@ -57,33 +78,19 @@ export default function VocabularyUpload() {
       )}
 
       {step === "preview" && (
-        <div>
-          <h2>Preview ({previewItems.length} items)</h2>
+        <VStack gap={3}>
+          <Text textStyle="heading.md">
+            Preview ({previewItems.length} items)
+          </Text>
           {errors.length > 0 && <div>Errors: {errors.join(", ")}</div>}
-          <Table.Root>
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeader>Word</Table.ColumnHeader>
-                <Table.ColumnHeader>Translation</Table.ColumnHeader>
-                <Table.ColumnHeader>Part of Speech</Table.ColumnHeader>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {previewItems.map((item, i) => (
-                <Table.Row key={i}>
-                  <Table.Cell>{item.word}</Table.Cell>
-                  <Table.Cell>{item.translation}</Table.Cell>
-                  <Table.Cell>{item.part_of_speech}</Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
+
+          <VocabularyTable vocabularyListData={obj} />
           <Button onClick={() => setStep("metadata")}>Continue</Button>
-        </div>
+        </VStack>
       )}
 
       {step === "metadata" && (
-        <div>
+        <Flex flexDir="column" flex="1" w="25rem" gap={2}>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -101,12 +108,11 @@ export default function VocabularyUpload() {
               onChange={(e) => setTargetLanguage(e.target.value)}
             >
               <option value="spanish">Spanish</option>
-              {/* ... */}
             </NativeSelect.Field>
           </NativeSelect.Root>
           <Button onClick={handleSave}>Save List</Button>
-        </div>
+        </Flex>
       )}
-    </div>
+    </Flex>
   );
 }

@@ -212,7 +212,7 @@ export interface VocabularyListCreate{
 }
 
 export interface VocabularyListResponse{
-    id: string;
+    id: string | null;
     title: string;
     description: string | null;
     target_language: string | null;

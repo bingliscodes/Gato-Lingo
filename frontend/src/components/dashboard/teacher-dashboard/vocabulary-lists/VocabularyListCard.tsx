@@ -1,4 +1,4 @@
-import { Card, Text } from "@chakra-ui/react";
+import { Card, Separator } from "@chakra-ui/react";
 
 import { type VocabularyListResponse } from "@/utils/apiCalls";
 import VocabularyTable from "@/components/common/VocabularyTable";
@@ -19,9 +19,7 @@ export default function VocabularyListCard({
           title="Description"
           data={vocabularyListData.description}
         />
-        <Text textAlign="center" textStyle="heading.md">
-          Vocabulary
-        </Text>
+        <Separator my={2} size="md" />
         <VocabularyTable vocabularyListData={vocabularyListData} />
       </Card.Body>
     </Card.Root>

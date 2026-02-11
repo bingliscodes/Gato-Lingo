@@ -20,7 +20,7 @@ export default function VocabularyTable({
       </Table.Header>
       <Table.Body>
         {vocabularyListData?.items.map((item) => (
-          <Table.Row key={item.id}>
+          <Table.Row key={item?.id}>
             <Table.Cell>{item.word}</Table.Cell>
             <Table.Cell>{item.translation}</Table.Cell>
             <Table.Cell>{item.part_of_speech}</Table.Cell>
