@@ -8,13 +8,14 @@ class TextToSpeechService:
     async def synthesize(
         self,
         text: str,
-        voice: Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"] = "nova"
+        voice: Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"] = "nova",
+        response_format: str = "mp3"
     ) -> bytes:
         response = self.client.audio.speech.create(
-            model="tts-1",
+            model="gpt-4o-mini-tts",
             voice=voice,
             input=text,
-            response_format="mp3"
+            response_format="opus"
         )
         
         return response.content

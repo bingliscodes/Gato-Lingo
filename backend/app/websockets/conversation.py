@@ -125,9 +125,24 @@ class ConversationHandler:
                         })
                         continue
                     
-                    # Decode and transcribe
+                    receive_time = datetime.now()
+                    print("Audio received at ", receive_time)
+                    
+                    # Decode
+                    decode_start = datetime.now()
+                    print("Decoding audio...") 
                     audio_bytes = base64.b64decode(data["audio"])
+                    decode_end = datetime.now()
+                    print(f"Audio decoding completed. Time elapsed: {(decode_start - decode_end).total_seconds()}seconds")
+                    
+                    # Transcribe
+                    transcribe_start = datetime.now()
                     transcript = await self.stt_service.transcribe(audio_bytes, target_language)
+                    transcribe_end = datetime.now()
+                    print(f"Audio transcription completed. Time elapsed: {(transcribe_end - transcribe_start).total_seconds()}seconds")
+                    
+                    save_turn_start = datetime.now()
+                    print("Saving turn...")
                     if session_id:
                         turn_number += 1
                         self._save_turn(
@@ -137,19 +152,30 @@ class ConversationHandler:
                             transcript=transcript,
                             target_language=target_language
                         )
-                
+
+                    save_turn_end = datetime.now()
+                    print(f"Save turn completed. Time elapsed: {(save_turn_end - save_turn_start).total_seconds()}seconds")
+                    
+                    transcript_send_start = datetime.now()
+                    print("Sending transcript back...")
                     # Send transcript back
                     await websocket.send_json({
                         "type": "transcript",
                         "text": transcript
                     })
+                    transcript_send_end = datetime.now()
+                    print(f"Send transcript back. Time elapsed: {(transcript_send_end - transcript_send_start).total_seconds()}seconds")
                     
                     # Generate response
+                    response_gen_start = datetime.now()
+                    print("Generating response...")
                     response = await self.conversation_engine.generate_response(
                         system_prompt,
                         conversation_history,
                         transcript
                     )
+                    response_gen_stop = datetime.now()
+                    print(f"response generation took {(response_gen_stop - response_gen_start).total_seconds()}seconds")
 
                     if session_id:
                         turn_number += 1
@@ -161,15 +187,24 @@ class ConversationHandler:
                             target_language=target_language
                         )
                     
-                    # Convert to speech
+                    # Convert to speech 
+                    ##### Bottleneck step
+                    print("Converting audio...")
+                    convert_start = datetime.now()
                     response_audio = await self.tts_service.synthesize(response)
-                    
+                    convert_end = datetime.now()
+                    print(f"Audio conversion completed. Time elapsed: {(convert_end - convert_start).total_seconds()}seconds")
+
+                    send_response_start = datetime.now()
+                    print("sending response")
                     # Send response
                     await websocket.send_json({
                         "type": "tutor_message",
                         "text": response,
                         "audio": base64.b64encode(response_audio).decode()
                     })
+                    send_response_end = datetime.now()
+                    print(f"response sent at {send_response_end}. Time elapsed: {(send_response_end - send_response_start).total_seconds()}seconds")
                     
                     # Update history
                     conversation_history.append({"role": "user", "content": transcript})
