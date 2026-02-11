@@ -27,19 +27,19 @@ export default function RightNavContent() {
     <Flex>
       <Stack direction="row" align="center">
         <ColorModeButton />
-        <NavLink to="/dashboard">
-          <Button variant="solid" size="sm">
-            Dashboard
-          </Button>
-        </NavLink>
+
         {!isLoggedIn && (
           <Button variant="solid" size="sm" onClick={() => nav("/login")}>
             Log In / Sign Up
           </Button>
         )}
-
         {isLoggedIn && (
           <>
+            <NavLink to="/dashboard">
+              <Button variant="solid" size="sm">
+                Dashboard
+              </Button>
+            </NavLink>
             <Button variant="solid" size="sm" onClick={handleLogout}>
               Log Out
             </Button>
