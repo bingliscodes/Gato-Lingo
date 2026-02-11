@@ -67,8 +67,8 @@ Focus on eliciting these tenses: {tenses_formatted}
         ]
         
         response = self.client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=300,
+            model="claude-haiku-4-5",
+            max_tokens=250,
             system=system_prompt,
             messages=messages
         )
@@ -77,7 +77,7 @@ Focus on eliciting these tenses: {tenses_formatted}
     
     async def generate_opening(self, system_prompt: str) -> str:
         response = self.client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-haiku-4-5",
             max_tokens=200,
             system=system_prompt,
             messages=[
