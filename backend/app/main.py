@@ -12,6 +12,8 @@ from .controllers import exam as exam_controller
 from .controllers import vocabulary as vocabulary_controller
 from .websockets.conversation import ConversationHandler
 
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup

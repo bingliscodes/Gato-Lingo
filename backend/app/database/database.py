@@ -7,9 +7,6 @@ if settings.environment_mode == "development":
 if settings.environment_mode == "production":
     db_url = f"postgresql://{settings.pguser}:{settings.pgpassword}@{settings.pghost}/{settings.pgdatabase}?sslmode={settings.pgsslmode}"
 
-# 2. Update backend url variable in netlify once deployed
-# 3. Update CORS settings
-
 engine = create_engine(db_url, echo=False)
 
 def init_db():

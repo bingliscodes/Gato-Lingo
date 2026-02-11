@@ -29,7 +29,7 @@ def set_token_cookie(response: Response, token: str):
         value=token,
         httponly=True,
         secure=settings.frontend_url.startswith("https"),  # True in production
-        samesite="lax",
+        samesite="none",
         max_age=settings.jwt_expires_in_minutes * 60  # Convert to seconds
     )
 
@@ -108,7 +108,7 @@ def logout(response: Response):
         key="jwt",
         httponly=True,
         secure=settings.frontend_url.startswith("https"),
-        samesite="lax"
+        samesite="none"
     )
     
     return MessageResponse(

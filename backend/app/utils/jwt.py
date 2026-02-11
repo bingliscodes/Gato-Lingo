@@ -7,7 +7,7 @@ from fastapi import HTTPException, status
 
 from ..config import settings
 
-
+#TODO: Figure out why cookies are not being stored in the frontend after login despite appearing and successfully authenticating
 def create_access_token(user_id: UUID) -> str:
     """
     Create a JWT token for a user.
