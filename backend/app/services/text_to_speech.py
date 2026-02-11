@@ -9,13 +9,12 @@ class TextToSpeechService:
         self,
         text: str,
         voice: Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"] = "nova",
-        response_format: str = "mp3"
     ) -> bytes:
         response = self.client.audio.speech.create(
             model="gpt-4o-mini-tts",
             voice=voice,
             input=text,
-            response_format=response_format
+            response_format="opus"
         )
         
         return response.content

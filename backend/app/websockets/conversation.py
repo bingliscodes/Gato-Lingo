@@ -193,7 +193,7 @@ class ConversationHandler:
                     ##### Bottleneck step
                     print("Converting audio...")
                     convert_start = datetime.now()
-                    response_audio = await self.tts_service.synthesize(response, response_format="opus")
+                    response_audio = await self.tts_service.synthesize(response)
                     convert_end = datetime.now()
                     print(f"Audio conversion completed. Time elapsed: {(convert_end - convert_start).total_seconds()}seconds")
 
