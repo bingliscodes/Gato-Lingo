@@ -110,7 +110,14 @@ export default function VocabularyUpload() {
               <option value="spanish">Spanish</option>
             </NativeSelect.Field>
           </NativeSelect.Root>
-          <Button onClick={handleSave}>Save List</Button>
+          <Flex justify="space-between">
+            <Button minW="8rem" onClick={handleSave}>
+              Save List
+            </Button>
+            <Button maxW="8rem" bg="red.300" onClick={() => setStep("upload")}>
+              Cancel upload
+            </Button>
+          </Flex>
         </Flex>
       )}
     </Flex>
