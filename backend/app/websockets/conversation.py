@@ -133,9 +133,10 @@ class ConversationHandler:
                     print("Decoding audio...") 
                     audio_bytes = base64.b64decode(data["audio"])
                     decode_end = datetime.now()
-                    print(f"Audio decoding completed. Time elapsed: {(decode_start - decode_end).total_seconds()}seconds")
+                    print(f"Audio decoding completed. Time elapsed: {(decode_end - decode_start).total_seconds()}seconds")
                     
                     # Transcribe
+                    ##### Bottleneck step
                     transcribe_start = datetime.now()
                     transcript = await self.stt_service.transcribe(audio_bytes, target_language)
                     transcribe_end = datetime.now()
@@ -167,6 +168,7 @@ class ConversationHandler:
                     print(f"Send transcript back. Time elapsed: {(transcript_send_end - transcript_send_start).total_seconds()}seconds")
                     
                     # Generate response
+                    ##### Bottleneck step
                     response_gen_start = datetime.now()
                     print("Generating response...")
                     response = await self.conversation_engine.generate_response(
@@ -191,7 +193,7 @@ class ConversationHandler:
                     ##### Bottleneck step
                     print("Converting audio...")
                     convert_start = datetime.now()
-                    response_audio = await self.tts_service.synthesize(response)
+                    response_audio = await self.tts_service.synthesize(response, response_format="opus")
                     convert_end = datetime.now()
                     print(f"Audio conversion completed. Time elapsed: {(convert_end - convert_start).total_seconds()}seconds")
 

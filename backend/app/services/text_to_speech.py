@@ -15,7 +15,7 @@ class TextToSpeechService:
             model="gpt-4o-mini-tts",
             voice=voice,
             input=text,
-            response_format="opus"
+            response_format=response_format
         )
         
         return response.content

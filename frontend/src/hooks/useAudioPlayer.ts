@@ -25,7 +25,7 @@ export const useAudioPlayer = (): UseAudioPlayerReturn => {
           audioArray[i] = audioData.charCodeAt(i)
         }
         
-        const blob = new Blob([audioArray], { type: 'audio/mp3' })
+        const blob = new Blob([audioArray], { type: 'audio/opus' })
         const url = URL.createObjectURL(blob)
         
         const audio = new Audio(url)
