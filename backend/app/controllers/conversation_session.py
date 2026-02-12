@@ -3,12 +3,15 @@ from sqlmodel import Session, select
 from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
+import requests
+from requests.exceptions import HTTPError
 
 from ..database.database import get_db
 from ..models.conversation_session import ConversationSession, SessionStatus, ConversationSessionResponse
 from ..schemas.responses import StudentAssignmentResponse
 from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
+from ..config import settings
 
 router = APIRouter(prefix="/conversation-sessions", tags=["conversation-sessions"])
 

@@ -227,7 +227,6 @@ export interface VocabularyListPreviewResponse{
 }
 
 
-
 export const previewVocabularyList = async(formData: FormData): Promise<VocabularyListPreviewResponse> => {
     try{
         const res = await axios.post<VocabularyListPreviewResponse>(
@@ -269,11 +268,25 @@ export const getCreatedVocabularyLists = async(): Promise<VocabularyListResponse
 export const getExamData = async(sessionId: string | undefined): Promise<StudentAssignmentResponse> => {
     try{
         const res = await axios.get<StudentAssignmentResponse>(
-            `${import.meta.env.VITE_API_BASE_URL}conversation-sessions/${sessionId}`
+            `${import.meta.env.VITE_API_BASE_URL}conversation-sessions/${sessionId}`,
+            {withCredentials: true}
         )
 
         return res.data
     }catch(err){
         throw new Error(getErrorMessage(err))
+    }
+}
+
+export const getEphemeralToken = async(instructions?: string)  => {
+    try{
+        const res = await axios.post(
+            `${import.meta.env.VITE_API_BASE_URL}realtime/token`,
+            {instructions},
+            {withCredentials: true}
+        )
+        return res.data;
+    }catch(err){
+        throw new Error(getErrorMessage(err));
     }
 }
