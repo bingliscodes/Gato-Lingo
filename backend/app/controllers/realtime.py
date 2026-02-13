@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 from uuid import UUID
 from datetime import datetime, timezone
+from openai import OpenAI
 
 from ..database.database import get_db
 from ..config import settings
@@ -23,51 +24,49 @@ def get_ephemeral_token(request: TokenRequest):
     """
     Retrieves an OpenAI ephemeral token to create a realtime session
     """
-
-    session_config = {
-        "model": "gpt-realtime",
-        "voice": "verse",
-        "modalities": ["text", "audio"],
-        "input_audio_transcription": {
-            "model": "whisper-1"
-        },
-        "turn_detection": {
-            "type": "server_vad",
-            "threshold": 0.5,
-            "prefix_padding_ms": 300,
-            "silence_duration_ms": 500,
-        },
-    }
-
-    if request.instructions:
-        session_config["instructions"] = request.instructions
-    
     try:
-        res = requests.post(
-            "https://api.openai.com/v1/realtime/sessions",
-            headers={
-                "Authorization": f"Bearer {settings.openai_api_key}",
-                "Content-Type": "application/json"
+        client = OpenAI(api_key=settings.openai_api_key)
+        session_config = {
+            "type": "realtime",
+            "model": "gpt-realtime",
+            "audio": {
+                "input": {
+                    "transcription": {
+                        "language": "es",
+                        "model": "whisper-1",
+                    },
+                    "turn_detection": {
+                        "type": "semantic_vad"
+                    }
+                },
+                "output": {
+                    "voice": "marin",
+                }
             },
-            json=session_config
-        )
-        res.raise_for_status()
+            "instructions": request.instructions,
+        }
 
-        return res.json()
+        client_secret_response = client.realtime.client_secrets.create(session=session_config)
 
-    except HTTPError as http_err:
-        print(f"HTTP error occurred: {http_err}")
-        print(f"Response body: {http_err.response.text}")
-        raise HTTPException(
-            status_code=http_err.response.status_code,
-            detail=f"OpenAI API error: {http_err.response.text}"
-        )
+        return client_secret_response.model_dump()
+    
     except Exception as err:
-        print(f"Other error occurred: {err}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to get ephemeral token: {str(err)}"
-        )
+        print(f"Error getting token: {err}")
+        raise HTTPException(status_code=500, detail=str(err))
+
+    # except HTTPError as http_err:
+    #     print(f"HTTP error occurred: {http_err}")
+    #     print(f"Response body: {http_err.response.text}")
+    #     raise HTTPException(
+    #         status_code=http_err.response.status_code,
+    #         detail=f"OpenAI API error: {http_err.response.text}"
+    #     )
+    # except Exception as err:
+    #     print(f"Other error occurred: {err}")
+    #     raise HTTPException(
+    #         status_code=500,
+    #         detail=f"Failed to get ephemeral token: {str(err)}"
+    #     )
 
 
 #TODO: Implement the controller to grade the session from Realtime AI and save all the conversation turns
@@ -80,8 +79,6 @@ class GradeResponse(BaseModel):
 
 @router.post("/grade")
 def grade_session(request: GradeRequest, db: Session = Depends(get_db)):
-    print(">>> Grading session!")
-    print(request)
     if request.session_id:
         session = db.get(ConversationSession, UUID(request.session_id))
         turns = 0

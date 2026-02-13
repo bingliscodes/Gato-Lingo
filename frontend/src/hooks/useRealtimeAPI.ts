@@ -57,7 +57,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
             // ========================================
             console.log("1. Getting ephemeral token...");
             const tokenData = await getEphemeralToken(instructions);
-            const token = tokenData.client_secret?.value;
+            const token = tokenData.value;
             
             if (!token) {
                 throw new Error("No token in response");
@@ -130,7 +130,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
             console.log("7. Sending offer to OpenAI...");
             const model = "gpt-4o-transcribe";
             const sdpResponse = await fetch(
-                `https://api.openai.com/v1/realtime?model=${model}`,
+                `https://api.openai.com/v1/realtime/calls`,
                 {
                     method: "POST",
                     body: offer.sdp,
@@ -212,26 +212,28 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
                     setConversationHistory(prev => [...prev, {
                         speaker: "student",
                         transcript: userText,
-                        timestamp: new Date(),
+                        timestamp: new Date().toISOString(),
                     }])
                 }
                 break;
-            
-             // AI is responding with text
-            case "response.audio_transcript.delta":
-                currentAssistantResponse.current += (event.delta || '');
-                setResponse(currentAssistantResponse.current);
-                break;
 
+            case "item.input_audio_transcription":
+                console.log("AI Text:", event.transcript)
+                break;
+            
+            // AI responding with test
+            case "response.output_audio_transcript.delta":
+                currentAssistantResponse.current += (event.delta || '');
+                break;
             // AI finished responding
-            case "response.audio_transcript.done":
+            case "response.output_audio_transcript.done":
             case "response.done":
                 const assistantText = currentAssistantResponse.current;
                 if (assistantText){
                     setConversationHistory(prev => [...prev, {
                         speaker: "tutor",
                         transcript: assistantText,
-                        timestamp: new Date(),
+                        timestamp: new Date().toISOString(),
                     }]);
                 }
                 currentAssistantResponse.current = '';

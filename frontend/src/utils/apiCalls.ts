@@ -298,8 +298,6 @@ export interface ConversationTurn {
     timestamp: string;
 }
 export const gradeConversationSession = async(conversationHistory: ConversationTurn[], sessionId: string | undefined) => {
-    console.log("requesting grade...")
-    console.log("conversation history is: ", conversationHistory);
     try{
         const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}realtime/grade`,
         {conversation_history: conversationHistory, session_id: sessionId},
