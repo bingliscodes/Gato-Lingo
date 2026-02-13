@@ -296,6 +296,7 @@ export interface ConversationTurn {
     speaker: "student" | "tutor";
     transcript: string;
     timestamp: string;
+    turnNumber: number;
 }
 export const gradeConversationSession = async(conversationHistory: ConversationTurn[], sessionId: string | undefined) => {
     try{

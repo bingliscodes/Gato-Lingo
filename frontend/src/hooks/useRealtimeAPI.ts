@@ -32,12 +32,17 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     const [error, setError] = useState<string | null>(null);
     
     // UI State
+    const [transcript, setTranscript] = useState('');
+    const [response, setResponse] = useState('');
     const [userIsSpeaking, setUserIsSpeaking] = useState(false);
     const [conversationHistory, setConversationHistory] = useState<ConversationTurn[]>([])
 
+
     // Transcript tracking refs
-    const currentStudentResponse = useRef<string>('');
+    const pendingUserTranscript = useRef<string>('');
     const currentAssistantResponse = useRef<string>('');
+    const turnCounter = useRef<number>(0);  // Track turn order
+    const pendingUserTurn = useRef<number | null>(null);  // Track user's turn number
 
     // WebRTC objects (refs because they don't need to trigger re-renders)
     const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -54,7 +59,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         setIsLoading(true);
         setError(null);
         setConversationHistory([]);
-        currentStudentResponse.current = '';
+        pendingUserTranscript.current = '';
         currentAssistantResponse.current = '';
 
         try {
@@ -157,7 +162,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
             const answerSdp = await sdpResponse.text();
             await pc.setRemoteDescription({ type: "answer", sdp: answerSdp });
 
-            console.log("✅ Connected to OpenAI Realtime API!");
+            console.log("Connected to OpenAI Realtime API!");
 
         } catch (err) {
             console.error("Connection failed:", err);
@@ -204,57 +209,66 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         }
     }, []);
 
+
+    // TODO: Figure out how to have tutor continue talking when voice events are triggered
     const handleServerEvent = (event: RealtimeEvent) => {
         switch (event.type) {
             // User started speaking
             case "input_audio_buffer.speech_started":
                 setUserIsSpeaking(true);
-                currentStudentResponse.current = '';
-                console.log("User started speaking")
+                turnCounter.current += 1;
+                pendingUserTurn.current = turnCounter.current;
+                setTranscript('');
+                console.log(`User started speaking (turn ${pendingUserTurn.current})`)
                 break;
 
             // User stopped speaking
             case "input_audio_buffer.speech_stopped":
                 setUserIsSpeaking(false);
-                console.log("User stopped speaking");
                 break;
             
-            // Transcript of what user said
             case "conversation.item.input_audio_transcription.completed":
                 const userText = event.transcript || '';
-                currentStudentResponse.current = userText;
-                console.log("User said: ", userText);
+                pendingUserTranscript.current = userText;
+                setTranscript(userText);
+
+                if (userText) {
+                    const userTurnNumber = pendingUserTurn.current || turnCounter.current;
+                    setConversationHistory(prev => {
+                        const updated = [...prev, {
+                            speaker: "student" as const,
+                            transcript: userText,
+                            timestamp: new Date().toISOString(),
+                            turnNumber: userTurnNumber,
+                        }];
+                        // Sort by turn number
+                        return updated.sort((a, b) => a.turnNumber - b.turnNumber);
+                    });
+                }
+                pendingUserTurn.current = null;
+
                 break;
-            
+                
             // AI finished responding transcribing audio
             case "response.output_audio_transcript.done":
                 const assistantText = event.transcript || '';
-                const userMessage = currentStudentResponse.current;
-
-                setConversationHistory(prev => {
-                    const newHistory = [...prev];
-
-                    if (userMessage){
-                        newHistory.push({
-                            speaker: "student",
-                            transcript: userMessage,
-                            timestamp: new Date().toISOString()
-                        });
-                    }
-                    if (assistantText){
-                        newHistory.push({
-                            speaker: "tutor",
+                if (assistantText) {
+                    turnCounter.current += 1;
+                    const assistantTurnNumber = turnCounter.current;
+                    
+                    setConversationHistory(prev => {
+                        const updated = [...prev, {
+                            speaker: "tutor" as const,
                             transcript: assistantText,
-                            timestamp: new Date().toISOString()
-                        });
-                    }
-                    return newHistory
-                })
-                // Reset for next turn
-                currentStudentResponse.current = '';
+                            timestamp: new Date().toISOString(),
+                            turnNumber: assistantTurnNumber,
+                        }];
+                        // Sort by turn number
+                        return updated.sort((a, b) => a.turnNumber - b.turnNumber);
+                    });
+                }
                 currentAssistantResponse.current = '';
                 break;
-
             // Session started
             case "session.created":
                 console.log("Session created!");
@@ -267,7 +281,8 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
                 break;
 
             default:
-                // Lots of events we don't need to handle
+                //Uncomment to debug unknown events
+                // console.log("Unhandled event:", event.type, event);
                 break;
         }
     };
