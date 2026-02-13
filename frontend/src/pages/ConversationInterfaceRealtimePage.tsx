@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { Box, Text, Button } from "@chakra-ui/react";
 
 import { useRealtimeAPI } from "@/hooks/useRealtimeAPI";
@@ -12,6 +12,7 @@ import { MessageList } from "@/components/MessageList";
 
 export default function ConversationInterfaceRealtimePage() {
   const { sessionId } = useParams();
+  const nav = useNavigate();
 
   const [examData, setExamData] = useState<StudentAssignmentResponse | null>(
     null,
@@ -69,6 +70,7 @@ export default function ConversationInterfaceRealtimePage() {
       setExamGrade(res);
       setIsGradingExam(false);
       disconnect();
+      nav("/dashboard");
     } catch (err) {
       setErrorGradingExam(
         err instanceof Error ? err.message : "Failed to grade exam",

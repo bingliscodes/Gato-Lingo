@@ -1,11 +1,16 @@
 // hooks/useRealtimeAPI.ts
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { getEphemeralToken, gradeConversationSession, type ConversationTurn } from '@/utils/apiCalls';
+import { getEphemeralToken, type ConversationTurn } from '@/utils/apiCalls';
 
 
 
 interface RealtimeEvent {
     type: string;
+    transcript?: string;
+    delta?: string;
+    error?:{
+        message: string;
+    };
     [key: string]: any;
 }
 
@@ -17,23 +22,21 @@ interface UseRealtimeAPIReturn {
     connect: (instructions?: string) => Promise<void>;
     disconnect: () => void;
     sendEvent: (event: RealtimeEvent) => void;
-    transcript: string;  // What the user said
-    response: string;    // What the AI said
     conversationHistory: ConversationTurn[];
 }
 
 export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
-    // UI State
+    // Connection state:
     const [isConnected, setIsConnected] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [transcript, setTranscript] = useState('');
-    const [response, setResponse] = useState('');
+    
+    // UI State
     const [userIsSpeaking, setUserIsSpeaking] = useState(false);
-
-    // Conversation Transcript
     const [conversationHistory, setConversationHistory] = useState<ConversationTurn[]>([])
-    const currentUserTranscript = useRef<string>('');
+
+    // Transcript tracking refs
+    const currentStudentResponse = useRef<string>('');
     const currentAssistantResponse = useRef<string>('');
 
     // WebRTC objects (refs because they don't need to trigger re-renders)
@@ -50,8 +53,9 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     const connect = useCallback(async (instructions?: string) => {
         setIsLoading(true);
         setError(null);
-        setTranscript('');
-        setResponse('');
+        setConversationHistory([]);
+        currentStudentResponse.current = '';
+        currentAssistantResponse.current = '';
 
         try {
             // ========================================
@@ -202,59 +206,58 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
 
     const handleServerEvent = (event: RealtimeEvent) => {
         switch (event.type) {
+            // User started speaking
+            case "input_audio_buffer.speech_started":
+                setUserIsSpeaking(true);
+                currentStudentResponse.current = '';
+                console.log("User started speaking")
+                break;
 
+            // User stopped speaking
+            case "input_audio_buffer.speech_stopped":
+                setUserIsSpeaking(false);
+                console.log("User stopped speaking");
+                break;
+            
             // Transcript of what user said
             case "conversation.item.input_audio_transcription.completed":
                 const userText = event.transcript || '';
-                currentUserTranscript.current = userText;
-                setTranscript(userText);    
-
-                if (userText){
-                    setConversationHistory(prev => [...prev, {
-                        speaker: "student",
-                        transcript: userText,
-                        timestamp: new Date().toISOString(),
-                    }])
-                }
-                break;
-
-            case "item.input_audio_transcription":
-                console.log("AI Text:", event.transcript)
+                currentStudentResponse.current = userText;
+                console.log("User said: ", userText);
                 break;
             
-            // AI responding with test
-            case "response.output_audio_transcript.delta":
-                currentAssistantResponse.current += (event.delta || '');
-                break;
-            // AI finished responding
+            // AI finished responding transcribing audio
             case "response.output_audio_transcript.done":
-                const assistantText = currentAssistantResponse.current;
-                if (assistantText){
-                    setConversationHistory(prev => [...prev, {
-                        speaker: "tutor",
-                        transcript: assistantText,
-                        timestamp: new Date().toISOString(),
-                    }]);
-                }
+                const assistantText = event.transcript || '';
+                const userMessage = currentStudentResponse.current;
+
+                setConversationHistory(prev => {
+                    const newHistory = [...prev];
+
+                    if (userMessage){
+                        newHistory.push({
+                            speaker: "student",
+                            transcript: userMessage,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
+                    if (assistantText){
+                        newHistory.push({
+                            speaker: "tutor",
+                            transcript: assistantText,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
+                    return newHistory
+                })
+                // Reset for next turn
+                currentStudentResponse.current = '';
                 currentAssistantResponse.current = '';
                 break;
 
             // Session started
             case "session.created":
                 console.log("Session created!");
-                break;
-
-            // User started speaking
-            case "input_audio_buffer.speech_started":
-                setUserIsSpeaking(true);
-                console.log("User started speaking");
-                setTranscript('');
-                break;
-
-            // User stopped speaking
-            case "input_audio_buffer.speech_stopped":
-                console.log("User stopped speaking");
-                setUserIsSpeaking(false);
                 break;
 
             // Error
@@ -276,8 +279,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         connect,
         disconnect,
         sendEvent,
-        transcript,
-        response,
         conversationHistory,
         userIsSpeaking,
     };

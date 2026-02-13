@@ -36,7 +36,9 @@ def get_ephemeral_token(request: TokenRequest):
                         "model": "whisper-1",
                     },
                     "turn_detection": {
-                        "type": "semantic_vad"
+                        "type": "server_vad",
+                        "threshold": 0.65, 
+                        "silence_duration_ms": 750
                     }
                 },
                 "output": {
