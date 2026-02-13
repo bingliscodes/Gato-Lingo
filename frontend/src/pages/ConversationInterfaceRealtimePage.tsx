@@ -80,20 +80,9 @@ export default function ConversationInterfaceRealtimePage() {
           Exam: {examData.exam.title}
         </Text>
 
-        {!isConnected && (
-          <Button onClick={handleConnect} disabled={isLoading}>
-            {isLoading ? "Connecting..." : "Start Conversation"}
-          </Button>
-        )}
-        <Button bgColor="red.300" variant="solid" onClick={disconnect}>
-          End Session
-        </Button>
-        {isConnected && (
-          <p style={{ marginTop: 20 }}>
-            🎤 Speak into your microphone - the AI should respond!
-          </p>
-        )}
-        {isConnected && (
+        {
+          // TODO: figure out how to handle dc/rc with new model
+          /* {!isConnected && (
           <Box
             position="fixed"
             top={0}
@@ -107,7 +96,22 @@ export default function ConversationInterfaceRealtimePage() {
           >
             Connection lost. Attempting to reconnect...
           </Box>
+        )} */
+        }
+
+        {!isConnected && (
+          <Button onClick={handleConnect} disabled={isLoading}>
+            {isLoading ? "Connecting..." : "Start Conversation"}
+          </Button>
         )}
+        {isConnected && (
+          <p style={{ marginTop: 20 }}>
+            🎤 Speak into your microphone - the tutor should respond!
+          </p>
+        )}
+        <Button bgColor="red.300" variant="solid" onClick={disconnect}>
+          End Session
+        </Button>
       </Box>
       <MessageList messages={conversationHistory} isListening={false} />
     </Box>

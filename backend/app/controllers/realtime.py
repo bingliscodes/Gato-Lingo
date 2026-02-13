@@ -3,14 +3,13 @@ from requests.exceptions import HTTPError
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 from ..database.database import get_db
 from ..config import settings
+from ..models.conversation_turn import ConversationTurn
 
 router = APIRouter(prefix="/realtime", tags=["realtime"])
-
-
 
 class TokenRequest(BaseModel):
     instructions: Optional[str] = None
@@ -65,3 +64,16 @@ def get_ephemeral_token(request: TokenRequest):
             status_code=500,
             detail=f"Failed to get ephemeral token: {str(err)}"
         )
+
+
+#TODO: Implement the controller to grade the session from Realtime AI and save all the conversation turns
+class GradeRequest(BaseModel):
+    conversationHistory: List[ConversationTurn]
+    sessionId: str
+
+@router.post("/grade")
+def grade_session(request: GradeRequest):
+    if request.conversationHistory:
+        pass
+    if request.sessionId:
+        pass

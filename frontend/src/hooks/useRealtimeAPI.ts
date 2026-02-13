@@ -1,12 +1,8 @@
 // hooks/useRealtimeAPI.ts
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { getEphemeralToken } from '@/utils/apiCalls';
+import { getEphemeralToken, gradeConversationSession, type ConversationTurn } from '@/utils/apiCalls';
 
-export interface ConversationTurn {
-    speaker: "student" | "tutor";
-    text: string;
-    timestamp: Date;
-}
+
 
 interface RealtimeEvent {
     type: string;
@@ -190,7 +186,9 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
             audioRef.current = null;
         }
 
+        // TODO: Trigger send transcript and trigger exam grading
         setIsConnected(false);
+        
     }, []);
 
     const sendEvent = useCallback((event: RealtimeEvent) => {
@@ -255,7 +253,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
             case "input_audio_buffer.speech_stopped":
                 console.log("User stopped speaking");
                 break;
-        
 
             // Error
             case "error":

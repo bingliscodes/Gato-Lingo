@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { MessageList } from "@/components/MessageList";
-import type { ConversationTurn } from "@/hooks/useRealtimeAPI";
+import { type ConversationTurn } from "@/utils/apiCalls";
 
 export interface ConversationInterfaceProps {
   sendMessage: (message: string) => void;
@@ -239,28 +239,3 @@ export default function ConversationInterface({
     </Box>
   );
 }
-
-interface ConversationInterfaceRealtimeProps {
-  messages: ConversationTurn[];
-}
-
-export const ConversationInterfaceRealtime = ({
-  messages,
-}: ConversationInterfaceRealtimeProps) => {
-  return (
-    <Box flex="1" display="flex" flexDirection="column" h="100vh">
-      {/* Header */}
-      <Box
-        as="header"
-        bg="bg.panel"
-        boxShadow="sm"
-        p={4}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <MessageList messages={messages} isListening={false} />
-      </Box>
-    </Box>
-  );
-};

@@ -278,7 +278,7 @@ export const getExamData = async(sessionId: string | undefined): Promise<Student
     }
 }
 
-export const getEphemeralToken = async(instructions?: string)  => {
+export const getEphemeralToken = async(instructions?: string) => {
     try{
         const res = await axios.post(
             `${import.meta.env.VITE_API_BASE_URL}realtime/token`,
@@ -289,4 +289,23 @@ export const getEphemeralToken = async(instructions?: string)  => {
     }catch(err){
         throw new Error(getErrorMessage(err));
     }
+}
+
+export interface ConversationTurn {
+    speaker: "student" | "tutor";
+    text: string;
+    timestamp: Date;
+}
+export const gradeConversationSession = async(conversationHistory: ConversationTurn[]) => {
+    try{
+        const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}realtime/grade`,
+        {conversationHistory},
+        {withCredentials: true}
+    )
+    return res.data;
+    }
+    catch(err){
+        throw new Error(getErrorMessage(err));
+    }
+    
 }
