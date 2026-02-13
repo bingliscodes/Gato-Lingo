@@ -277,7 +277,8 @@ export const getExamData = async(sessionId: string | undefined): Promise<Student
         throw new Error(getErrorMessage(err))
     }
 }
-
+// TODO: Need to decrease sensitivity of VAD, or switch to push to talk to avoid hallucinations
+// Issue with spelling. Using "K" for "que" when transcribing.
 export const getEphemeralToken = async(instructions?: string) => {
     try{
         const res = await axios.post(
@@ -293,13 +294,15 @@ export const getEphemeralToken = async(instructions?: string) => {
 
 export interface ConversationTurn {
     speaker: "student" | "tutor";
-    text: string;
-    timestamp: Date;
+    transcript: string;
+    timestamp: string;
 }
-export const gradeConversationSession = async(conversationHistory: ConversationTurn[]) => {
+export const gradeConversationSession = async(conversationHistory: ConversationTurn[], sessionId: string | undefined) => {
+    console.log("requesting grade...")
+    console.log("conversation history is: ", conversationHistory);
     try{
         const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}realtime/grade`,
-        {conversationHistory},
+        {conversation_history: conversationHistory, session_id: sessionId},
         {withCredentials: true}
     )
     return res.data;

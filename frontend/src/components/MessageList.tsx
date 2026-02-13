@@ -1,7 +1,7 @@
 import { Box, Stack, Text } from "@chakra-ui/react";
 import { useRef, useEffect } from "react";
 
-import { type ConversationTurn } from "@/hooks/useRealtimeAPI";
+import { type ConversationTurn } from "@/utils/apiCalls";
 
 interface MessageListProps {
   messages: ConversationTurn[];
@@ -36,7 +36,7 @@ export const MessageList = ({ messages, isListening }: MessageListProps) => {
               <Text fontSize="xs" opacity={0.7} mb={1}>
                 {msg.speaker === "student" ? "You" : "Tutor"}
               </Text>
-              <Text>{msg.text}</Text>
+              <Text>{msg.transcript}</Text>
             </Box>
           </Box>
         ))}

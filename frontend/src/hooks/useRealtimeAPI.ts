@@ -185,8 +185,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
             audioRef.current.srcObject = null;
             audioRef.current = null;
         }
-
-        // TODO: Trigger send transcript and trigger exam grading
+        
         setIsConnected(false);
         
     }, []);
@@ -212,7 +211,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
                 if (userText){
                     setConversationHistory(prev => [...prev, {
                         speaker: "student",
-                        text: userText,
+                        transcript: userText,
                         timestamp: new Date(),
                     }])
                 }
@@ -231,7 +230,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
                 if (assistantText){
                     setConversationHistory(prev => [...prev, {
                         speaker: "tutor",
-                        text: assistantText,
+                        transcript: assistantText,
                         timestamp: new Date(),
                     }]);
                 }

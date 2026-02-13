@@ -3,7 +3,11 @@ import { useParams } from "react-router";
 import { Box, Text, Button } from "@chakra-ui/react";
 
 import { useRealtimeAPI } from "@/hooks/useRealtimeAPI";
-import { type StudentAssignmentResponse, getExamData } from "@/utils/apiCalls";
+import {
+  type StudentAssignmentResponse,
+  getExamData,
+  gradeConversationSession,
+} from "@/utils/apiCalls";
 import { MessageList } from "@/components/MessageList";
 
 export default function ConversationInterfaceRealtimePage() {
@@ -12,6 +16,9 @@ export default function ConversationInterfaceRealtimePage() {
   const [examData, setExamData] = useState<StudentAssignmentResponse | null>(
     null,
   );
+  const [isGradingExam, setIsGradingExam] = useState(false);
+  const [errorGradingExam, setErrorGradingExam] = useState<string | null>(null);
+  const [examGrade, setExamGrade] = useState<string>("");
   const [isLoadingExamData, setIsLoadingExamData] = useState(true);
   const [errorLoadingExamData, setErrorLoadingExamData] = useState<
     string | null
@@ -48,6 +55,25 @@ export default function ConversationInterfaceRealtimePage() {
   const handleConnect = () => {
     if (examData?.exam.conversation_prompt) {
       connect(examData.exam.conversation_prompt);
+    }
+  };
+
+  const handleEndSession = async () => {
+    setIsGradingExam(true);
+    try {
+      const res = await gradeConversationSession(
+        conversationHistory,
+        sessionId,
+      );
+      setExamGrade(res);
+      setIsGradingExam(false);
+      disconnect();
+    } catch (err) {
+      setErrorGradingExam(
+        err instanceof Error ? err.message : "Failed to grade exam",
+      );
+    } finally {
+      setIsGradingExam(false);
     }
   };
 
@@ -109,7 +135,7 @@ export default function ConversationInterfaceRealtimePage() {
             🎤 Speak into your microphone - the tutor should respond!
           </p>
         )}
-        <Button bgColor="red.300" variant="solid" onClick={disconnect}>
+        <Button bgColor="red.300" variant="solid" onClick={handleEndSession}>
           End Session
         </Button>
       </Box>

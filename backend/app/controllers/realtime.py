@@ -4,10 +4,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 from pydantic import BaseModel
 from typing import Optional, List
+from uuid import UUID
+from datetime import datetime, timezone
 
 from ..database.database import get_db
 from ..config import settings
-from ..models.conversation_turn import ConversationTurn
+from ..models.conversation_turn import ConversationTurn, ConversationTurnCreate
+from ..models.conversation_session import ConversationSession, SessionStatus
+from ..utils.score_session import generate_session_score
 
 router = APIRouter(prefix="/realtime", tags=["realtime"])
 
@@ -68,12 +72,53 @@ def get_ephemeral_token(request: TokenRequest):
 
 #TODO: Implement the controller to grade the session from Realtime AI and save all the conversation turns
 class GradeRequest(BaseModel):
-    conversationHistory: List[ConversationTurn]
-    sessionId: str
+    conversation_history: List[ConversationTurnCreate]
+    session_id: str
+
+class GradeResponse(BaseModel):
+    status: str
 
 @router.post("/grade")
-def grade_session(request: GradeRequest):
-    if request.conversationHistory:
-        pass
-    if request.sessionId:
-        pass
+def grade_session(request: GradeRequest, db: Session = Depends(get_db)):
+    print(">>> Grading session!")
+    print(request)
+    if request.session_id:
+        session = db.get(ConversationSession, UUID(request.session_id))
+        turns = 0
+        if session:
+            # 1. Save all turns
+            for turn in request.conversation_history:
+                # Handle date cleaning
+                cleaned_timestamp = turn.timestamp
+                if turn.timestamp.endswith('Z'):
+                    cleaned_timestamp = cleaned_timestamp.replace('Z', '+00:00')
+                python_datetime_object = datetime.fromisoformat(cleaned_timestamp)
+                
+                turns += 1
+                new_turn = ConversationTurn(
+                    session_id=session.id,
+                    timestamp=python_datetime_object,
+                    speaker= turn.speaker,
+                    transcript=turn.transcript,
+                    turn_number = turns
+                )
+                db.add(new_turn)
+                db.commit()
+
+            # 2. Mark session as completed
+            session.status = SessionStatus.completed
+            session.ended_at = datetime.now(timezone.utc)
+            db.add(session)
+            db.commit()
+
+            print(f"Session {request.session_id} ended with {turns} turns")
+
+            # 3. Grade session
+            generate_session_score(conversation_session_id=request.session_id)
+
+        
+        return GradeResponse(status="success")
+
+
+
+    

@@ -59,8 +59,8 @@ export default function ConversationInterface({
               ...prev,
               {
                 speaker: "tutor",
-                text: data.text,
-                timestamp: new Date(),
+                transcript: data.transcript,
+                timestamp: new Date().toISOString(),
               },
             ]);
             setIsTutorSpeaking(true);
@@ -72,8 +72,8 @@ export default function ConversationInterface({
               ...prev,
               {
                 speaker: "student",
-                text: data.text,
-                timestamp: new Date(),
+                transcript: data.transcript,
+                timestamp: new Date().toISOString(),
               },
             ]);
             break;
@@ -83,7 +83,7 @@ export default function ConversationInterface({
               const restoredMessages: ConversationTurn[] = data.turns.map(
                 (turn: any) => ({
                   speaker: turn.speaker as "student" | "tutor",
-                  text: turn.transcript,
+                  transcript: turn.transcript,
                   timestamp: new Date(turn.timestamp),
                 }),
               );

@@ -16,7 +16,7 @@ class ConversationTurn(SQLModel, table=True):
     audio_url: Optional[str] = None
     transcript: str
     turn_number: int
-    target_language: str
+    target_language: Optional[str] = None
 
     # Foreign Keys
     session_id: Optional[uuid.UUID] = Field(default=None, foreign_key="conversation_sessions.id")
@@ -31,3 +31,8 @@ class ConversationTurnResponse(SQLModel):
     audio_url: str
     transcript: str
     turn_number: int
+
+class ConversationTurnCreate(SQLModel):
+    timestamp: str
+    speaker: str
+    transcript: str
