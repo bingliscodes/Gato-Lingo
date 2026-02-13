@@ -22,6 +22,7 @@ interface UseRealtimeAPIReturn {
     sendEvent: (event: RealtimeEvent) => void;
     transcript: string;  // What the user said
     response: string;    // What the AI said
+    conversationHistory: ConversationTurn[];
 }
 
 export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
@@ -36,7 +37,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     const [conversationHistory, setConversationHistory] = useState<ConversationTurn[]>([])
     const currentUserTranscript = useRef<string>('');
     const currentAssistantResponse = useRef<string>('');
-    
+
     // WebRTC objects (refs because they don't need to trigger re-renders)
     const pcRef = useRef<RTCPeerConnection | null>(null);
     const dcRef = useRef<RTCDataChannel | null>(null);
@@ -202,9 +203,43 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     }, []);
 
     const handleServerEvent = (event: RealtimeEvent) => {
-        console.log("Server event:", event.type);
-
         switch (event.type) {
+
+            // Transcript of what user said
+            case "conversation.item.input_audio_transcription.completed":
+                const userText = event.transcript || '';
+                currentUserTranscript.current = userText;
+                setTranscript(userText);    
+
+                if (userText){
+                    setConversationHistory(prev => [...prev, {
+                        role: "user",
+                        text: userText,
+                        timestamp: new Date(),
+                    }])
+                }
+                break;
+            
+             // AI is responding with text
+            case "response.audio_transcript.delta":
+                currentAssistantResponse.current += (event.delta || '');
+                setResponse(currentAssistantResponse.current);
+                break;
+
+            // AI finished responding
+            case "response.audio_transcript.done":
+            case "response.done":
+                const assistantText = currentAssistantResponse.current;
+                if (assistantText){
+                    setConversationHistory(prev => [...prev, {
+                        role: "assistant",
+                        text: assistantText,
+                        timestamp: new Date(),
+                    }]);
+                }
+                currentAssistantResponse.current = '';
+                break;
+
             // Session started
             case "session.created":
                 console.log("Session created!");
@@ -220,32 +255,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
             case "input_audio_buffer.speech_stopped":
                 console.log("User stopped speaking");
                 break;
-
-            // Transcript of what user said
-            case "conversation.item.input_audio_transcription.completed":
-                console.log("User said:", event.transcript);
-                setTranscript(event.transcript || '');
-                break;
-
-            case "conversation.item.added":
-                console.log("Conversation item added");
-                console.log(event)
-                break;
-
-            // AI is responding with text
-            case "response.audio_transcript.delta":
-                setResponse(prev => prev + (event.delta || ''));
-                break;
-
-            // AI finished responding
-            case "response.audio_transcript.done":
-                console.log("AI response complete:", event.transcript);
-                break;
-
-            // Response finished
-            case "response.done":
-                console.log("Response complete");
-                break;
+        
 
             // Error
             case "error":
@@ -268,5 +278,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         sendEvent,
         transcript,
         response,
+        conversationHistory,
     };
 };
