@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import { Box, Text, Button } from "@chakra-ui/react";
 
 import { useRealtimeAPI } from "@/hooks/useRealtimeAPI";
 import { type StudentAssignmentResponse, getExamData } from "@/utils/apiCalls";
+import { MessageList } from "@/components/MessageList";
 
-export default function ConversationInterfaceRealtime() {
+export default function ConversationInterfaceRealtimePage() {
   const { sessionId } = useParams();
 
   const [examData, setExamData] = useState<StudentAssignmentResponse | null>(
@@ -16,8 +18,14 @@ export default function ConversationInterfaceRealtime() {
   >(null);
 
   // Always call the hook at the top level (React rules)
-  const { isConnected, isLoading, error, connect, disconnect } =
-    useRealtimeAPI();
+  const {
+    isConnected,
+    isLoading,
+    error,
+    connect,
+    disconnect,
+    conversationHistory,
+  } = useRealtimeAPI();
 
   // Load exam data on mount
   useEffect(() => {
@@ -57,29 +65,51 @@ export default function ConversationInterfaceRealtime() {
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Realtime API Test</h1>
-      <p>Exam: {examData.exam.title}</p>
+    <Box flex="1" display="flex" flexDirection="column" h="100vh">
+      {/* Header */}
+      <Box
+        as="header"
+        bg="bg.panel"
+        boxShadow="sm"
+        p={4}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Text fontSize="xl" fontWeight="semibold">
+          Exam: {examData.exam.title}
+        </Text>
 
-      <p>Status: {isConnected ? "Connected ✅" : "Disconnected ❌"}</p>
-      {isLoading && <p>Connecting...</p>}
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
-
-      <div style={{ marginTop: 20 }}>
-        {!isConnected ? (
-          <button onClick={handleConnect} disabled={isLoading}>
+        {!isConnected && (
+          <Button onClick={handleConnect} disabled={isLoading}>
             {isLoading ? "Connecting..." : "Start Conversation"}
-          </button>
-        ) : (
-          <button onClick={disconnect}>End Conversation</button>
+          </Button>
         )}
-      </div>
-
-      {isConnected && (
-        <p style={{ marginTop: 20 }}>
-          🎤 Speak into your microphone - the AI should respond!
-        </p>
-      )}
-    </div>
+        <Button bgColor="red.300" variant="solid" onClick={disconnect}>
+          End Session
+        </Button>
+        {isConnected && (
+          <p style={{ marginTop: 20 }}>
+            🎤 Speak into your microphone - the AI should respond!
+          </p>
+        )}
+        {isConnected && (
+          <Box
+            position="fixed"
+            top={0}
+            left={0}
+            right={0}
+            bg="red.500"
+            color="white"
+            p={2}
+            textAlign="center"
+            zIndex={1000}
+          >
+            Connection lost. Attempting to reconnect...
+          </Box>
+        )}
+      </Box>
+      <MessageList messages={conversationHistory} isListening={false} />
+    </Box>
   );
 }

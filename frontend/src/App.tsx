@@ -17,7 +17,7 @@ import ExamScorePage from "./pages/ExamScorePage";
 import VocabularyListsPage from "./pages/VocabularyListsPage";
 import ExamsPage from "./pages/ExamsPage";
 import AssignedExams from "./components/dashboard/student-dashboard/assigned-exams/AssignedExams";
-import ConversationInterfaceRealtime from "./pages/ConversationInterfaceRealtime";
+import ConversationInterfaceRealtimePage from "./pages/ConversationInterfaceRealtimePage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -25,7 +25,6 @@ const router = createBrowserRouter(
       <Route index element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
-      <Route path="/session" element={<ConversationInterfaceRealtime />} />
       <Route path="dashboard" element={<DashboardLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="exams" element={<ExamsPage />} />
@@ -41,7 +40,7 @@ const router = createBrowserRouter(
         <Route path="exams/scores/:examId" element={<ExamScorePage />} />
         <Route
           path="exams/assigned/session/:sessionId"
-          element={<ConversationInterfaceRealtime />}
+          element={<ConversationInterfaceRealtimePage />}
         />
         <Route path="vocabulary" element={<VocabularyListsPage />} />
       </Route>

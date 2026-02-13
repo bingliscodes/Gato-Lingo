@@ -2,8 +2,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { getEphemeralToken } from '@/utils/apiCalls';
 
-interface ConversationTurn {
-    role: "user" | "assistant";
+export interface ConversationTurn {
+    speaker: "student" | "tutor";
     text: string;
     timestamp: Date;
 }
@@ -213,7 +213,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
 
                 if (userText){
                     setConversationHistory(prev => [...prev, {
-                        role: "user",
+                        speaker: "student",
                         text: userText,
                         timestamp: new Date(),
                     }])
@@ -232,7 +232,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
                 const assistantText = currentAssistantResponse.current;
                 if (assistantText){
                     setConversationHistory(prev => [...prev, {
-                        role: "assistant",
+                        speaker: "tutor",
                         text: assistantText,
                         timestamp: new Date(),
                     }]);

@@ -4,12 +4,7 @@ import { useNavigate } from "react-router";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { MessageList } from "@/components/MessageList";
-
-interface Message {
-  speaker: "student" | "tutor";
-  text: string;
-  timestamp: Date;
-}
+import type { ConversationTurn } from "@/hooks/useRealtimeAPI";
 
 export interface ConversationInterfaceProps {
   sendMessage: (message: string) => void;
@@ -36,7 +31,7 @@ export default function ConversationInterface({
   const nav = useNavigate();
 
   // UI State
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ConversationTurn[]>([]);
   const [isTutorSpeaking, setIsTutorSpeaking] = useState(false);
   const [wasResumed, setWasResumed] = useState(false);
 
@@ -85,7 +80,7 @@ export default function ConversationInterface({
 
           case "session_resumed":
             if (data.turns) {
-              const restoredMessages: Message[] = data.turns.map(
+              const restoredMessages: ConversationTurn[] = data.turns.map(
                 (turn: any) => ({
                   speaker: turn.speaker as "student" | "tutor",
                   text: turn.transcript,
@@ -244,3 +239,28 @@ export default function ConversationInterface({
     </Box>
   );
 }
+
+interface ConversationInterfaceRealtimeProps {
+  messages: ConversationTurn[];
+}
+
+export const ConversationInterfaceRealtime = ({
+  messages,
+}: ConversationInterfaceRealtimeProps) => {
+  return (
+    <Box flex="1" display="flex" flexDirection="column" h="100vh">
+      {/* Header */}
+      <Box
+        as="header"
+        bg="bg.panel"
+        boxShadow="sm"
+        p={4}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <MessageList messages={messages} isListening={false} />
+      </Box>
+    </Box>
+  );
+};

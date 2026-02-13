@@ -1,14 +1,10 @@
 import { Box, Stack, Text } from "@chakra-ui/react";
 import { useRef, useEffect } from "react";
 
-interface Message {
-  speaker: "student" | "tutor";
-  text: string;
-  timestamp: Date;
-}
+import { type ConversationTurn } from "@/hooks/useRealtimeAPI";
 
 interface MessageListProps {
-  messages: Message[];
+  messages: ConversationTurn[];
   isListening: boolean;
 }
 
