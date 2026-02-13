@@ -32,6 +32,7 @@ export default function ConversationInterfaceRealtimePage() {
     connect,
     disconnect,
     conversationHistory,
+    userIsSpeaking,
   } = useRealtimeAPI();
 
   // Load exam data on mount
@@ -139,7 +140,10 @@ export default function ConversationInterfaceRealtimePage() {
           End Session
         </Button>
       </Box>
-      <MessageList messages={conversationHistory} isListening={false} />
+      <MessageList
+        messages={conversationHistory}
+        isListening={userIsSpeaking}
+      />
     </Box>
   );
 }

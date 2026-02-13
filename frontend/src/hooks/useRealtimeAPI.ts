@@ -12,6 +12,7 @@ interface RealtimeEvent {
 interface UseRealtimeAPIReturn {
     isConnected: boolean;
     isLoading: boolean;
+    userIsSpeaking: boolean;
     error: string | null;
     connect: (instructions?: string) => Promise<void>;
     disconnect: () => void;
@@ -28,6 +29,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     const [error, setError] = useState<string | null>(null);
     const [transcript, setTranscript] = useState('');
     const [response, setResponse] = useState('');
+    const [userIsSpeaking, setUserIsSpeaking] = useState(false);
 
     // Conversation Transcript
     const [conversationHistory, setConversationHistory] = useState<ConversationTurn[]>([])
@@ -128,7 +130,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
             // STEP 7: Send offer to OpenAI, get answer
             // ========================================
             console.log("7. Sending offer to OpenAI...");
-            const model = "gpt-4o-transcribe";
             const sdpResponse = await fetch(
                 `https://api.openai.com/v1/realtime/calls`,
                 {
@@ -227,7 +228,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
                 break;
             // AI finished responding
             case "response.output_audio_transcript.done":
-            case "response.done":
                 const assistantText = currentAssistantResponse.current;
                 if (assistantText){
                     setConversationHistory(prev => [...prev, {
@@ -246,6 +246,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
 
             // User started speaking
             case "input_audio_buffer.speech_started":
+                setUserIsSpeaking(true);
                 console.log("User started speaking");
                 setTranscript('');
                 break;
@@ -253,6 +254,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
             // User stopped speaking
             case "input_audio_buffer.speech_stopped":
                 console.log("User stopped speaking");
+                setUserIsSpeaking(false);
                 break;
 
             // Error
@@ -277,5 +279,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         transcript,
         response,
         conversationHistory,
+        userIsSpeaking,
     };
 };
