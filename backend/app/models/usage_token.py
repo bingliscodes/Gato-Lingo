@@ -11,6 +11,7 @@ class UsageToken(SQLModel, table=True):
     __tablename__ = "usage_tokens"
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    name: str = Field(default = "demo")
     usage_limit: int
     daily_usage: int = Field(default = 0)
 

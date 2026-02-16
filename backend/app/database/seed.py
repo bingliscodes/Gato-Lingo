@@ -5,6 +5,7 @@ from sqlmodel import Session, select
 from ..models.user import User
 from ..models.usage_token import UsageToken
 from ..models.vocabulary import VocabularyItem, VocabularyList, VocabularyListItem
+from ..models.exam import Exam
 from ..utils.password import hash_password
 
 def seed_users(db: Session):
@@ -21,7 +22,7 @@ def seed_users(db: Session):
         return
     
     # Create test users
-    ben = User( email="ben@example.com",
+    demo_teacher = User( email="teacher@example.com",
             password_hash=hash_password("password123"),  
             first_name="Ben",
             last_name="Inglis",
@@ -37,9 +38,9 @@ def seed_users(db: Session):
             role="student",
             native_language="cat",
             target_language="spanish",
-            teacher = ben
+            teacher = demo_teacher
     )
-    db.add(ben)
+    db.add(demo_teacher)
     db.add(cannoli)
     db.commit()
 
@@ -96,7 +97,7 @@ def seed_vocabulary(db:Session):
     db.refresh(word_2)
     db.refresh(word_3)
 
-def seed_demo(db: Session):
+def seed_usage_token(db: Session):
     statement = select(UsageToken)
     results = db.exec(statement)
     usage_tokens = results.all()
@@ -104,53 +105,26 @@ def seed_demo(db: Session):
 
     if usage_tokens_count > 0:
         print(f"Database already has {usage_tokens_count} usage tokens. Skipping seed")
+        return
     
-    else:
-        demo_token = UsageToken(
-            usage_limit=10,
-        )
-        db.add(demo_token)
-        db.commit()
-    
-    # Create demo users
-    statement = select(User).where(User.email == "teacher@example.com")
-    res = db.exec(statement).first()
-    if res:
-        print(f"Database already has demo teacher. Skipping seed")
-    else:
-        demo_teacher = User(
-            password_hash=hash_password("password123"),  
-            email="teacher@example.com",
-            first_name="Teacher",
-            last_name="Demo",
-            role="teacher",
-            native_language="english",
-            target_language="spanish",
-        )
-        db.add(demo_teacher)
-        db.commit()
-    
-    statement = select(User).where(User.email == "student@example.com")
-    res = db.exec(statement).first()
-    if res:
-        print(f"Database already has the demo student. Skipping seed")
-    else:
-        demo_student = User(
-            password_hash=hash_password("password123"),  
-            email="student@example.com",
-            first_name="Student",
-            last_name="Demo",
-            role="student",
-            native_language="english",
-            target_language="spanish",
-            usage_token=demo_token,
-            teacher=demo_teacher
-        )
-        db.add(demo_student)
-        db.commit()
+    demo_token = UsageToken(
+        usage_limit=10,
+    )
 
+    db.add(demo_token)
+    db.commit()
+    
     
 
+def seed_exams(db: Session):
+    statement = select(Exam)
+    res = db.exec(statement)
+    exams = res.all()
+    exams_count = len(exams)
+
+    if exams_count > 0:
+        print(f"Database already has {exams_count} exams. Skipping seed")
+        return
 
 
 
@@ -160,4 +134,5 @@ def seed_all(db: Session):
     """Run all seed functions."""
     seed_users(db)
     seed_vocabulary(db)
-    seed_demo(db)
+    seed_usage_token(db)
+    seed_exams(db)
