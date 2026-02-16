@@ -13,7 +13,6 @@ class UsageToken(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     usage_limit: int
     daily_usage: int = Field(default = 0)
-    remaining_uses: int = Field(usage_limit - daily_usage)
 
     users: List["User"] = Relationship(back_populates="usage_token")
 

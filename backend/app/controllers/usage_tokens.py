@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from fastapi import APIRouter, Depends
+from sqlmodel import Session
 from ..models.usage_token import UsageToken, UsageTokenResponse
 from ..models.user import User
 
@@ -8,7 +8,7 @@ from ..dependencies.auth import get_current_user
 router = APIRouter(prefix="/usage", tags=["usage"])
 
 
-@router.post("/update", response_model=UsageTokenResponse)
+@router.get("/update", response_model=UsageTokenResponse)
 def update_usage_token(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     usage_token = db.get(UsageToken, current_user.usage_token_id)
 
@@ -19,13 +19,13 @@ def update_usage_token(db: Session = Depends(get_db), current_user: User = Depen
 
         return UsageTokenResponse(
             status = "Success",
-            message = f"Usage token updated. Remaining uses: {usage_token.remaining_uses}"
+            message = f"Usage token updated. Remaining uses: {usage_token.daily_usage - usage_token.usage_limit}"
         )
 
     else:
         return UsageTokenResponse(
             status = "Failure",
-            message = f"Token {usage_token.id} has no more uses. Please wait until it resets to try again"
+            message = f"Token {usage_token.id} has reached it's daily usage limit. Please wait until it resets to try again"
         )
 
     

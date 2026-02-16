@@ -311,3 +311,15 @@ export const gradeConversationSession = async(conversationHistory: ConversationT
     }
     
 }
+
+export const updateUsageToken = async() => {
+    try {
+        const res = await axios.get(
+            `${import.meta.env.VITE_API_BASE_URL}usage/update`,
+            {withCredentials: true}
+        )
+        return res.data
+    }catch(err){
+        throw new Error(getErrorMessage(err));
+    }
+}
