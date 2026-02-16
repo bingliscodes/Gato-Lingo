@@ -1,6 +1,6 @@
 // hooks/useRealtimeAPI.ts
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { getEphemeralToken, type ConversationTurn } from '@/utils/apiCalls';
+import { getEphemeralToken, updateUsageToken, type ConversationTurn } from '@/utils/apiCalls';
 
 interface RealtimeEvent {
     type: string;
@@ -54,6 +54,15 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     }, []);
 
     const connect = useCallback(async (instructions?: string) => {
+        // Before we establish the connection, ensure the token is valid
+        const usageTokenRes = await updateUsageToken();
+
+        console.log("usageTokenRes", usageTokenRes)
+        if (usageTokenRes.status !== "Success"){
+            console.log(usageTokenRes.message);
+            return;
+        } 
+
         setIsLoading(true);
         setError(null);
         setConversationHistory([]);

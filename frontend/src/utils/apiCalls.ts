@@ -312,9 +312,13 @@ export const gradeConversationSession = async(conversationHistory: ConversationT
     
 }
 
+export interface UsageTokenResponse {
+    status: string;
+    message: string;
+}
 export const updateUsageToken = async() => {
     try {
-        const res = await axios.get(
+        const res = await axios.get<UsageTokenResponse>(
             `${import.meta.env.VITE_API_BASE_URL}usage/update`,
             {withCredentials: true}
         )
