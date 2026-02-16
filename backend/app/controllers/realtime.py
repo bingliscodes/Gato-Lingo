@@ -5,16 +5,12 @@ from typing import Optional, List
 from uuid import UUID
 from datetime import datetime, timezone
 from openai import OpenAI
-
 from ..database.database import get_db
 from ..config import settings
 from ..models.conversation_turn import ConversationTurn, ConversationTurnCreate
 from ..models.conversation_session import ConversationSession, SessionStatus
-from ..models.usage_token import UsageToken
-from ..models.user import User
-from ..models.exam import Exam
 from ..utils.score_session import generate_session_score
-from ..utils.password import hash_password
+
 
 router = APIRouter(prefix="/realtime", tags=["realtime"])
 
@@ -110,35 +106,7 @@ def grade_session(request: GradeRequest, db: Session = Depends(get_db)):
 
         
         return GradeResponse(status="success")
-
-
-
-@router.get("/demo")
-def init_demo(db: Session = Depends(get_db)):
-    """
-    Create a demo for the exam-taking side by creating a new student, assigning a demo exam to them, and associating the demo_usage token with them
-    """
-    statement = select(UsageToken).where(UsageToken.name == "demo")
-    demo_token = db.exec(statement).first()
-    if not demo_token:
-        return "Error, no demo token found"
     
-    statement = select(User).where(User.email == "teacher@example.com")
-    demo_teacher = db.exec(statement).first()
-    
-    new_student = User(
-            password_hash=hash_password("password123"),
-            email="student@example.com",
-            first_name="Student",
-            last_name="Demo",
-            role="student",
-            native_language="English",
-            target_language="Spanish",
-            teacher=demo_teacher,
-            usage_token=demo_token
-    )
 
-    statement = select(Exam)
-    db.add(new_student)
-    db.commit()
+
     

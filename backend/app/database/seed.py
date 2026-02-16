@@ -5,7 +5,6 @@ from sqlmodel import Session, select
 from ..models.user import User
 from ..models.usage_token import UsageToken
 from ..models.vocabulary import VocabularyItem, VocabularyList, VocabularyListItem
-from ..models.exam import Exam
 from ..utils.password import hash_password
 
 def seed_users(db: Session):
@@ -114,25 +113,9 @@ def seed_usage_token(db: Session):
     db.add(demo_token)
     db.commit()
     
-    
-
-def seed_exams(db: Session):
-    statement = select(Exam)
-    res = db.exec(statement)
-    exams = res.all()
-    exams_count = len(exams)
-
-    if exams_count > 0:
-        print(f"Database already has {exams_count} exams. Skipping seed")
-        return
-
-
-
-
 
 def seed_all(db: Session):
     """Run all seed functions."""
     seed_users(db)
     seed_vocabulary(db)
     seed_usage_token(db)
-    seed_exams(db)

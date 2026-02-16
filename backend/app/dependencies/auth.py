@@ -2,12 +2,12 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from fastapi import Depends, HTTPException, status, Request, Response
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlmodel import Session, select
 
 from ..database.database import get_db
-from ..models.user import User, AuthResponse
+from ..models.user import User
 from ..utils.jwt import decode_token
 
 security = HTTPBearer(auto_error=False)
