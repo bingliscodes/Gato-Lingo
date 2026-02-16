@@ -4,6 +4,8 @@ from pydantic import BaseModel
 from typing import Optional, List
 from uuid import UUID
 from datetime import datetime, timezone
+import random
+import string
 
 from ..database.database import get_db
 from ..config import settings
@@ -17,10 +19,19 @@ from ..utils.jwt import create_access_token
 from ..controllers.auth import set_token_cookie
 from ..controllers.exam import create_exam, ExamCreate
 
+def generate_random_string(length):
+    """
+    Generates a random string of a specified length using letters and digits.
+    """
+    # Define the pool of characters to choose from
+    characters = string.ascii_letters + string.digits
+    
+    # Use a list comprehension and join to create the random string
+    random_string = ''.join(random.choice(characters) for _ in range(length))
+    
+    return random_string
 
 router = APIRouter(prefix="/demo", tags=["demo"])
-
-
 
 @router.get("/")
 def init_demo(demo_data: ExamCreate, response: Response, db: Session = Depends(get_db)):
@@ -37,10 +48,10 @@ def init_demo(demo_data: ExamCreate, response: Response, db: Session = Depends(g
 
     statement = select(VocabularyList).where(VocabularyList.teacher_id == demo_teacher.id)
     demo_vocab_list = db.exec(statement).first()
-    
+    demo_account_string = generate_random_string(10)
     new_student = User(
             password_hash=hash_password("password123"),
-            email="student@example.com",
+            email=f"{demo_account_string}@example.com",
             first_name="Student",
             last_name="Demo",
             role="student",
