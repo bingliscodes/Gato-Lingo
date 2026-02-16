@@ -23,20 +23,20 @@ def seed_users(db: Session):
     # Create test users
     demo_teacher = User( email="teacher@example.com",
             password_hash=hash_password("password123"),  
-            first_name="Ben",
-            last_name="Inglis",
+            first_name="Teacher",
+            last_name="Demo",
             role="teacher",
-            native_language="english",
-            target_language="spanish",)
+            native_language="English",
+            target_language="Spanish",)
     
     cannoli = User (
-        email="cannoli@example.com",
+        email="student@example.com",
             password_hash=hash_password("password123"),
-            first_name="Cannoli",
-            last_name="Inglis",
+            first_name="Student",
+            last_name="Demo",
             role="student",
             native_language="cat",
-            target_language="spanish",
+            target_language="Spanish",
             teacher = demo_teacher
     )
     db.add(demo_teacher)

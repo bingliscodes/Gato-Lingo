@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getErrorMessage } from "./helperFunctions";
+import { type AuthResponse } from './authentication';
 
 
 export interface ExamFormData {
@@ -323,6 +324,24 @@ export const updateUsageToken = async() => {
             {withCredentials: true}
         )
         return res.data
+    }catch(err){
+        throw new Error(getErrorMessage(err));
+    }
+}
+
+export const startDemo = async(exam_data: ExamFormData) => {
+            const requestData = {
+            ...exam_data,
+            tenses: JSON.stringify(exam_data.tenses)
+        }
+    try{
+        const res = await axios.post<AuthResponse>(
+            `${import.meta.env.VITE_API_BASE_URL}demo`,
+            requestData,
+            {withCredentials: true}
+        )
+        console.log(res.data);
+        return res.data;
     }catch(err){
         throw new Error(getErrorMessage(err));
     }

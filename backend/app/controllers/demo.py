@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, HTTPException, status
 from sqlmodel import Session, select
 from pydantic import BaseModel
 from typing import Optional, List
@@ -23,31 +23,42 @@ def generate_random_string(length):
     """
     Generates a random string of a specified length using letters and digits.
     """
-    # Define the pool of characters to choose from
     characters = string.ascii_letters + string.digits
-    
-    # Use a list comprehension and join to create the random string
-    random_string = ''.join(random.choice(characters) for _ in range(length))
-    
-    return random_string
+    return ''.join(random.choice(characters) for _ in range(length))
 
 router = APIRouter(prefix="/demo", tags=["demo"])
 
-@router.get("/")
-def init_demo(demo_data: ExamCreate, response: Response, db: Session = Depends(get_db)):
+@router.post("/", response_model=AuthResponse)
+def init_demo(response: Response, db: Session = Depends(get_db), demo_data: Optional[ExamCreate] = None):
     """
     Create a demo for the exam-taking side by creating a new student, assigning a demo exam to them, and associating the demo_usage token with them
     """
+    print("initializing demo...")
+    print("demo_data", demo_data)
+    
     statement = select(UsageToken).where(UsageToken.name == "demo")
     demo_token = db.exec(statement).first()
     if not demo_token:
-        return "Error, no demo token found"
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Demo token not found"
+        )
     
     statement = select(User).where(User.email == "teacher@example.com")
     demo_teacher = db.exec(statement).first()
+    if not demo_teacher:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Demo teacher not found"
+        )
 
     statement = select(VocabularyList).where(VocabularyList.teacher_id == demo_teacher.id)
     demo_vocab_list = db.exec(statement).first()
+    if not demo_vocab_list:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Demo vocabulary list not found"
+        )
     demo_account_string = generate_random_string(10)
     new_student = User(
             password_hash=hash_password("password123"),
@@ -61,10 +72,12 @@ def init_demo(demo_data: ExamCreate, response: Response, db: Session = Depends(g
             usage_token=demo_token
     )
 
+    print("adding new student...")
     db.add(new_student)
     db.commit()
     db.refresh(new_student)
     
+
     token = create_access_token(new_student.id)
     set_token_cookie(response, token)
     
@@ -73,7 +86,7 @@ def init_demo(demo_data: ExamCreate, response: Response, db: Session = Depends(g
         description= demo_data.description if demo_data.description else "A demonstration of GatoLingo",
         difficulty_level=demo_data.difficulty_level if demo_data.difficulty_level else "beginner",
         target_language="spanish",
-        tenses=["present", "preterite"],
+        tenses='["present", "preterite"]',
         topic= demo_data.topic if demo_data.topic else "How cool cats are",
         vocabulary_list_id=demo_vocab_list.id,
     )
