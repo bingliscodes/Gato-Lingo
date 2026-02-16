@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { Box, Text, Button } from "@chakra-ui/react";
+import { Box, Text, Button, VStack } from "@chakra-ui/react";
 
 import { useRealtimeAPI } from "@/hooks/useRealtimeAPI";
 import {
@@ -9,6 +9,13 @@ import {
   gradeConversationSession,
 } from "@/utils/apiCalls";
 import { MessageList } from "@/components/MessageList";
+
+const MicrophoneIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+  </svg>
+);
 
 export default function ConversationInterfaceRealtimePage() {
   const { sessionId } = useParams();
@@ -146,6 +153,44 @@ export default function ConversationInterfaceRealtimePage() {
         messages={conversationHistory}
         isListening={userIsSpeaking}
       />
+      {/* Recording controls */}
+      <Box p={6} bg="bg.panel" boxShadow="lg">
+        <VStack gap={3}>
+          <Button
+            // onMouseDown={handleMouseDown}
+            // onMouseUp={handleMouseUp}
+            // onTouchStart={handleMouseDown}
+            // onTouchEnd={handleMouseUp}
+            // disabled={isTutorSpeaking || isPlaying}
+            w="80px"
+            h="80px"
+            borderRadius="full"
+            colorPalette={userIsSpeaking ? "red" : "blue"}
+            transform={userIsSpeaking ? "scale(1.1)" : "scale(1)"}
+            transition="all 0.2s"
+            _disabled={{
+              bg: "gray.300",
+              cursor: "not-allowed",
+            }}
+          >
+            <MicrophoneIcon />
+          </Button>
+
+          <Text color="fg.muted" fontSize="sm">
+            {/* {isTutorSpeaking || isPlaying
+                    ? "Tutor is speaking..."
+                    : isRecording
+                      ? "Listening... Release to send"
+                      : "Hold to speak"} */}
+          </Text>
+          {/*       
+                {recorderError && (
+                  <Text color="red.500" fontSize="sm">
+                    {recorderError}
+                  </Text>
+                )} */}
+        </VStack>
+      </Box>
     </Box>
   );
 }

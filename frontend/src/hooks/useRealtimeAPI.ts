@@ -211,6 +211,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
 
 
     // TODO: Figure out how to have tutor continue talking when voice events are triggered
+    // Will likely have to switch to push to talk for responses
     const handleServerEvent = (event: RealtimeEvent) => {
         switch (event.type) {
             // User started speaking
