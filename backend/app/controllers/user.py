@@ -20,7 +20,6 @@ def get_all_users(db: Session = Depends(get_db)):
 def get_my_students(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)):
-    print("getting students for user:", current_user.id)
     statement = select(User).where(User.teacher_id == current_user.id)
     students = db.exec(statement).all()
     return students

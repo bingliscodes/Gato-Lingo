@@ -1,10 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
-import requests
-from requests.exceptions import HTTPError
 
 from ..database.database import get_db
 from ..models.conversation_session import ConversationSession, SessionStatus, ConversationSessionResponse
