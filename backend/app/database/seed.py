@@ -44,7 +44,6 @@ def seed_users(db: Session):
     db.commit()
 
 
-
 def seed_vocabulary(db:Session):
     statement = select(VocabularyListItem)
     results = db.exec(statement)
@@ -97,7 +96,7 @@ def seed_vocabulary(db:Session):
     db.refresh(word_2)
     db.refresh(word_3)
 
-def seed_usage_tokens(db: Session):
+def seed_demo(db: Session):
     statement = select(UsageToken)
     results = db.exec(statement)
     usage_tokens = results.all()
@@ -105,17 +104,60 @@ def seed_usage_tokens(db: Session):
 
     if usage_tokens_count > 0:
         print(f"Database already has {usage_tokens_count} usage tokens. Skipping seed")
-        return
     
-    demo_token = UsageToken(
-        usage_limit=10,
-    )
+    else:
+        demo_token = UsageToken(
+            usage_limit=10,
+        )
+        db.add(demo_token)
+        db.commit()
+    
+    # Create demo users
+    statement = select(User).where(User.email == "teacher@example.com")
+    res = db.exec(statement).first()
+    if res:
+        print(f"Database already has demo teacher. Skipping seed")
+    else:
+        demo_teacher = User(
+            password_hash=hash_password("password123"),  
+            email="teacher@example.com",
+            first_name="Teacher",
+            last_name="Demo",
+            role="teacher",
+            native_language="english",
+            target_language="spanish",
+        )
+        db.add(demo_teacher)
+        db.commit()
+    
+    statement = select(User).where(User.email == "student@example.com")
+    res = db.exec(statement).first()
+    if res:
+        print(f"Database already has the demo student. Skipping seed")
+    else:
+        demo_student = User(
+            password_hash=hash_password("password123"),  
+            email="student@example.com",
+            first_name="Student",
+            last_name="Demo",
+            role="student",
+            native_language="english",
+            target_language="spanish",
+            usage_token=demo_token,
+            teacher=demo_teacher
+        )
+        db.add(demo_student)
+        db.commit()
 
-    db.add(demo_token)
-    db.commit()
+    
+
+
+
+
+
 
 def seed_all(db: Session):
     """Run all seed functions."""
     seed_users(db)
     seed_vocabulary(db)
-    seed_usage_tokens(db)
+    seed_demo(db)
