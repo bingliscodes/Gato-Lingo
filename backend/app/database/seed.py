@@ -3,7 +3,7 @@ Seed the database with initial data for development.
 """
 from sqlmodel import Session, select
 from ..models.user import User
-from ..models.conversation_session import ConversationSession
+from ..models.usage_token import UsageToken
 from ..models.vocabulary import VocabularyItem, VocabularyList, VocabularyListItem
 from ..utils.password import hash_password
 
@@ -97,7 +97,25 @@ def seed_vocabulary(db:Session):
     db.refresh(word_2)
     db.refresh(word_3)
 
+def seed_usage_tokens(db: Session):
+    statement = select(UsageToken)
+    results = db.exec(statement)
+    usage_tokens = results.all()
+    usage_tokens_count = len(usage_tokens)
+
+    if usage_tokens_count > 0:
+        print(f"Database already has {usage_tokens_count} usage tokens. Skipping seed")
+        return
+    
+    demo_token = UsageToken(
+        usage_limit=10,
+    )
+
+    db.add(demo_token)
+    db.commit()
+
 def seed_all(db: Session):
     """Run all seed functions."""
     seed_users(db)
     seed_vocabulary(db)
+    seed_usage_tokens(db)

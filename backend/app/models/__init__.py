@@ -4,6 +4,7 @@ from .exam import Exam, ExamCreate
 from .conversation_session import ConversationSession, SessionAssignment, SessionStatus
 from .conversation_turn import ConversationTurn
 from .session_score import SessionScore
+from .usage_token import UsageToken
 
 from ..schemas.responses import (
     ExamResponse, DashboardExamResponse, ConversationSessionResponse, StudentAssignmentResponse, SessionScoreResponse

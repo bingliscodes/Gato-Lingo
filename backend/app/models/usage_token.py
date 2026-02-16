@@ -13,5 +13,5 @@ class UsageToken(SQLModel, table=True):
     usage_limit: int
     daily_usage: int = Field(default = 0)
 
-    users: List["User"] = Relationship(back_populates="token")
+    users: List["User"] = Relationship(back_populates="usage_token")
     

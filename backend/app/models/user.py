@@ -33,7 +33,7 @@ class User(SQLModel, table=True):
 
     # Relationships
     teacher_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
-    token_id: Optional[uuid.UUID] = Field(default=None, foreign_key="usage_tokens.id")
+    usage_token_id: Optional[uuid.UUID] = Field(default=None, foreign_key="usage_tokens.id")
     teacher: Optional["User"] = Relationship(
         back_populates="students",
         sa_relationship_kwargs={
