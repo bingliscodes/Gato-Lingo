@@ -1,5 +1,3 @@
-import requests
-from requests.exceptions import HTTPError
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 from pydantic import BaseModel

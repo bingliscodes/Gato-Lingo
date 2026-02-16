@@ -2,8 +2,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { getEphemeralToken, type ConversationTurn } from '@/utils/apiCalls';
 
-
-
 interface RealtimeEvent {
     type: string;
     transcript?: string;
@@ -247,7 +245,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
                     });
                 }
                 pendingUserTurn.current = null;
-
                 break;
                 
             // AI finished responding transcribing audio
@@ -282,7 +279,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
                 break;
 
             default:
-                //Uncomment to debug unknown events
+                // Uncomment to debug unknown events
                 // console.log("Unhandled event:", event.type, event);
                 break;
         }
