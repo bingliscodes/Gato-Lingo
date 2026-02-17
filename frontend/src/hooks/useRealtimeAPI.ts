@@ -1,5 +1,6 @@
 // hooks/useRealtimeAPI.ts
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, type Dispatch,
+  type SetStateAction } from 'react';
 import { getEphemeralToken, updateUsageToken, type ConversationTurn } from '@/utils/apiCalls';
 
 interface RealtimeEvent {
@@ -21,6 +22,8 @@ interface UseRealtimeAPIReturn {
     disconnect: () => void;
     sendEvent: (event: RealtimeEvent) => void;
     conversationHistory: ConversationTurn[];
+    setIsPushToTalk: Dispatch<SetStateAction<boolean>>;
+    setIsHoldingButton: Dispatch<SetStateAction<boolean>>;
 }
 
 export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
@@ -34,6 +37,10 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     const [response, setResponse] = useState('');
     const [userIsSpeaking, setUserIsSpeaking] = useState(false);
     const [conversationHistory, setConversationHistory] = useState<ConversationTurn[]>([])
+
+    // Push to talk mode
+    const [isPushToTalk, setIsPushToTalk] = useState(false);
+    const [isHoldingButton, setIsHoldingButton] = useState(false);
 
 
     // Transcript tracking refs
@@ -52,6 +59,13 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     useEffect(() => {
         return () => disconnect();
     }, []);
+
+    useEffect(() => {
+    if (streamRef.current && isPushToTalk) {
+        const audioTrack = streamRef.current.getAudioTracks()[0];
+        audioTrack.enabled = isHoldingButton;
+    }
+}, [isHoldingButton, isPushToTalk]);
 
     const connect = useCallback(async (instructions?: string) => {
         // Before we establish the connection, ensure the token is valid
@@ -216,9 +230,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         }
     }, []);
 
-
-    // TODO: Figure out how to have tutor continue talking when voice events are triggered
-    // Will likely have to switch to push to talk for responses
     const handleServerEvent = (event: RealtimeEvent) => {
         switch (event.type) {
             // User started speaking
@@ -303,5 +314,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         sendEvent,
         conversationHistory,
         userIsSpeaking,
+        setIsPushToTalk,
+        setIsHoldingButton,
     };
 };

@@ -41,6 +41,7 @@ export default function ConversationInterfaceRealtimePage() {
     disconnect,
     conversationHistory,
     userIsSpeaking,
+    setIsHoldingButton,
   } = useRealtimeAPI();
 
   // Load exam data on mount
@@ -154,14 +155,14 @@ export default function ConversationInterfaceRealtimePage() {
         isListening={userIsSpeaking}
       />
       {/* Recording controls */}
-      <Box p={6} bg="bg.panel" boxShadow="lg">
+      {/* <Box p={6} bg="bg.panel" boxShadow="lg">
         <VStack gap={3}>
           <Button
-            // onMouseDown={handleMouseDown}
-            // onMouseUp={handleMouseUp}
-            // onTouchStart={handleMouseDown}
-            // onTouchEnd={handleMouseUp}
-            // disabled={isTutorSpeaking || isPlaying}
+            onMouseDown={() => setIsHoldingButton(true)}
+            onMouseUp={() => setIsHoldingButton(false)}
+            onTouchStart={() => setIsHoldingButton(true)}
+            onTouchEnd={() => setIsHoldingButton(false)}
+            disabled={isTutorSpeaking || isPlaying}
             w="80px"
             h="80px"
             borderRadius="full"
@@ -177,20 +178,20 @@ export default function ConversationInterfaceRealtimePage() {
           </Button>
 
           <Text color="fg.muted" fontSize="sm">
-            {/* {isTutorSpeaking || isPlaying
+            {isTutorSpeaking || isPlaying
                     ? "Tutor is speaking..."
                     : isRecording
                       ? "Listening... Release to send"
-                      : "Hold to speak"} */}
+                      : "Hold to speak"}
           </Text>
-          {/*       
+                
                 {recorderError && (
                   <Text color="red.500" fontSize="sm">
                     {recorderError}
                   </Text>
-                )} */}
+                )}
         </VStack>
-      </Box>
+      </Box> */}
     </Box>
   );
 }

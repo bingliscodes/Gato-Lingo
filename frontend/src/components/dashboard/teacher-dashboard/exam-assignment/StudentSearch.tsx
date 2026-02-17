@@ -13,7 +13,7 @@ import StudentCard from "./StudentSearchCard";
 
 export interface StudentSearchProps {
   assignedStudentIds: string[];
-  setAssignedStudentIds: React.Dispatch<React.SetStateAction<string[]>>;
+  setAssignedStudentIds: Dispatch<SetStateAction<string[]>>;
   setDialogIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
