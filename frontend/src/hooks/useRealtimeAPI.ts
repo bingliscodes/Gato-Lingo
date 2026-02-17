@@ -76,6 +76,10 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
       const audioTrack = streamRef.current.getAudioTracks()[0];
       audioTrack.enabled = isHoldingButton;
     }
+    if (streamRef.current && !isPushToTalk) {
+      const audioTrack = streamRef.current.getAudioTracks()[0];
+      audioTrack.enabled = true;
+    }
   }, [isHoldingButton, isPushToTalk]);
 
   // Switch to push-to-talk mode
@@ -342,7 +346,10 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         console.log('Session created!');
         break;
 
-      // Error
+      case 'session.updated':
+        console.log('Session updated', event);
+        break;
+
       case 'error':
         console.error('API Error:', event.error);
         setError(event.error?.message || 'Unknown error');

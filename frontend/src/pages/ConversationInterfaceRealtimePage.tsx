@@ -43,7 +43,18 @@ export default function ConversationInterfaceRealtimePage() {
     userIsSpeaking,
     setIsHoldingButton,
     setIsPushToTalk,
+    sendEvent,
   } = useRealtimeAPI();
+
+  const handleUserFinishedSpeaking = () => {
+    setIsHoldingButton(false);
+    sendEvent({
+      type: 'input_audio_buffer.commit',
+    });
+    sendEvent({
+      type: 'response.create',
+    });
+  };
 
   // Load exam data on mount
   useEffect(() => {
@@ -168,9 +179,9 @@ export default function ConversationInterfaceRealtimePage() {
         <VStack gap={3}>
           <Button
             onMouseDown={() => setIsHoldingButton(true)}
-            onMouseUp={() => setIsHoldingButton(false)}
+            onMouseUp={handleUserFinishedSpeaking}
             onTouchStart={() => setIsHoldingButton(true)}
-            onTouchEnd={() => setIsHoldingButton(false)}
+            onTouchEnd={handleUserFinishedSpeaking}
             // disabled={isTutorSpeaking || isPlaying}
             w="80px"
             h="80px"
