@@ -1,16 +1,30 @@
-import { Flex, Button, Stack, Image } from '@chakra-ui/react';
+import { Flex, Button, Stack } from '@chakra-ui/react';
 import { useNavigate } from 'react-router';
 
 import { useUser } from '@/contexts/UserContext';
-import LogoIcon from '@/assets/gatolingo-logo.svg';
+import LogoIcon from '@/assets/gatolingo-logo.svg?react';
 import { startDemo, type ExamFormData } from '@/utils/apiCalls';
+interface LogoProps {
+  fill?: string;
+  stroke?: string;
+  width?: string | number;
+  height?: string | number;
+}
 
-const SampleIcon = ({
-  fill = 'red',
-  backgroundColor = 'white',
-  width = '300',
-  height = '200',
-}) => <LogoIcon />;
+const Logo = ({
+  fill = 'currentColor',
+  stroke,
+  width = 48,
+  height = 48,
+}: LogoProps) => (
+  <LogoIcon
+    fill={fill}
+    width={width}
+    height={height}
+    stroke={stroke}
+    style={{ display: 'block' }}
+  />
+);
 
 export default function LeftNavContent() {
   const { isLoggedIn, refreshUserData } = useUser();
@@ -42,8 +56,7 @@ export default function LeftNavContent() {
   return (
     <Flex>
       <Stack direction="row" align="center">
-        <SampleIcon fill="green" backgroundColor="#ff0" />
-        {/* <Image src={logo} alt="GatoLingo Logo" boxSize="4rem" bg="white" /> */}
+        <Logo width="4rem" height="4rem" fill="white" />
         {!isLoggedIn && (
           <Button variant="solid" size="sm" onClick={handleDemo}>
             Demo
