@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router";
-import { Box, Text, Button, VStack } from "@chakra-ui/react";
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router';
+import { Box, Text, Button, VStack, Switch, HStack } from '@chakra-ui/react';
 
-import { useRealtimeAPI } from "@/hooks/useRealtimeAPI";
+import { useRealtimeAPI } from '@/hooks/useRealtimeAPI';
 import {
   type StudentAssignmentResponse,
   getExamData,
   gradeConversationSession,
-} from "@/utils/apiCalls";
-import { MessageList } from "@/components/MessageList";
+} from '@/utils/apiCalls';
+import { MessageList } from '@/components/MessageList';
 
 const MicrophoneIcon = () => (
   <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
@@ -26,7 +26,7 @@ export default function ConversationInterfaceRealtimePage() {
   );
   const [isGradingExam, setIsGradingExam] = useState(false);
   const [errorGradingExam, setErrorGradingExam] = useState<string | null>(null);
-  const [examGrade, setExamGrade] = useState<string>("");
+  const [examGrade, setExamGrade] = useState<string>('');
   const [isLoadingExamData, setIsLoadingExamData] = useState(true);
   const [errorLoadingExamData, setErrorLoadingExamData] = useState<
     string | null
@@ -42,6 +42,7 @@ export default function ConversationInterfaceRealtimePage() {
     conversationHistory,
     userIsSpeaking,
     setIsHoldingButton,
+    setIsPushToTalk,
   } = useRealtimeAPI();
 
   // Load exam data on mount
@@ -52,7 +53,7 @@ export default function ConversationInterfaceRealtimePage() {
         setExamData(data);
       } catch (err) {
         setErrorLoadingExamData(
-          err instanceof Error ? err.message : "Failed to load exam",
+          err instanceof Error ? err.message : 'Failed to load exam',
         );
       } finally {
         setIsLoadingExamData(false);
@@ -78,10 +79,10 @@ export default function ConversationInterfaceRealtimePage() {
       setExamGrade(res);
       setIsGradingExam(false);
       disconnect();
-      nav("/dashboard");
+      nav('/dashboard');
     } catch (err) {
       setErrorGradingExam(
-        err instanceof Error ? err.message : "Failed to grade exam",
+        err instanceof Error ? err.message : 'Failed to grade exam',
       );
     } finally {
       setIsGradingExam(false);
@@ -113,10 +114,18 @@ export default function ConversationInterfaceRealtimePage() {
         justifyContent="space-between"
         alignItems="center"
       >
-        <Text fontSize="xl" fontWeight="semibold">
-          Exam: {examData.exam.title}
-        </Text>
-
+        <HStack gap={6}>
+          <Text fontSize="xl" fontWeight="semibold">
+            Exam: {examData.exam.title}
+          </Text>
+          <Switch.Root
+            onCheckedChange={() => setIsPushToTalk((prevState) => !prevState)}
+          >
+            <Switch.HiddenInput />
+            <Switch.Control />
+            <Switch.Label>Activate push-to-talk mode</Switch.Label>
+          </Switch.Root>
+        </HStack>
         {
           // TODO: figure out how to handle dc/rc with new model
           /* {!isConnected && (
@@ -138,7 +147,7 @@ export default function ConversationInterfaceRealtimePage() {
 
         {!isConnected && (
           <Button onClick={handleConnect} disabled={isLoading}>
-            {isLoading ? "Connecting..." : "Start Conversation"}
+            {isLoading ? 'Connecting...' : 'Start Conversation'}
           </Button>
         )}
         {isConnected && (
@@ -155,43 +164,29 @@ export default function ConversationInterfaceRealtimePage() {
         isListening={userIsSpeaking}
       />
       {/* Recording controls */}
-      {/* <Box p={6} bg="bg.panel" boxShadow="lg">
+      <Box p={6} bg="bg.panel" boxShadow="lg">
         <VStack gap={3}>
           <Button
             onMouseDown={() => setIsHoldingButton(true)}
             onMouseUp={() => setIsHoldingButton(false)}
             onTouchStart={() => setIsHoldingButton(true)}
             onTouchEnd={() => setIsHoldingButton(false)}
-            disabled={isTutorSpeaking || isPlaying}
+            // disabled={isTutorSpeaking || isPlaying}
             w="80px"
             h="80px"
             borderRadius="full"
-            colorPalette={userIsSpeaking ? "red" : "blue"}
-            transform={userIsSpeaking ? "scale(1.1)" : "scale(1)"}
+            colorPalette={userIsSpeaking ? 'red' : 'blue'}
+            transform={userIsSpeaking ? 'scale(1.1)' : 'scale(1)'}
             transition="all 0.2s"
             _disabled={{
-              bg: "gray.300",
-              cursor: "not-allowed",
+              bg: 'gray.300',
+              cursor: 'not-allowed',
             }}
           >
             <MicrophoneIcon />
           </Button>
-
-          <Text color="fg.muted" fontSize="sm">
-            {isTutorSpeaking || isPlaying
-                    ? "Tutor is speaking..."
-                    : isRecording
-                      ? "Listening... Release to send"
-                      : "Hold to speak"}
-          </Text>
-                
-                {recorderError && (
-                  <Text color="red.500" fontSize="sm">
-                    {recorderError}
-                  </Text>
-                )}
         </VStack>
-      </Box> */}
+      </Box>
     </Box>
   );
 }
