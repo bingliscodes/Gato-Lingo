@@ -34,6 +34,7 @@ interface UseRealtimeAPIReturn {
   conversationHistory: ConversationTurn[];
   setIsPushToTalk: Dispatch<SetStateAction<boolean>>;
   setIsHoldingButton: Dispatch<SetStateAction<boolean>>;
+  setUserIsSpeaking: Dispatch<SetStateAction<boolean>>;
 }
 
 export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
@@ -371,6 +372,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     sendEvent,
     conversationHistory,
     userIsSpeaking,
+    setUserIsSpeaking,
     setIsPushToTalk,
     setIsHoldingButton,
   };
