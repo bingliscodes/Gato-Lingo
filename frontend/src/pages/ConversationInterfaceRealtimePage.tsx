@@ -43,6 +43,7 @@ export default function ConversationInterfaceRealtimePage() {
     userIsSpeaking,
     setUserIsSpeaking,
     setIsHoldingButton,
+    isPushToTalk,
     setIsPushToTalk,
     sendEvent,
   } = useRealtimeAPI();
@@ -182,29 +183,31 @@ export default function ConversationInterfaceRealtimePage() {
         isListening={userIsSpeaking}
       />
       {/* Recording controls */}
-      <Box p={6} bg="bg.panel" boxShadow="lg">
-        <VStack gap={3}>
-          <Button
-            onMouseDown={handleUserStartSpeaking}
-            onMouseUp={handleUserFinishSpeaking}
-            onTouchStart={() => setIsHoldingButton(true)}
-            onTouchEnd={handleUserFinishSpeaking}
-            // disabled={isTutorSpeaking || isPlaying}
-            w="80px"
-            h="80px"
-            borderRadius="full"
-            colorPalette={userIsSpeaking ? 'red' : 'blue'}
-            transform={userIsSpeaking ? 'scale(1.1)' : 'scale(1)'}
-            transition="all 0.2s"
-            _disabled={{
-              bg: 'gray.300',
-              cursor: 'not-allowed',
-            }}
-          >
-            <MicrophoneIcon />
-          </Button>
-        </VStack>
-      </Box>
+      {isPushToTalk && (
+        <Box p={6} bg="bg.panel" boxShadow="lg">
+          <VStack gap={3}>
+            <Button
+              onMouseDown={handleUserStartSpeaking}
+              onMouseUp={handleUserFinishSpeaking}
+              onTouchStart={() => setIsHoldingButton(true)}
+              onTouchEnd={handleUserFinishSpeaking}
+              // disabled={isTutorSpeaking || isPlaying}
+              w="80px"
+              h="80px"
+              borderRadius="full"
+              colorPalette={userIsSpeaking ? 'red' : 'blue'}
+              transform={userIsSpeaking ? 'scale(1.1)' : 'scale(1)'}
+              transition="all 0.2s"
+              _disabled={{
+                bg: 'gray.300',
+                cursor: 'not-allowed',
+              }}
+            >
+              <MicrophoneIcon />
+            </Button>
+          </VStack>
+        </Box>
+      )}
     </Box>
   );
 }

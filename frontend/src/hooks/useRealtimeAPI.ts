@@ -32,6 +32,7 @@ interface UseRealtimeAPIReturn {
   disconnect: () => void;
   sendEvent: (event: RealtimeEvent) => void;
   conversationHistory: ConversationTurn[];
+  isPushToTalk: boolean;
   setIsPushToTalk: Dispatch<SetStateAction<boolean>>;
   setIsHoldingButton: Dispatch<SetStateAction<boolean>>;
   setUserIsSpeaking: Dispatch<SetStateAction<boolean>>;
@@ -373,6 +374,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     conversationHistory,
     userIsSpeaking,
     setUserIsSpeaking,
+    isPushToTalk,
     setIsPushToTalk,
     setIsHoldingButton,
   };
