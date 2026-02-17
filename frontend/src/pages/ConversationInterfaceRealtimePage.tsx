@@ -164,19 +164,31 @@ export default function ConversationInterfaceRealtimePage() {
         )} */
         }
 
-        {!isConnected && (
-          <Button onClick={handleConnect} disabled={isLoading}>
-            {isLoading ? 'Connecting...' : 'Start Conversation'}
-          </Button>
-        )}
         {isConnected && (
           <p style={{ marginTop: 20 }}>
             🎤 Speak into your microphone - the tutor should respond!
           </p>
         )}
-        <Button bgColor="red.300" variant="solid" onClick={handleEndSession}>
-          End Session
-        </Button>
+        <HStack>
+          {!isConnected && (
+            <Button
+              variant="solid"
+              onClick={handleConnect}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Connecting...' : 'Start Conversation'}
+            </Button>
+          )}
+          {isConnected && (
+            <Button
+              bgColor="red.300"
+              variant="solid"
+              onClick={handleEndSession}
+            >
+              End Session
+            </Button>
+          )}
+        </HStack>
       </Box>
       <MessageList
         messages={conversationHistory}
