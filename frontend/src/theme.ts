@@ -1,22 +1,21 @@
 // src/Theme.ts
-import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react"
-
+import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
 
 const config = defineConfig({
   theme: {
     tokens: {
       colors: {
         brand: {
-          50: { value: "#f0f4f8" },
-          100: { value: "#d9e2ec" },
-          200: { value: "#bcccdc" },
-          300: { value: "#9fb3c8" },
-          400: { value: "#829ab1" },
-          500: { value: "#627d98" },
-          600: { value: "#486581" },
-          700: { value: "#334e68" },
-          800: { value: "#243b53" },
-          900: { value: "#102a43" },
+          50: { value: '#f0f4f8' },
+          100: { value: '#d9e2ec' },
+          200: { value: '#bcccdc' },
+          300: { value: '#9fb3c8' },
+          400: { value: '#829ab1' },
+          500: { value: '#627d98' },
+          600: { value: '#486581' },
+          700: { value: '#334e68' },
+          800: { value: '#243b53' },
+          900: { value: '#102a43' },
         },
       },
       fonts: {
@@ -28,34 +27,40 @@ const config = defineConfig({
       colors: {
         bg: {
           DEFAULT: {
-            value: { _light: "{colors.white}", _dark: "#1A1A1D" },
+            value: { _light: '{colors.white}', _dark: '#1A1A1D' },
           },
           subtle: {
-            value: { _light: "{colors.brand.50}", _dark: "{colors.brand.900}" },
+            value: { _light: '{colors.brand.50}', _dark: '{colors.brand.900}' },
           },
           muted: {
-            value: { _light: "{colors.gray.100}", _dark: "{colors.gray.800}" },
+            value: { _light: '{colors.gray.100}', _dark: '{colors.gray.800}' },
           },
         },
         fg: {
           DEFAULT: {
-            value: { _light: "{colors.brand.900}", _dark: "{colors.gray.50}" },
+            value: { _light: '{colors.brand.900}', _dark: '{colors.gray.50}' },
           },
           muted: {
-            value: { _light: "{colors.brand.600}", _dark: "{colors.brand.300}" },
+            value: {
+              _light: '{colors.brand.600}',
+              _dark: '{colors.brand.300}',
+            },
           },
         },
         border: {
           DEFAULT: {
-            value: { _light: "{colors.gray.200}", _dark: "{colors.gray.800}" },
+            value: { _light: '{colors.gray.200}', _dark: '{colors.gray.800}' },
           },
         },
         accent: {
           DEFAULT: {
-            value: { _light: "{colors.brand.600}", _dark: "{colors.brand.400}" },
+            value: {
+              _light: '{colors.brand.600}',
+              _dark: '{colors.brand.400}',
+            },
           },
           fg: {
-            value: { _light: "{colors.white}", _dark: "{colors.brand.900}" },
+            value: { _light: '{colors.white}', _dark: '{colors.brand.900}' },
           },
         },
       },
@@ -63,153 +68,153 @@ const config = defineConfig({
     recipes: {
       button: {
         base: {
-          fontWeight: "medium",
-          borderRadius: "lg",
+          fontWeight: 'medium',
+          borderRadius: 'lg',
         },
         variants: {
           variant: {
             solid: {
-              bg: "accent",
-              color: "accent.fg",
+              bg: 'accent',
+              color: 'accent.fg',
               _hover: { opacity: 0.9 },
             },
             outline: {
-              borderColor: "border",
-              color: "fg",
-              _hover: { bg: "bg.subtle" },
+              borderColor: 'border',
+              color: 'fg',
+              _hover: { bg: 'bg.subtle' },
             },
             ghost: {
-              color: "fg.muted",
-              _hover: { bg: "bg.muted" },
+              color: 'fg.muted',
+              _hover: { bg: 'bg.muted' },
             },
           },
         },
       },
       heading: {
         base: {
-          color: "fg",
-          fontWeight: "semibold",
+          color: 'fg',
+          fontWeight: 'semibold',
         },
       },
     },
     slotRecipes: {
-      card:{
-        className: "card",
-        slots: ["root", "header", "body", "footer", "title"],
+      card: {
+        className: 'card',
+        slots: ['root', 'header', 'body', 'footer', 'title'],
         base: {
           root: {
-            bg: "bg",
-            borderWidth: "3px",
-            borderColor: "border",
-            borderRadius: "xl",
-            boxShadow: "md",
+            bg: 'bg',
+            borderWidth: '3px',
+            borderColor: 'border',
+            borderRadius: 'xl',
+            boxShadow: 'md',
           },
-         
+
           header: {
-            color: "fg",
-            fontWeight:"semibold",
+            color: 'fg',
+            fontWeight: 'semibold',
           },
           body: {
-            color: "fg",
+            color: 'fg',
           },
           footer: {
-            borderTopWidth: "1px",
-            borderColor: "border",
+            borderTopWidth: '1px',
+            borderColor: 'border',
           },
         },
         variants: {
-          variant: { elevated: {
-            root: {
-              boxShadow: "none",
-              bg: "bg.panel",
-              borderColor: "brand.600",
-              borderWidth: "2px",
-              mb: "2",
+          variant: {
+            elevated: {
+              root: {
+                boxShadow: 'none',
+                bg: 'bg.panel',
+                borderColor: 'brand.600',
+                borderWidth: '2px',
+                mb: '2',
+              },
+              header: {
+                textStyle: 'heading.lg',
+              },
             },
-             header: {
-            textStyle: "heading.lg"
+            outline: {
+              root: {
+                borderWidth: '2px',
+                boxShadow: 'none',
+              },
+            },
           },
-
-          },
-          outline: {
-            root: {
-              borderWidth: "2px",
-              boxShadow: "none",
-            }
-          }}
-        }
+        },
       },
     },
     textStyles: {
       // Headings
-      "heading.xl": {
+      'heading.xl': {
         value: {
-          fontSize: "2.25rem",
-          lineHeight: "2.5rem",
-          fontWeight: "bold",
-          letterSpacing: "-0.025em",
-          color: "fg",
+          fontSize: '2.25rem',
+          lineHeight: '2.5rem',
+          fontWeight: 'bold',
+          letterSpacing: '-0.025em',
+          color: 'fg',
         },
       },
-      "heading.lg": {
+      'heading.lg': {
         value: {
-          fontSize: "1.5rem",
-          lineHeight: "2rem",
-          fontWeight: "semibold",
-          letterSpacing: "-0.02em",
-          color: "fg",
+          fontSize: '1.5rem',
+          lineHeight: '2rem',
+          fontWeight: 'semibold',
+          letterSpacing: '-0.02em',
+          color: 'fg',
         },
       },
-      "heading.md": {
+      'heading.md': {
         value: {
-          fontSize: "1.125rem",
-          lineHeight: "1.75rem",
-          fontWeight: "semibold",
-          letterSpacing: "-0.01em",
-          color: "fg",
+          fontSize: '1.125rem',
+          lineHeight: '1.75rem',
+          fontWeight: 'semibold',
+          letterSpacing: '-0.01em',
+          color: 'fg',
         },
       },
 
       // Body
-      "body.lg": {
+      'body.lg': {
         value: {
-          fontSize: "1.0625rem",
-          lineHeight: "1.75rem",
-          fontWeight: "normal",
-          color: "fg",
+          fontSize: '1.0625rem',
+          lineHeight: '1.75rem',
+          fontWeight: 'normal',
+          color: 'fg',
         },
       },
-      "body.md": {
+      'body.md': {
         value: {
-          fontSize: "0.9375rem",
-          lineHeight: "1.5rem",
-          fontWeight: "normal",
-          color: "fg",
+          fontSize: '0.9375rem',
+          lineHeight: '1.5rem',
+          fontWeight: 'normal',
+          color: 'fg',
         },
       },
 
       // Small / supporting text
-      "label.md": {
+      'label.md': {
         value: {
-          fontSize: "0.8125rem",
-          lineHeight: "1.25rem",
-          fontWeight: "medium",
-          color: "fg.muted",
+          fontSize: '0.8125rem',
+          lineHeight: '1.25rem',
+          fontWeight: 'medium',
+          color: 'fg.muted',
         },
       },
-      "label.sm": {
+      'label.sm': {
         value: {
-          fontSize: "0.6875rem",
-          lineHeight: "1rem",
-          fontWeight: "medium",
-          letterSpacing: "0.025em",
-          textTransform: "uppercase",
-          color: "fg.muted",
+          fontSize: '0.6875rem',
+          lineHeight: '1rem',
+          fontWeight: 'medium',
+          letterSpacing: '0.025em',
+          textTransform: 'uppercase',
+          color: 'fg.muted',
         },
       },
     },
   },
-  
-})
+});
 
-export const system = createSystem(defaultConfig, config)
+export const system = createSystem(defaultConfig, config);

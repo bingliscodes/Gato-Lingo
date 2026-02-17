@@ -34,7 +34,7 @@ export default function LeftNavContent() {
 
   return (
     <Flex>
-      <GatoLingoLogo />
+      <GatoLingoLogo rounded foregroundColor="#627d98" strokeColor="#627d98" />
       <Stack direction="row" align="center">
         {!isLoggedIn && (
           <Button variant="solid" size="sm" onClick={handleDemo}>
