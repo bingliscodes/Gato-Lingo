@@ -1,8 +1,8 @@
-import { Flex, Button, Stack, Box } from '@chakra-ui/react';
+import { Flex, Button, Stack } from '@chakra-ui/react';
 import { useNavigate } from 'react-router';
 
 import { useUser } from '@/contexts/UserContext';
-import LogoIcon from '@/assets/GatoLingo_vector_logo.svg?react';
+import GatoLingoLogo from '@/components/common/GatoLingoLogo';
 import { startDemo, type ExamFormData } from '@/utils/apiCalls';
 
 export default function LeftNavContent() {
@@ -34,9 +34,7 @@ export default function LeftNavContent() {
 
   return (
     <Flex>
-      <Box bg="bg.emphasized">
-        <LogoIcon width="4rem" height="4rem" />
-      </Box>
+      <GatoLingoLogo />
       <Stack direction="row" align="center">
         {!isLoggedIn && (
           <Button variant="solid" size="sm" onClick={handleDemo}>
