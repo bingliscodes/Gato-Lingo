@@ -67,11 +67,49 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     }
 }, [isHoldingButton, isPushToTalk]);
 
+// Switch to push-to-talk mode
+useEffect(() => {
+    if (isPushToTalk) {
+        sendEvent(
+            {
+                type: "session.update",
+                session: {
+                    type: "realtime",
+                    audio: {
+                        input: {
+                            turn_detection: null
+                        }
+                    }
+                }
+            }
+        )
+    }
+    if (!isPushToTalk) {
+        sendEvent(
+            {
+                type: "session.update",
+                session: {
+                    type: "realtime",
+                    audio: {
+                        input: {
+                            turn_detection: {
+                                type: "server_vad",
+                                threshold: 0.75,         
+                                prefix_padding_ms: 400,
+                                silence_duration_ms: 800, 
+                                interrupt_response: false,        
+                    }
+                        }
+                    }
+                }
+            }
+        )
+    }
+}, [isPushToTalk])
+
     const connect = useCallback(async (instructions?: string) => {
         // Before we establish the connection, ensure the token is valid
         const usageTokenRes = await updateUsageToken();
-
-        console.log("usageTokenRes", usageTokenRes)
         if (usageTokenRes.status !== "success"){
             console.log(usageTokenRes.message);
             return;
