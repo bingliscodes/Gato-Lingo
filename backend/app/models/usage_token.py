@@ -1,5 +1,4 @@
 from sqlmodel import SQLModel, Field, Relationship
-from datetime import datetime, timezone
 from typing import List, TYPE_CHECKING
 import uuid
 

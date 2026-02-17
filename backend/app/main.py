@@ -12,6 +12,7 @@ from .controllers import exam as exam_controller
 from .controllers import vocabulary as vocabulary_controller
 from .controllers import realtime as realtime_controller
 from .controllers import demo as demo_controller
+from .controllers import usage_tokens as usage_tokens_controller
 from .websockets.conversation import ConversationHandler
 
 
@@ -48,6 +49,7 @@ app.include_router(conversation_session_controller.router)
 app.include_router(vocabulary_controller.router)
 app.include_router(realtime_controller.router)
 app.include_router(demo_controller.router)
+app.include_router(usage_tokens_controller.router)
 
 # WebSocket handler
 conversation_handler = ConversationHandler()

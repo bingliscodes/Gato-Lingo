@@ -58,7 +58,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         const usageTokenRes = await updateUsageToken();
 
         console.log("usageTokenRes", usageTokenRes)
-        if (usageTokenRes.status !== "Success"){
+        if (usageTokenRes.status !== "success"){
             console.log(usageTokenRes.message);
             return;
         } 

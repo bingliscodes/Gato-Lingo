@@ -317,7 +317,9 @@ export interface UsageTokenResponse {
     status: string;
     message: string;
 }
+
 export const updateUsageToken = async() => {
+    console.log("sending update request...")
     try {
         const res = await axios.get<UsageTokenResponse>(
             `${import.meta.env.VITE_API_BASE_URL}usage/update`,

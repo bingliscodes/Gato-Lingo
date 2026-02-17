@@ -29,7 +29,7 @@ def seed_users(db: Session):
             native_language="English",
             target_language="Spanish",)
     
-    cannoli = User (
+    demo_student = User (
         email="student@example.com",
             password_hash=hash_password("password123"),
             first_name="Student",
@@ -40,7 +40,7 @@ def seed_users(db: Session):
             teacher = demo_teacher
     )
     db.add(demo_teacher)
-    db.add(cannoli)
+    db.add(demo_student)
     db.commit()
 
 
