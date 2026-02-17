@@ -3,7 +3,6 @@ from sqlmodel import Session, select
 from datetime import datetime, timezone
 import time
 from uuid import UUID
-import json
 import base64
 
 from ..services.conversation_engine import ConversationEngine

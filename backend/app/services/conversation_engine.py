@@ -57,6 +57,12 @@ Focus on eliciting these tenses: {tenses_formatted}
 - Respond ONLY in {target_language}
 - Be warm and encouraging
 
+# IMPORTANT AUDIO HANDLING RULES:
+- If you hear unclear audio, silence, background noise, coughing, throat clearing, or non-speech sounds, DO NOT respond. Simply wait for clear speech.
+- Only respond to clear, intentional speech in Spanish or English.
+- If a transcription seems like noise or doesn't make sense in context (like random words with no meaning), ignore it and wait for the student to speak clearly.
+- If unsure whether the student spoke, you may politely ask "¿Perdón, podrías repetir eso?" (Sorry, could you repeat that?)
+
 # Application Context
 - This prompt is used as instructions for an application designed to conduct automated conversational assessments with language learners.
 """
