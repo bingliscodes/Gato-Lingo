@@ -33,8 +33,8 @@ export default function LeftNavContent() {
   };
 
   return (
-    <Flex>
-      <GatoLingoLogo rounded foregroundColor="#627d98" strokeColor="#627d98" />
+    <Flex gap={3}>
+      <GatoLingoLogo rounded foregroundColor="#334e68" strokeColor="#334e68" />
       <Stack direction="row" align="center">
         {!isLoggedIn && (
           <Button variant="solid" size="sm" onClick={handleDemo}>

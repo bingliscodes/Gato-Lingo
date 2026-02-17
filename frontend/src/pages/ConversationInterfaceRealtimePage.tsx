@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Box, Text, Button, VStack, Switch, HStack } from '@chakra-ui/react';
 
+import { toaster } from '@/components/ui/toaster';
 import { useRealtimeAPI } from '@/hooks/useRealtimeAPI';
 import {
   type StudentAssignmentResponse,
@@ -89,12 +90,26 @@ export default function ConversationInterfaceRealtimePage() {
   };
 
   const handleEndSession = async () => {
+    const gradeExamPromise = gradeConversationSession(
+      conversationHistory,
+      sessionId,
+    );
+
+    toaster.promise(gradeExamPromise, {
+      loading: {
+        title: 'Grading exam',
+        description: 'Analyzing transcript...',
+      },
+      success: {
+        title: 'Exam graded successfully!',
+        description: 'Redirecting to your dashboard.',
+      },
+      error: { title: 'Error', description: 'Exam grading failed' },
+    });
+
     setIsGradingExam(true);
     try {
-      const res = await gradeConversationSession(
-        conversationHistory,
-        sessionId,
-      );
+      const res = await gradeExamPromise;
       setExamGrade(res);
       setIsGradingExam(false);
       disconnect();

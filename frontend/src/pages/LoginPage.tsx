@@ -1,5 +1,5 @@
-"use client";
-import { useState } from "react";
+'use client';
+import { useState } from 'react';
 import {
   Checkbox,
   Text,
@@ -8,21 +8,17 @@ import {
   Input,
   Stack,
   Button,
-} from "@chakra-ui/react";
-import { NavLink, useNavigate } from "react-router";
+} from '@chakra-ui/react';
+import { NavLink, useNavigate } from 'react-router';
 
-import { toaster } from "@/components/ui/toaster";
-import { login, type LoginCredentials } from "../utils/authentication";
-import { useUser } from "@/contexts/UserContext";
-
-interface LoginError {
-  message: string;
-}
+import { toaster } from '@/components/ui/toaster';
+import { login, type LoginCredentials } from '../utils/authentication';
+import { useUser } from '@/contexts/UserContext';
 
 export default function LoginForm() {
-  const [loginError, setLoginError] = useState<LoginError | null>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [checked, setChecked] = useState(false);
   const { refreshUserData } = useUser();
 
@@ -37,26 +33,26 @@ export default function LoginForm() {
 
     toaster.promise(loginPromise, {
       loading: {
-        title: "Logging In...",
-        description: "Checking your credentials.",
+        title: 'Logging In...',
+        description: 'Checking your credentials.',
       },
       success: {
-        title: "Login Successful!",
-        description: "Redirecting to your dashboard.",
+        title: 'Login Successful!',
+        description: 'Redirecting to your dashboard.',
       },
-      error: { title: "Error", description: "Login failed." },
+      error: { title: 'Error', description: 'Login failed.' },
     });
 
     try {
       await loginPromise;
       setLoginError(null);
       await refreshUserData();
-      nav("/dashboard");
+      nav('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
-        setLoginError({ message: err.message });
+        setLoginError(err.message);
       } else {
-        setLoginError({ message: "An unexpected error occurred during login" });
+        setLoginError('An unexpected error occurred during login');
       }
       console.error(err);
     }
@@ -102,7 +98,7 @@ export default function LoginForm() {
           <Field.Root px={4} color="text.sidebar">
             <Field.Label>Password</Field.Label>
             <Input
-              type={checked ? "text" : "password"}
+              type={checked ? 'text' : 'password'}
               placeholder="password"
               name="password"
               value={password}
@@ -122,7 +118,7 @@ export default function LoginForm() {
           </Checkbox.Root>
           {loginError && (
             <Text fontSize="sm" color="red.400">
-              {loginError.message}
+              {loginError}
             </Text>
           )}
           <Button
@@ -130,7 +126,7 @@ export default function LoginForm() {
             mt={2}
             type="submit"
             textStyle="xl"
-            _hover={{ bg: "bg.secondaryBtnHover" }}
+            _hover={{ bg: 'bg.secondaryBtnHover' }}
           >
             Log In
           </Button>
