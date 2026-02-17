@@ -10,8 +10,8 @@ export interface ExamFormData {
     difficulty_level: string;
     topic: string;
     tenses: string[];                    // Array of tense names
-    vocabulary_list_id: string;      // Comma-separated string from textarea
-    cultural_context: string | null;           
+    vocabulary_list_id?: string;      // Comma-separated string from textarea
+    cultural_context?: string;           
 }
 
 // What the API returns
