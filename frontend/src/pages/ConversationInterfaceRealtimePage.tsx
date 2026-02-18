@@ -86,6 +86,11 @@ export default function ConversationInterfaceRealtimePage() {
   const handleConnect = () => {
     if (examData?.exam.conversation_prompt) {
       connect(examData.exam.conversation_prompt);
+
+      // Initialize the conversation
+      sendEvent({
+        type: 'response.create',
+      });
     }
   };
 

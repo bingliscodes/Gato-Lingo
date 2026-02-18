@@ -123,7 +123,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
 
   const connect = useCallback(async (instructions?: string) => {
     // Before we establish the connection, ensure the token is valid
-    console.log('>>> Connection function called');
     const usageTokenRes = await updateUsageToken();
     if (usageTokenRes.status !== 'success') {
       console.log(usageTokenRes.message);
