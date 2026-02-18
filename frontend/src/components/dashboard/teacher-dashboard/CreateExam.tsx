@@ -1,5 +1,5 @@
-"use client";
-import { useState } from "react";
+'use client';
+import { useState } from 'react';
 import {
   Field,
   Input,
@@ -8,13 +8,13 @@ import {
   Box,
   NativeSelect,
   Heading,
-} from "@chakra-ui/react";
-import { useNavigate } from "react-router";
+} from '@chakra-ui/react';
+import { useNavigate } from 'react-router';
 
-import { toaster } from "@/components/ui/toaster";
-import { useUser } from "@/contexts/UserContext";
-import { createExam, type ExamFormData } from "@/utils/apiCalls";
-import { useVocabularyLists } from "@/hooks/useVocabularyLists";
+import { toaster } from '@/components/ui/toaster';
+import { useUser } from '@/contexts/UserContext';
+import { createExam, type ExamFormData } from '@/utils/apiCalls';
+import { useVocabularyLists } from '@/hooks/useVocabularyLists';
 
 interface ExamCreationError {
   message: string;
@@ -22,14 +22,14 @@ interface ExamCreationError {
 
 export default function CreateExam() {
   const [error, setError] = useState<ExamCreationError | null>(null);
-  const [examTitle, setExamTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [targetLanguage, setTargetLanguage] = useState("spanish");
-  const [level, setLevel] = useState("beginner");
-  const [topic, setTopic] = useState("Ordering food at a restaurant");
-  const [vocabularyListId, setVocabularyListId] = useState("");
-  const [verbTenses, setVerbTenses] = useState(["present", "preterite"]);
-  const [culturalContext, setCulturalContext] = useState("");
+  const [examTitle, setExamTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [targetLanguage, setTargetLanguage] = useState('spanish');
+  const [level, setLevel] = useState('beginner');
+  const [topic, setTopic] = useState('');
+  const [vocabularyListId, setVocabularyListId] = useState('');
+  const [verbTenses, setVerbTenses] = useState(['present', 'preterite']);
+  const [culturalContext, setCulturalContext] = useState('');
 
   const { vocabLists, isLoading, error: vocabListError } = useVocabularyLists();
 
@@ -61,15 +61,15 @@ export default function CreateExam() {
 
     toaster.promise(examCreatePromise, {
       loading: {
-        title: "Creating exam...",
-        description: "",
+        title: 'Creating exam...',
+        description: '',
       },
       success: {
-        title: "Exam created successfully!",
-        description: "View exam details in your dashboard.",
+        title: 'Exam created successfully!',
+        description: 'View exam details in your dashboard.',
       },
       error: {
-        title: "Error",
+        title: 'Error',
         description: `Exam creation failed: ${error?.message}`,
       },
     });
@@ -78,12 +78,12 @@ export default function CreateExam() {
       await examCreatePromise;
       setError(null);
       await refreshUserData();
-      nav("../");
+      nav('../');
     } catch (err) {
       if (err instanceof Error) {
         setError({ message: err.message });
       } else {
-        setError({ message: "An unexpected error occurred" });
+        setError({ message: 'An unexpected error occurred' });
       }
       console.error(err);
     }
@@ -193,18 +193,18 @@ export default function CreateExam() {
           <Field.Label>Verb Tenses to Practice</Field.Label>
           <Stack direction="row" flexWrap="wrap" gap={2}>
             {[
-              "present",
-              "preterite",
-              "imperfect",
-              "future",
-              "conditional",
-              "subjunctive",
+              'present',
+              'preterite',
+              'imperfect',
+              'future',
+              'conditional',
+              'subjunctive',
             ].map((tense) => (
               <Button
                 key={tense}
                 size="sm"
-                variant={verbTenses.includes(tense) ? "solid" : "outline"}
-                colorPalette={verbTenses.includes(tense) ? "blue" : "gray"}
+                variant={verbTenses.includes(tense) ? 'solid' : 'outline'}
+                colorPalette={verbTenses.includes(tense) ? 'blue' : 'gray'}
                 onClick={() => toggleTense(tense)}
               >
                 {tense.charAt(0).toUpperCase() + tense.slice(1)}

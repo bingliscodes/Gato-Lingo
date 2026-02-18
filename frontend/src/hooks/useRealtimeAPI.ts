@@ -123,6 +123,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
 
   const connect = useCallback(async (instructions?: string) => {
     // Before we establish the connection, ensure the token is valid
+    console.log('>>> Connection function called');
     const usageTokenRes = await updateUsageToken();
     if (usageTokenRes.status !== 'success') {
       console.log(usageTokenRes.message);
@@ -296,7 +297,13 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         setUserIsSpeaking(false);
         break;
 
+      // I think we have to use an array of transcripts then join them in the event that two separate speech events occur within a turn.
+      // Alternatively increase the padding at the end of speech in the VAD setting to ensure user is done.
       case 'conversation.item.input_audio_transcription.completed':
+        console.log(
+          'User transcription completed. User said:',
+          event.transcript,
+        );
         const userText = event.transcript || '';
         pendingUserTranscript.current = userText;
         setTranscript(userText);
@@ -320,9 +327,45 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         pendingUserTurn.current = null;
         break;
 
+      case 'response.created':
+        console.log('Assistant created a response');
+        break;
+
+      // TODO: Test and see if this event is being sent. If not, send it when the AI is talking and the client starts
+      // Alternatively, disable the mic when the AI is producing speech
+      // I don't think I can listen for this event, but I can see if it's being received
+      case 'conversation.item.truncate':
+        console.log('>>> (CLIENT SIDE) Conversation item truncate event sent.');
+        break;
+
+      case 'response.output_audio_transcript.delta':
+        currentAssistantResponse.current += event.delta || '';
+        console.log(
+          '>>> Asisstant audio transcript updated. Current response: ',
+          currentAssistantResponse.current,
+        );
+        break;
+
+      case 'response.output_audio.done':
+        console.log('>>> Assistant audio completed or interrupted.');
+        break;
+
+      case 'conversation.item.truncated':
+        console.log('>>> (SERVER SIDE) Conversation item truncated ');
+        break;
+
       // AI finished responding transcribing audio
+      // The issue with this is that it is adding the transcript to the conversation history regardless of whether or not the AI actually completed the dialogue.
+      // There could also be a case where a second transcript.done event is received and overwrites the first by forcing a re-render
+      // TODO: Investigate the response.done event and see if it could be useful here.
       case 'response.output_audio_transcript.done':
+        console.log(
+          'Assistant transcript complete. Assistant said:',
+          event.transcript,
+        );
         const assistantText = event.transcript || '';
+        currentAssistantResponse.current = assistantText;
+        setResponse(currentAssistantResponse.current);
         if (assistantText) {
           turnCounter.current += 1;
           const assistantTurnNumber = turnCounter.current;
@@ -359,7 +402,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
 
       default:
         // Uncomment to debug unknown events
-        // console.log("Unhandled event:", event.type, event);
+        console.log('Unhandled event:', event.type, event);
         break;
     }
   };
