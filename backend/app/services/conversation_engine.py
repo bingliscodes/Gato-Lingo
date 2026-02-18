@@ -57,7 +57,9 @@ For advanced: Use sophisticated vocabulary, complex grammar, cultural nuances.
 {vocabulary_section}
 
 # Target Verb Tenses
-Focus on eliciting these tenses in the student's responses: {tenses_formatted}
+- Focus on eliciting these tenses in the student's responses: {tenses_formatted}
+- In your own replies, primarily use only the tenses listed in {tenses_formatted}.  
+- Avoid other tenses unless absolutely necessary for clarity, greetings, or grammatical correctness.
 
 # Intructions/Rules
 - Start with a warm greeting and introduce the topic naturally

@@ -1,8 +1,8 @@
 oral_proficiency_scoring_categories = {
     "1": {
-        "Grammar": "Errors in grammar arefrequent, but speaker canbe understood by a native speaker used to dealing with foreigners attempting to speak his or her language.",
+        "Grammar": "Errors in grammar are frequent, but speaker can be understood by a native speaker used to dealing with foreigners attempting to speak his or her language.",
         "Vocabulary": "Speaking vocabulary inadequate to express anything but the most elementary needs",
-        "Comprehension": "Within the scope of very limited language experience, can understand simple questions and statements if delivered with slowed speech, repetition,or paraphrase.",
+        "Comprehension": "Within the scope of very limited language experience, can understand simple questions and statements if delivered with slowed speech, repetition, or paraphrase.",
         "Fluency": "No specific fluency description. Refer to other four language areas for implied level of fluency",
         "Pronunciation": "Errors in pronunciation are frequent but can be understood by a native speaker used to dealing with foreigners attempting to speak his or her language.",
         "Task": "Can ask and answer questions on very familiar topics. Able to satisfy routine travel needs and minimum courtesy requirements. (Should be able to order a simple meal, ask for shelter or lodging, ask for and give simple directions, make purchases, and tell time.)"
@@ -10,7 +10,7 @@ oral_proficiency_scoring_categories = {
     "2": {
         "Grammar": "Can usually handle elementary constructions quite accuratelyy but does not have throrough or confident control of the grammar",
         "Vocabulary": "Has speaking vocabulary sufficient to express oneself simply with some circumlocutions",
-        "Comprehension": " Can get the gist of most conversations of nontechn ical subjects (i.e., topics that require no specialized knowledge).",
+        "Comprehension": "Can get the gist of most conversations of nontechnical subjects (i.e., topics that require no specialized knowledge).",
         "Fluency": "Can handle with confidence but not with facility most social situations, including introductions and casual conversations about current events, as well as work, family, and autobiographical information.",
         "Pronunciation": "Accent is intelligible though often quite faulty.",
         "Task": "Able to satisfy routine social demands and work requirements; needs help in handling any complication or difficulties."
@@ -24,7 +24,7 @@ oral_proficiency_scoring_categories = {
         "Task": "Can participate effectively in most formal and informal conversations on practical, social, and professional topics."
     },
     "4": {
-        "Grammar": "Able to use the language accurately on all levels normally pertinent to professional needs. Errors in grammar are quite rate",
+        "Grammar": "Able to use the language accurately on all levels normally pertinent to professional needs. Errors in grammar are quite rare",
         "Vocabulary": "Can understand and participate in any conversation within the range of ones's experience with a high degree of precision of vocabulary",
         "Comprehension": "Can understand any conversation within the range of one's experience",
         "Fluency": "Able to use the language fluently on all levels normally pertinent to professional needs. Can participate in any conversation within the range of one's experience with a high degree of fluency.",
