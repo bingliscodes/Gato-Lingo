@@ -9,7 +9,7 @@ from ..services.conversation_engine import ConversationEngine
 from ..database.database import get_db
 from ..models.exam import Exam, ExamCreate, ExamResponse, DashboardExamResponse, StudentAssignmentResponse
 from ..models.conversation_session import ConversationSession, SessionStatus, SessionAssignment, ConversationSessionResponse
-from ..models.vocabulary import VocabularyList, VocabularyItem, VocabularyListResponse
+from ..models.vocabulary import VocabularyList
 from ..schemas.responses import SessionScoreResponse
 from ..models.user import User
 from ..dependencies.auth import get_current_user, require_roles
