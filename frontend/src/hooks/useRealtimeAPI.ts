@@ -70,8 +70,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const lastAssistantItem = useRef<RealtimeEvent | null>(null);
-
   // Cleanup on unmount
   useEffect(() => {
     return () => disconnect();
@@ -280,10 +278,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
       audioRef.current = null;
     }
 
-    if (lastAssistantItem.current) {
-      lastAssistantItem.current = null;
-    }
-
     setIsConnected(false);
   }, []);
 
@@ -382,9 +376,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         break;
 
       case 'conversation.item.truncated':
-        console.log(
-          '>>> (SERVER SIDE) Conversation item truncated. Updated lastAssistantItem ref...',
-        );
+        console.log('>>> (SERVER SIDE) Conversation item truncated.');
         break;
 
       case 'response.output_audio_transcript.done':
@@ -444,6 +436,5 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     isPushToTalk,
     setIsPushToTalk,
     setIsHoldingButton,
-    lastAssistantItem,
   };
 };

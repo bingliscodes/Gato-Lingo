@@ -47,7 +47,6 @@ export default function ConversationInterfaceRealtimePage() {
     isPushToTalk,
     setIsPushToTalk,
     sendEvent,
-    lastAssistantItem,
   } = useRealtimeAPI();
 
   const handleUserFinishSpeaking = () => {

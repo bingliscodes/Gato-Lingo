@@ -1,4 +1,3 @@
-# reset_db.py
 import sys
 sys.path.insert(0, '.')
 
@@ -12,6 +11,7 @@ from app.models.vocabulary import VocabularyList, VocabularyItem, VocabularyList
 from app.models.conversation_session import ConversationSession
 from app.models.conversation_turn import ConversationTurn
 from app.models.session_score import SessionScore
+from app.models.usage_token import UsageToken
 
 response = input("This will DELETE ALL DATA. Are you sure? (yes/no): ")
 if response.lower() != "yes":

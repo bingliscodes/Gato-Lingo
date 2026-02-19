@@ -33,3 +33,6 @@ dist/
 
 # Text
 *.txt
+
+# Scripts
+*.sh
