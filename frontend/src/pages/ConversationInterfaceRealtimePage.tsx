@@ -47,6 +47,7 @@ export default function ConversationInterfaceRealtimePage() {
     isPushToTalk,
     setIsPushToTalk,
     sendEvent,
+    lastAssistantItem,
   } = useRealtimeAPI();
 
   const handleUserFinishSpeaking = () => {
@@ -213,6 +214,14 @@ export default function ConversationInterfaceRealtimePage() {
           )}
         </HStack>
       </Box>
+      {/* // TODO: Implement the pause button */}
+      <Button
+        onClick={() =>
+          console.log('Pausing conversation... (not yet implemented)')
+        }
+      >
+        Pause conversation
+      </Button>
       <MessageList
         messages={conversationHistory}
         isListening={userIsSpeaking}

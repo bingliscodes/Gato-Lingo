@@ -36,6 +36,7 @@ interface UseRealtimeAPIReturn {
   setIsPushToTalk: Dispatch<SetStateAction<boolean>>;
   setIsHoldingButton: Dispatch<SetStateAction<boolean>>;
   setUserIsSpeaking: Dispatch<SetStateAction<boolean>>;
+  tutorIsSpeaking: boolean;
 }
 
 export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
@@ -45,9 +46,10 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
   const [error, setError] = useState<string | null>(null);
 
   // UI State
-  const [transcript, setTranscript] = useState('');
-  const [response, setResponse] = useState('');
+  // const [transcript, setTranscript] = useState('');
+  // const [response, setResponse] = useState('');
   const [userIsSpeaking, setUserIsSpeaking] = useState(false);
+  const [tutorIsSpeaking, setTutorIsSpeaking] = useState(false);
   const [conversationHistory, setConversationHistory] = useState<
     ConversationTurn[]
   >([]);
@@ -68,6 +70,8 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
+  const lastAssistantItem = useRef<RealtimeEvent | null>(null);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => disconnect();
@@ -83,6 +87,15 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
       audioTrack.enabled = true;
     }
   }, [isHoldingButton, isPushToTalk]);
+
+  // Disable mic when tutor is speaking
+  useEffect(() => {
+    if (streamRef.current) {
+      const audioTrack = streamRef.current.getAudioTracks()[0];
+      console.log('tutorIsSpeaking updated!', tutorIsSpeaking);
+      audioTrack.enabled = !tutorIsSpeaking;
+    }
+  }, [tutorIsSpeaking]);
 
   // Switch to push-to-talk mode
   useEffect(() => {
@@ -165,7 +178,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
       // When we receive audio from OpenAI, play it
       // Currently we are playing audio tracks as soon as we receive them, which is likely part of the problem.
       pc.ontrack = (event) => {
-        console.log('Received audio track from OpenAI. Event details: ', event);
         audio.srcObject = event.streams[0];
       };
 
@@ -268,6 +280,10 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
       audioRef.current = null;
     }
 
+    if (lastAssistantItem.current) {
+      lastAssistantItem.current = null;
+    }
+
     setIsConnected(false);
   }, []);
 
@@ -287,7 +303,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         setUserIsSpeaking(true);
         turnCounter.current += 1;
         pendingUserTurn.current = turnCounter.current;
-        setTranscript('');
+        // setTranscript('');
         console.log(`User started speaking (turn ${pendingUserTurn.current})`);
         break;
 
@@ -305,7 +321,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         );
         const userText = event.transcript || '';
         pendingUserTranscript.current = userText;
-        setTranscript(userText);
+        // setTranscript(userText);
 
         if (userText) {
           const userTurnNumber = pendingUserTurn.current || turnCounter.current;
@@ -326,8 +342,16 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         pendingUserTurn.current = null;
         break;
 
+      case 'output_audio_buffer.cleared':
+        console.log('>>>Output audio buffer cleared');
+        break;
+
       case 'response.created':
-        console.log('Assistant created a response');
+        console.log('Assistant created a response. Updating lastAssistantItem');
+        break;
+
+      case 'response.output_audio':
+        console.log('Audio delta event received.');
         break;
 
       case 'conversation.item.truncate':
@@ -344,32 +368,28 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
 
       case 'output_audio_buffer.started':
         console.log('Assistant started speaking.');
+        setTutorIsSpeaking(true);
         break;
 
       case 'output_audio_buffer.stopped':
         console.log('Assistant stopped speaking');
+        setTutorIsSpeaking(false);
         break;
 
       case 'response.output_audio.done':
         console.log('>>> Assistant audio completed or interrupted.');
+
         break;
 
       case 'conversation.item.truncated':
-        console.log('>>> (SERVER SIDE) Conversation item truncated ');
+        console.log(
+          '>>> (SERVER SIDE) Conversation item truncated. Updated lastAssistantItem ref...',
+        );
         break;
 
-      // AI finished responding transcribing audio
-      // The issue with this is that it is adding the transcript to the conversation history regardless of whether or not the AI actually completed the dialogue.
-      // There could also be a case where a second transcript.done event is received and overwrites the first by forcing a re-render
-      // TODO: Investigate the response.done event and see if it could be useful here.
       case 'response.output_audio_transcript.done':
-        console.log(
-          'Assistant transcript complete. Assistant said:',
-          event.transcript,
-        );
-        const assistantText = event.transcript || '';
-        currentAssistantResponse.current = assistantText;
-        setResponse(currentAssistantResponse.current);
+        const assistantText = currentAssistantResponse.current;
+        // setResponse(assistantText);
         if (assistantText) {
           turnCounter.current += 1;
           const assistantTurnNumber = turnCounter.current;
@@ -424,5 +444,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     isPushToTalk,
     setIsPushToTalk,
     setIsHoldingButton,
+    lastAssistantItem,
   };
 };
