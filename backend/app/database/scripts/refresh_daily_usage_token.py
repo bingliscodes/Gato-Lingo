@@ -5,8 +5,7 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from sqlmodel import SQLModel, Session, select
-from sqlalchemy import text
+from sqlmodel import Session, select
 from app.database.database import engine
 from app.models.usage_token import UsageToken
 
@@ -23,7 +22,5 @@ with Session(engine) as db:
         db.refresh(token)
     else:
         print("Demo token not found.")
-
-SQLModel.metadata.create_all(engine)
 
 print("Done! daily usage token has been reset.")
