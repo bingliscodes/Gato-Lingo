@@ -165,7 +165,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
       // When we receive audio from OpenAI, play it
       // Currently we are playing audio tracks as soon as we receive them, which is likely part of the problem.
       pc.ontrack = (event) => {
-        console.log('Received audio track from OpenAI');
+        console.log('Received audio track from OpenAI. Event details: ', event);
         audio.srcObject = event.streams[0];
       };
 
@@ -340,6 +340,14 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
           '>>> Asisstant audio transcript updated. Current response: ',
           currentAssistantResponse.current,
         );
+        break;
+
+      case 'output_audio_buffer.started':
+        console.log('Assistant started speaking.');
+        break;
+
+      case 'output_audio_buffer.stopped':
+        console.log('Assistant stopped speaking');
         break;
 
       case 'response.output_audio.done':
