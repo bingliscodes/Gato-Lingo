@@ -86,13 +86,16 @@ export default function ConversationInterfaceRealtimePage() {
   const handleConnect = () => {
     if (examData?.exam.conversation_prompt) {
       connect(examData.exam.conversation_prompt);
-
-      // Initialize the conversation
-      sendEvent({
-        type: 'response.create',
-      });
     }
   };
+
+  // Initialize the conversation once connected
+  useEffect(() => {
+    if (!isConnected) return;
+    sendEvent({
+      type: 'response.create',
+    });
+  }, [isConnected]);
 
   const handleEndSession = async () => {
     const gradeExamPromise = gradeConversationSession(

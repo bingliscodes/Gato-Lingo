@@ -163,6 +163,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
       audioRef.current = audio;
 
       // When we receive audio from OpenAI, play it
+      // Currently we are playing audio tracks as soon as we receive them, which is likely part of the problem.
       pc.ontrack = (event) => {
         console.log('Received audio track from OpenAI');
         audio.srcObject = event.streams[0];
@@ -234,7 +235,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
       console.log('8. Setting remote description...');
       const answerSdp = await sdpResponse.text();
       await pc.setRemoteDescription({ type: 'answer', sdp: answerSdp });
-
       console.log('Connected to OpenAI Realtime API!');
     } catch (err) {
       console.error('Connection failed:', err);
@@ -330,9 +330,6 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
         console.log('Assistant created a response');
         break;
 
-      // TODO: Test and see if this event is being sent. If not, send it when the AI is talking and the client starts
-      // Alternatively, disable the mic when the AI is producing speech
-      // I don't think I can listen for this event, but I can see if it's being received
       case 'conversation.item.truncate':
         console.log('>>> (CLIENT SIDE) Conversation item truncate event sent.');
         break;

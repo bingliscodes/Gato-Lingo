@@ -33,6 +33,9 @@ def get_ephemeral_token(request: TokenRequest):
                         "language": "es",
                         "model": "whisper-1",
                     },
+                    "noise_reduction": {
+                        "type": "far_field"
+                    },
                     "turn_detection": {
                         "type": "server_vad",
                         "threshold": 0.75,            # Higher threshold for noisy environments
