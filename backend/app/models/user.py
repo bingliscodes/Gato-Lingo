@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
-from pydantic import EmailStr, model_validator
+from pydantic import EmailStr, model_validator, BaseModel
 from datetime import datetime, timezone
 from typing import Optional, List, TYPE_CHECKING
 import uuid
@@ -133,4 +133,3 @@ class ResetPasswordRequest(SQLModel):
 class MessageResponse(SQLModel):
     status: str = "success"
     message: str
-

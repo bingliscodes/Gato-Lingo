@@ -2,6 +2,7 @@ from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from sqlmodel import Session
+from typing import Annotated
 
 from .database.database import engine, init_db
 from .database.seed import seed_all
