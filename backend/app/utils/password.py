@@ -1,16 +1,11 @@
-import bcrypt
+from pwdlib import PasswordHash
 
+password_hash = PasswordHash.recommended()
 
-def hash_password(plain_password: str) -> str:
-    """Hash a plain text password."""
-    password_bytes = plain_password.encode('utf-8')
-    salt = bcrypt.gensalt(rounds=12)
-    hashed = bcrypt.hashpw(password_bytes, salt)
-    return hashed.decode('utf-8')
+DUMMY_HASH = password_hash.hash("dummypassword")
 
+def verify_password(plain_password, hashed_password):
+    return password_hash.verify(plain_password, hashed_password)
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a plain text password against a hash."""
-    password_bytes = plain_password.encode('utf-8')
-    hashed_bytes = hashed_password.encode('utf-8')
-    return bcrypt.checkpw(password_bytes, hashed_bytes)
+def get_password_hash(password):
+    return password_hash.hash(password)

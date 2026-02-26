@@ -11,7 +11,7 @@ from ..models.vocabulary import VocabularyList
 from ..models.usage_token import UsageToken
 from ..models.user import User, UserResponse, AuthResponse
 from ..models.exam import Exam, ExamCreate
-from ..utils.password import hash_password
+from ..utils.password import get_password_hash
 from ..utils.jwt import create_access_token
 from ..controllers.auth import set_token_cookie
 from ..controllers.exam import create_exam, ExamCreate
@@ -58,7 +58,7 @@ def init_demo(response: Response, db: Session = Depends(get_db), demo_data: Opti
         )
     demo_account_string = generate_random_string(10)
     new_student = User(
-            password_hash=hash_password("password123"),
+            password_hash=get_password_hash("password123"),
             email=f"{demo_account_string}@example.com",
             first_name="Student",
             last_name="Demo",

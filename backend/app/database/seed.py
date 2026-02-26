@@ -5,7 +5,7 @@ from sqlmodel import Session, select
 from ..models.user import User
 from ..models.usage_token import UsageToken
 from ..models.vocabulary import VocabularyItem, VocabularyList, VocabularyListItem
-from ..utils.password import hash_password
+from ..utils.password import get_password_hash
 
 def seed_users(db: Session):
     """Add test users if none exist."""
@@ -22,7 +22,7 @@ def seed_users(db: Session):
     
     # Create test users
     demo_teacher = User( email="teacher@example.com",
-            password_hash=hash_password("password123"),  
+            password_hash=get_password_hash("password123"),  
             first_name="Teacher",
             last_name="Demo",
             role="teacher",
@@ -31,7 +31,7 @@ def seed_users(db: Session):
     
     demo_student = User (
         email="student@example.com",
-            password_hash=hash_password("password123"),
+            password_hash=get_password_hash("password123"),
             first_name="Student",
             last_name="Demo",
             role="student",

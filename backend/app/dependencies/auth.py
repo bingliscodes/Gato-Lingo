@@ -1,17 +1,32 @@
-from datetime import datetime
-from typing import Optional
+from datetime import datetime, timezone, timedelta
+from typing import Optional, Annotated
 from uuid import UUID
 
+import jwt
 from fastapi import Depends, HTTPException, status, Request
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select
-
-from ..database.database import get_db
-from ..models.user import User
+from jwt.exceptions import InvalidTokenError
+from ..database.database import get_db, engine
+from ..models.user import User, UserResponse
 from ..utils.jwt import decode_token
+from ..utils.password import verify_password, get_password_hash, DUMMY_HASH
+
+from pydantic import BaseModel
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: str | None = None
 
 security = HTTPBearer(auto_error=False)
+SECRET_KEY = "bcd9a9baaf81fdb7e79bf5e0352e6c4ecb3cc9f3dbe68a2418f9379dc1f37db3"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 def get_token_from_request(
     request: Request,
@@ -24,73 +39,54 @@ def get_token_from_request(
     
     return request.cookies.get("jwt")
 
+def get_user(username: str) -> User | None:
+    with Session(engine) as db:
+        statement = select(User).where(User.email == username)
+        user = db.exec(statement).first()
+        return user
+        
 
-def get_current_user(
-    token: Optional[str] = Depends(get_token_from_request),
-    db: Session = Depends(get_db)
-) -> User:
-    """
-    Dependency that gets the current authenticated user.
-    """
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not logged in! Please log in to get access."
-        )
-    
-    # Decode and verify token
-    try:
-        payload = decode_token(token)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token"
-        )
-    
-    user_id = payload.get("sub")
-    if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token"
-        )
-    
-    # Check if user still exists
-    statement = select(User).where(User.id == UUID(user_id))
-    user = db.exec(statement).first()
-    
+def authenticate_user(username: str, password: str):
+    user = get_user(username=username)
+
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="The user belonging to this token no longer exists"
-        )
-    
-    # Check if user changed password after token was issued
-    token_issued_at = datetime.fromtimestamp(payload.get("iat", 0))
-    if user.password_changed_at and user.password_changed_at > token_issued_at:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User recently changed password! Please log in again."
-        )
-    
+        verify_password(password, DUMMY_HASH)
+        return False
+    if not verify_password(password, user.password_hash):
+        return False
     return user
 
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
-def get_current_user_optional(
-    token: Optional[str] = Depends(get_token_from_request),
-    db: Session = Depends(get_db)
-) -> Optional[User]:
-    """
-    Same as get_current_user but returns None instead of raising an exception.
-    Useful for routes that work with or without authentication.
-    """
-    if not token:
-        return None
-    
+async def get_current_user(
+        token: Annotated[str, Depends(oauth2_scheme)]
+) -> UserResponse:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     try:
-        return get_current_user(token, db)
-    except HTTPException:
-        return None
-
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except InvalidTokenError:
+        raise credentials_exception
+    user = get_user(username=token_data.username)
+    if user is None:
+        raise credentials_exception
+    return UserResponse.model_validate(user)
+    
 
 def require_roles(*allowed_roles: str):
     """

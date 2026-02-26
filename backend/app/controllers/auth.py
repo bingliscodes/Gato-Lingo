@@ -4,6 +4,7 @@ import secrets
 import hashlib
 
 from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 
 from ..database.database import get_db
@@ -17,17 +18,19 @@ from ..models.user import (
     ForgotPasswordRequest,
     ResetPasswordRequest,
 )
-from ..utils.password import hash_password, verify_password
-from ..utils.jwt import create_access_token
-from ..dependencies.auth import get_current_user
+from ..utils.password import get_password_hash, verify_password
+from ..dependencies.auth import get_current_user, Token, authenticate_user, create_access_token
 from ..config import settings
 
+
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-def set_token_cookie(response: Response, token: str):
+
+def set_token_cookie(response: Response, token: Token):
     response.set_cookie(
         key="jwt",
-        value=token,
+        value=token.access_token,
         httponly=True,
         secure=settings.frontend_url.startswith("https"),  # True in production
         samesite="none" if settings.frontend_url.startswith("https") else "lax",
@@ -54,7 +57,7 @@ def signup(
     # Create new user
     new_user = User(
         email=user_data.email,
-        password_hash=hash_password(user_data.password),
+        password_hash=get_password_hash(user_data.password),
         first_name=user_data.first_name,
         last_name=user_data.last_name,
         native_language=user_data.native_language,
@@ -74,6 +77,23 @@ def signup(
         token=token,
         user=UserResponse.model_validate(new_user)
     )
+
+#TODO: Direct login in frontend to this endpoint, then have another call to get_current_user to retrieve user data.
+@router.post("/token")
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], response: Response) -> Token:
+    user = authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={"sub": user.email}, expires_delta=access_token_expires)
+    token = Token(access_token=access_token, token_type="bearer")
+    
+    set_token_cookie(response, token)
+    return token
 
 
 @router.post("/login", response_model=AuthResponse)
@@ -119,7 +139,7 @@ def logout(response: Response):
 
 
 @router.get("/me", response_model=UserResponse)
-def get_me(current_user: User = Depends(get_current_user)):
+async def get_me(current_user: Annotated[User, Depends(get_current_user)]) -> UserResponse:
     return current_user
 
 
