@@ -1,16 +1,13 @@
 from fastapi import APIRouter, Depends, Response, HTTPException, status
 from sqlmodel import Session, select
-from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 from uuid import UUID
-from datetime import datetime, timezone
 import random
 import string
 
 from ..database.database import get_db
-from ..config import settings
 from ..models.conversation_session import ConversationSession, SessionStatus
-from ..models.vocabulary import VocabularyItem, VocabularyList
+from ..models.vocabulary import VocabularyList
 from ..models.usage_token import UsageToken
 from ..models.user import User, UserResponse, AuthResponse
 from ..models.exam import Exam, ExamCreate

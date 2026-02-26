@@ -1,126 +1,125 @@
 import axios from 'axios';
-import { getErrorMessage } from "./helperFunctions";
+import { getErrorMessage } from './helperFunctions';
 import { type AuthResponse } from './authentication';
 
-
 export interface ExamFormData {
-    title: string;
-    description: string;
-    target_language: string;
-    difficulty_level: string;
-    topic: string;
-    tenses: string[];                    // Array of tense names
-    vocabulary_list_id?: string;      // Comma-separated string from textarea
-    cultural_context?: string;           
+  title: string;
+  description: string;
+  target_language: string;
+  difficulty_level: string;
+  topic: string;
+  tenses: string[]; // Array of tense names
+  vocabulary_list_id?: string; // Comma-separated string from textarea
+  cultural_context?: string;
 }
 
 // What the API returns
 export interface ExamResponse {
-    id: string;
-    title: string;
-    description: string | null;
-    target_language: string;
-    difficulty_level: string;
-    topic: string;
-    tenses: string;                      // JSON string in DB
-    vocabulary_list_id: string | null;
-    vocabulary_list: VocabularyListResponse | null;
-    cultural_context: string | null;
-    conversation_prompt: string;
-    created_by_id: string;
-    created_at: string;
+  id: string;
+  title: string;
+  description: string | null;
+  target_language: string;
+  difficulty_level: string;
+  topic: string;
+  tenses: string; // JSON string in DB
+  vocabulary_list_id: string | null;
+  vocabulary_list: VocabularyListResponse | null;
+  cultural_context: string | null;
+  conversation_prompt: string;
+  created_by_id: string;
+  created_at: string;
 }
 
 export interface SessionScoreResponse {
-    id: string;
-    vocabulary_usage_score: number;
-    grammar_accuracy_score: number; 
-    verb_tense_accuracy_score: number,
-    fluency_score: number;
-    overall_score: number; 
-    vocabulary_used: string | null;
-    vocabulary_missed: string | null;
-    grammar_feedback: string | null;
+  id: string;
+  vocabulary_usage_score: number;
+  grammar_accuracy_score: number;
+  verb_tense_accuracy_score: number;
+  fluency_score: number;
+  overall_score: number;
+  vocabulary_used: string | null;
+  vocabulary_missed: string | null;
+  grammar_feedback: string | null;
 }
 
+export const createExam = async (
+  formData: ExamFormData,
+): Promise<ExamResponse> => {
+  try {
+    const requestData = {
+      ...formData,
+      tenses: JSON.stringify(formData.tenses),
+    };
 
-export const createExam = async(formData: ExamFormData): Promise<ExamResponse> => {
-    try{
-        const requestData = {
-            ...formData,
-            tenses: JSON.stringify(formData.tenses)
-        }
+    const res = await axios.post<ExamResponse>(
+      `${import.meta.env.VITE_API_BASE_URL}exams`,
+      requestData,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};
 
-        const res = await axios.post<ExamResponse>(
-            `${import.meta.env.VITE_API_BASE_URL}exams`,
-            requestData,
-            {withCredentials: true},
-        )
-        return res.data;
-
-    } catch(err){
-         throw new Error(getErrorMessage(err));
-        }
-} 
-
-type SessionStatus = "assigned" | "in_progress" | "completed";
+type SessionStatus = 'assigned' | 'in_progress' | 'completed';
 
 export interface ConversationSession {
-    id: string;
-    status: SessionStatus;
-    due_date: string | null;
-    started_at: string | null
-    ended_at: string | null
-    created_at: string | null
-    exam_id: string | null;
-    student_id: string | null
-    session_score: SessionScoreResponse | null;
+  id: string;
+  status: SessionStatus;
+  due_date: string | null;
+  started_at: string | null;
+  ended_at: string | null;
+  created_at: string | null;
+  exam_id: string | null;
+  student_id: string | null;
+  session_score: SessionScoreResponse | null;
 }
 
 export interface DashboardExamResponse {
-    exam: ExamResponse;
-    total_assigned: number;
-    pending: number;
-    in_progress: number;
-    completed: number;
-    sessions: ConversationSession [];
+  exam: ExamResponse;
+  total_assigned: number;
+  pending: number;
+  in_progress: number;
+  completed: number;
+  sessions: ConversationSession[];
 }
 
-export const getCreatedExams = async(): Promise<DashboardExamResponse[]> => {
-    try {
-        const res = await axios.get<DashboardExamResponse[]>(
-            `${import.meta.env.VITE_API_BASE_URL}exams/dashboard`,
-            {withCredentials: true}
-        );
-        return res.data;
-    }catch(err){
-         throw new Error(getErrorMessage(err));
-        }
-}
+export const getCreatedExams = async (): Promise<DashboardExamResponse[]> => {
+  try {
+    const res = await axios.get<DashboardExamResponse[]>(
+      `${import.meta.env.VITE_API_BASE_URL}exams/dashboard`,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};
 
 export interface StudentResponse {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
 }
 
 export const getStudents = async (): Promise<StudentResponse[]> => {
-    try {
-        const res = await axios.get<StudentResponse[]>(
-            `${import.meta.env.VITE_API_BASE_URL}users/my-students`,
-            { withCredentials: true }
-        );
-        return res.data;
-    } catch (err) {
-        if (axios.isAxiosError(err)) {
-            // Log the full error response
-            console.error("Status:", err.response?.status);
-            console.error("Data:", err.response?.data);
-            console.error("Headers:", err.response?.headers);
-        }
-        throw new Error(getErrorMessage(err));
+  try {
+    const res = await axios.get<StudentResponse[]>(
+      `${import.meta.env.VITE_API_BASE_URL}users/my-students`,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      // Log the full error response
+      console.error('Status:', err.response?.status);
+      console.error('Data:', err.response?.data);
+      console.error('Headers:', err.response?.headers);
     }
+    throw new Error(getErrorMessage(err));
+  }
 };
 
 export interface ExamAssignmentRequest {
@@ -129,69 +128,73 @@ export interface ExamAssignmentRequest {
   due_date: string | null;
 }
 
-export const assignExamToStudents = async (examAssignmentRequest: ExamAssignmentRequest): Promise<ConversationSession[]> => {
-    try{
-        const res = await axios.post<ConversationSession[]>(
-            `${import.meta.env.VITE_API_BASE_URL}exams/assign`,
-            examAssignmentRequest,
-            {withCredentials: true},
-        )
-        return res.data;
-    }
-   catch(err){
-         throw new Error(getErrorMessage(err));
-        }
-
-}
+export const assignExamToStudents = async (
+  examAssignmentRequest: ExamAssignmentRequest,
+): Promise<ConversationSession[]> => {
+  try {
+    const res = await axios.post<ConversationSession[]>(
+      `${import.meta.env.VITE_API_BASE_URL}exams/assign`,
+      examAssignmentRequest,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};
 
 export interface StudentAssignmentResponse {
-    id: string;
-    status: SessionStatus;
-    due_date: string | null;
-    started_at: string | null;
-    ended_at: string | null;
-    created_at: string;
-    student_id: string | null;
-    exam: ExamResponse;
-    session_score: SessionScoreResponse | null;
-} 
-
-export const getMyAssignments = async (): Promise<StudentAssignmentResponse[]> => {
-    try{
-        const res = await axios.get<StudentAssignmentResponse[]>(
-            `${import.meta.env.VITE_API_BASE_URL}exams/assignments`,
-            {withCredentials: true}
-        )
-        return res.data;
-    }catch (err){
-        throw new Error(getErrorMessage(err));
-    }
+  id: string;
+  status: SessionStatus;
+  due_date: string | null;
+  started_at: string | null;
+  ended_at: string | null;
+  created_at: string;
+  student_id: string | null;
+  exam: ExamResponse;
+  session_score: SessionScoreResponse | null;
 }
 
+export const getMyAssignments = async (): Promise<
+  StudentAssignmentResponse[]
+> => {
+  try {
+    const res = await axios.get<StudentAssignmentResponse[]>(
+      `${import.meta.env.VITE_API_BASE_URL}exams/assignments`,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};
+
 export interface ExamScoreSummary {
-    session_id: string;
-    student_name: string;
-    status: SessionStatus;
-    completed_at: string;
-    score: SessionScoreResponse
+  session_id: string;
+  student_name: string;
+  status: SessionStatus;
+  completed_at: string;
+  score: SessionScoreResponse;
 }
 
 export interface ExamScoresResponse {
-    exam: ExamResponse;
-    sessions: ExamScoreSummary [];
-} 
-
-export const getExamScores = async(examId: string | undefined): Promise<ExamScoresResponse> => {
-    try{
-        const res = await axios.get<ExamScoresResponse>(
-            `${import.meta.env.VITE_API_BASE_URL}exams/${examId}/scores`,
-            {withCredentials: true}
-        )
-        return res.data;
-    } catch(err){
-        throw new Error(getErrorMessage(err));
-    }
+  exam: ExamResponse;
+  sessions: ExamScoreSummary[];
 }
+
+export const getExamScores = async (
+  examId: string | undefined,
+): Promise<ExamScoresResponse> => {
+  try {
+    const res = await axios.get<ExamScoresResponse>(
+      `${import.meta.env.VITE_API_BASE_URL}exams/${examId}/scores`,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};
 
 export interface VocabularyItemCreate {
   word: string;
@@ -201,150 +204,157 @@ export interface VocabularyItemCreate {
   regional_notes: string | null;
 }
 
-export interface VocabularyItemResponse extends VocabularyItemCreate{
-    id: string;
+export interface VocabularyItemResponse extends VocabularyItemCreate {
+  id: string;
 }
 
-export interface VocabularyListCreate{
-    title: string;
-    description: string | null;
-    target_language: string | null;
-    items: VocabularyItemCreate[];
+export interface VocabularyListCreate {
+  title: string;
+  description: string | null;
+  target_language: string | null;
+  items: VocabularyItemCreate[];
 }
 
-export interface VocabularyListResponse{
-    id: string | null;
-    title: string;
-    description: string | null;
-    target_language: string | null;
-    teacher_id: string | null;
-    items: VocabularyItemResponse[];
+export interface VocabularyListResponse {
+  id: string | null;
+  title: string;
+  description: string | null;
+  target_language: string | null;
+  teacher_id: string | null;
+  items: VocabularyItemResponse[];
 }
 
-export interface VocabularyListPreviewResponse{
-    items: VocabularyItemCreate[];
-    total: number;
-    errors: string[];
+export interface VocabularyListPreviewResponse {
+  items: VocabularyItemCreate[];
+  total: number;
+  errors: string[];
 }
 
+export const previewVocabularyList = async (
+  formData: FormData,
+): Promise<VocabularyListPreviewResponse> => {
+  try {
+    const res = await axios.post<VocabularyListPreviewResponse>(
+      `${import.meta.env.VITE_API_BASE_URL}vocabulary-lists/preview`,
+      formData,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};
 
-export const previewVocabularyList = async(formData: FormData): Promise<VocabularyListPreviewResponse> => {
-    try{
-        const res = await axios.post<VocabularyListPreviewResponse>(
-            `${import.meta.env.VITE_API_BASE_URL}vocabulary-lists/preview`,
-            formData,
-            {withCredentials: true}
-        )
-        return res.data;
-    }catch(err){
-        throw new Error(getErrorMessage(err));
-    }
-}
+export const createVocabularyList = async (
+  vocabListData: VocabularyListCreate,
+): Promise<VocabularyListResponse> => {
+  try {
+    const res = await axios.post<VocabularyListResponse>(
+      `${import.meta.env.VITE_API_BASE_URL}vocabulary-lists/save`,
+      vocabListData,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};
 
-export const createVocabularyList = async(vocabListData: VocabularyListCreate): Promise<VocabularyListResponse> => {
-    try{
-        const res = await axios.post<VocabularyListResponse>(
-            `${import.meta.env.VITE_API_BASE_URL}vocabulary-lists/save`,
-            vocabListData,
-            {withCredentials: true}
-        )
-        return res.data;
-    }catch(err){
-        throw new Error(getErrorMessage(err));
-    }
-}
+export const getCreatedVocabularyLists = async (): Promise<
+  VocabularyListResponse[]
+> => {
+  try {
+    const res = await axios.get<VocabularyListResponse[]>(
+      `${import.meta.env.VITE_API_BASE_URL}vocabulary-lists`,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};
 
-export const getCreatedVocabularyLists = async(): Promise<VocabularyListResponse[]> => {
-    try{
-        const res = await axios.get<VocabularyListResponse[]>(
-            `${import.meta.env.VITE_API_BASE_URL}vocabulary-lists`,
-            {withCredentials: true}
-        )
-        return res.data;
-    }catch(err){
-        throw new Error(getErrorMessage(err));
-    }
-}
+export const getExamData = async (
+  sessionId: string | undefined,
+): Promise<StudentAssignmentResponse> => {
+  try {
+    const res = await axios.get<StudentAssignmentResponse>(
+      `${import.meta.env.VITE_API_BASE_URL}conversation-sessions/${sessionId}`,
+      { withCredentials: true },
+    );
 
-export const getExamData = async(sessionId: string | undefined): Promise<StudentAssignmentResponse> => {
-    try{
-        const res = await axios.get<StudentAssignmentResponse>(
-            `${import.meta.env.VITE_API_BASE_URL}conversation-sessions/${sessionId}`,
-            {withCredentials: true}
-        )
-
-        return res.data
-    }catch(err){
-        throw new Error(getErrorMessage(err))
-    }
-}
+    return res.data;
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};
 // TODO: Need to decrease sensitivity of VAD, or switch to push to talk to avoid hallucinations
 // Issue with spelling. Using "K" for "que" when transcribing.
-export const getEphemeralToken = async(instructions?: string) => {
-    try{
-        const res = await axios.post(
-            `${import.meta.env.VITE_API_BASE_URL}realtime/token`,
-            {instructions},
-            {withCredentials: true}
-        )
-        return res.data;
-    }catch(err){
-        throw new Error(getErrorMessage(err));
-    }
-}
+export const getEphemeralToken = async (instructions?: string) => {
+  try {
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}realtime/token`,
+      { instructions },
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};
 
 export interface ConversationTurn {
-    speaker: "student" | "tutor";
-    transcript: string;
-    timestamp: string;
-    turnNumber: number;
+  speaker: 'student' | 'tutor';
+  transcript: string;
+  timestamp: string;
+  turnNumber: number;
 }
-export const gradeConversationSession = async(conversationHistory: ConversationTurn[], sessionId: string | undefined) => {
-    try{
-        const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}realtime/grade`,
-        {conversation_history: conversationHistory, session_id: sessionId},
-        {withCredentials: true}
-    )
+export const gradeConversationSession = async (
+  conversationHistory: ConversationTurn[],
+  sessionId: string | undefined,
+) => {
+  try {
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}realtime/grade`,
+      { conversation_history: conversationHistory, session_id: sessionId },
+      { withCredentials: true },
+    );
     return res.data;
-    }
-    catch(err){
-        throw new Error(getErrorMessage(err));
-    }
-    
-}
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};
 
 export interface UsageTokenResponse {
-    status: string;
-    message: string;
+  status: string;
+  message: string;
 }
 
-export const updateUsageToken = async() => {
-    console.log("sending update request...")
-    try {
-        const res = await axios.get<UsageTokenResponse>(
-            `${import.meta.env.VITE_API_BASE_URL}usage/update`,
-            {withCredentials: true}
-        )
-        return res.data
-    }catch(err){
-        throw new Error(getErrorMessage(err));
-    }
-}
+export const updateUsageToken = async () => {
+  try {
+    const res = await axios.get<UsageTokenResponse>(
+      `${import.meta.env.VITE_API_BASE_URL}usage/update`,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};
 
-export const startDemo = async(exam_data: ExamFormData) => {
-            const requestData = {
-            ...exam_data,
-            tenses: JSON.stringify(exam_data.tenses)
-        }
-    try{
-        const res = await axios.post<AuthResponse>(
-            `${import.meta.env.VITE_API_BASE_URL}demo`,
-            requestData,
-            {withCredentials: true}
-        )
-        console.log(res.data);
-        return res.data;
-    }catch(err){
-        throw new Error(getErrorMessage(err));
-    }
-}
+export const startDemo = async (exam_data: ExamFormData) => {
+  const requestData = {
+    ...exam_data,
+    tenses: JSON.stringify(exam_data.tenses),
+  };
+  try {
+    const res = await axios.post<AuthResponse>(
+      `${import.meta.env.VITE_API_BASE_URL}demo`,
+      requestData,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
+};

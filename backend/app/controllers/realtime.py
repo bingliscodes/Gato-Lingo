@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 from pydantic import BaseModel
 from typing import Optional, List
@@ -60,7 +60,7 @@ def get_ephemeral_token(request: TokenRequest):
         raise HTTPException(status_code=500, detail=str(err))
 
 class GradeRequest(BaseModel):
-    conversation_history: List[ConversationTurnCreate]
+    conversation_history: Optional[List[ConversationTurnCreate]] = Query(None)
     session_id: str
 
 class GradeResponse(BaseModel):
@@ -68,8 +68,18 @@ class GradeResponse(BaseModel):
 
 @router.post("/grade")
 def grade_session(request: GradeRequest, db: Session = Depends(get_db)):
+    print("grading exam... request is:", request)
     if request.session_id:
         session = db.get(ConversationSession, UUID(request.session_id))
+
+        if not request.conversation_history:
+            generate_session_score(conversation_session_id=request.session_id)
+            session.status = SessionStatus.completed
+            session.ended_at = datetime.now(timezone.utc)
+            db.add(session)
+            db.commit()
+            return GradeResponse(status="success")
+        
         turns = 0
         if session:
             # 1. Save all turns
@@ -104,6 +114,7 @@ def grade_session(request: GradeRequest, db: Session = Depends(get_db)):
 
         
         return GradeResponse(status="success")
+
     
 
 

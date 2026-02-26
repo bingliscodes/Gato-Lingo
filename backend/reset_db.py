@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, '.')
 
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, Session
 from sqlalchemy import text
 from app.database.database import engine
 
@@ -12,6 +12,7 @@ from app.models.conversation_session import ConversationSession
 from app.models.conversation_turn import ConversationTurn
 from app.models.session_score import SessionScore
 from app.models.usage_token import UsageToken
+from app.database.seed import seed_all
 
 response = input("This will DELETE ALL DATA. Are you sure? (yes/no): ")
 if response.lower() != "yes":
@@ -36,3 +37,8 @@ from sqlalchemy import inspect
 inspector = inspect(engine)
 columns = [col['name'] for col in inspector.get_columns('users')]
 print(f"Users table columns: {columns}")
+
+# Seed the DB
+with Session(engine) as db:
+    print("Seeding database...")
+    seed_all(db)

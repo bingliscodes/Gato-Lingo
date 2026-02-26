@@ -9,7 +9,6 @@ from sqlmodel import Session, select
 from app.database.database import engine
 from app.models.usage_token import UsageToken
 
-
 print("Resetting daily usage token...")
 
 with Session(engine) as db:

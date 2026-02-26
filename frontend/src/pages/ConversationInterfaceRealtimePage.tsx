@@ -117,10 +117,10 @@ export default function ConversationInterfaceRealtimePage() {
 
     setIsGradingExam(true);
     try {
+      disconnect();
       const res = await gradeExamPromise;
       setExamGrade(res);
       setIsGradingExam(false);
-      disconnect();
       nav('/dashboard');
     } catch (err) {
       setErrorGradingExam(
