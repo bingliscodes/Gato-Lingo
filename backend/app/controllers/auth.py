@@ -12,7 +12,6 @@ from ..models.user import (
     User,
     UserCreate,
     UserResponse,
-    AuthResponse,
     MessageResponse,
     ForgotPasswordRequest,
     ResetPasswordRequest,
@@ -35,7 +34,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/signup", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/signup", response_model=LoginResponse, status_code=status.HTTP_201_CREATED)
 def signup(
     user_data: UserCreate,
     response: Response,
@@ -66,12 +65,12 @@ def signup(
     db.commit()
     db.refresh(new_user)
     
-    token = create_access_token(new_user.id)
-    set_token_cookie(response, token)
+    access_token = create_access_token(new_user.id)
+    set_token_cookie(response, access_token)
     
-    return AuthResponse(
-        status="success",
-        token=token,
+    return LoginResponse(
+        access_token=access_token,
+        token_type="bearer",
         user=UserResponse.model_validate(new_user)
     )
 
@@ -144,7 +143,7 @@ def forgot_password(
     )
 
 
-@router.post("/reset-password/{token}", response_model=AuthResponse)
+@router.post("/reset-password/{token}", response_model=LoginResponse)
 def reset_password(
     token: str,
     request_data: ResetPasswordRequest,
@@ -167,7 +166,7 @@ def reset_password(
         )
     
     # Update password
-    user.password_hash = hash_password(request_data.password)
+    user.password_hash = get_password_hash(request_data.password)
     user.password_changed_at = datetime.now(datetime.UTC)
     user.password_reset_token = None
     user.password_reset_expires = None
@@ -177,11 +176,11 @@ def reset_password(
     db.refresh(user)
     
     # Log user in with new token
-    jwt_token = create_access_token(user.id)
-    set_token_cookie(response, jwt_token)
+    access_token = create_access_token(user.id)
+    set_token_cookie(response, access_token)
     
-    return AuthResponse(
-        status="success",
-        token=jwt_token,
+    return LoginResponse(
+        access_token=access_token,
+        token_type="bearer",
         user=UserResponse.model_validate(user)
     )

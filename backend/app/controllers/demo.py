@@ -9,11 +9,11 @@ from ..database.database import get_db
 from ..models.conversation_session import ConversationSession, SessionStatus
 from ..models.vocabulary import VocabularyList
 from ..models.usage_token import UsageToken
-from ..models.user import User, UserResponse, AuthResponse
+from ..models.user import User, UserResponse
 from ..models.exam import Exam, ExamCreate
 from ..utils.password import get_password_hash
 from ..utils.jwt import create_access_token
-from ..controllers.auth import set_token_cookie
+from ..dependencies.auth import set_token_cookie, LoginResponse
 from ..controllers.exam import create_exam, ExamCreate
 
 def generate_random_string(length):
@@ -25,7 +25,7 @@ def generate_random_string(length):
 
 router = APIRouter(prefix="/demo", tags=["demo"])
 
-@router.post("/", response_model=AuthResponse)
+@router.post("/", response_model=LoginResponse)
 def init_demo(response: Response, db: Session = Depends(get_db), demo_data: Optional[ExamCreate] = None):
     """
     Create a demo for the exam-taking side by creating a new student, assigning a demo exam to them, and associating the demo_usage token with them
@@ -75,8 +75,8 @@ def init_demo(response: Response, db: Session = Depends(get_db), demo_data: Opti
     db.refresh(new_student)
     
 
-    token = create_access_token(new_student.id)
-    set_token_cookie(response, token)
+    access_token = create_access_token(new_student.id)
+    set_token_cookie(response, access_token)
     
     exam_data = ExamCreate(
         title = demo_data.title if demo_data.title else "Demo Exam",
@@ -99,8 +99,8 @@ def init_demo(response: Response, db: Session = Depends(get_db), demo_data: Opti
     db.commit()
 
 
-    return AuthResponse(
-        status="success",
-        token=token,
+    return LoginResponse(
+        access_token=access_token,
+        token_type="bearer",
         user=UserResponse.model_validate(new_student)
     )
