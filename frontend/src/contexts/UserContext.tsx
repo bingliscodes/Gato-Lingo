@@ -5,8 +5,8 @@ import {
   useCallback,
   useContext,
   type ReactNode,
-} from "react";
-import { verifyJWT, type User } from "../utils/authentication";
+} from 'react';
+import { verifyJWT, type User } from '../utils/authentication';
 
 export interface UserContextType {
   userData: User | null;
@@ -36,7 +36,7 @@ export const UserContextProvider = ({ children }: Props) => {
       const currentUser = await verifyJWT();
       setUserData(currentUser);
     } catch (err) {
-      console.error("Failed to verify user:", err);
+      console.error('Failed to verify user:', err);
       setUserData(null);
     } finally {
       setIsLoading(false);
@@ -62,7 +62,7 @@ export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
 
   if (context === undefined) {
-    throw new Error("useUser must be used within a UserContextProvider");
+    throw new Error('useUser must be used within a UserContextProvider');
   }
 
   return context;

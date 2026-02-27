@@ -112,9 +112,12 @@ class StudentResponse(SQLModel):
     first_name: str
     last_name: str
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
 class AuthResponse(SQLModel):
-    status: str = "success"
-    token: str
+    token: Token
     user: UserResponse
 
 class ForgotPasswordRequest(SQLModel):

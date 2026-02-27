@@ -27,9 +27,13 @@ export default function LoginForm() {
   async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
 
-    const credentials: LoginCredentials = { email, password };
+    const formData = new FormData();
+    formData.append('username', email);
+    formData.append('password', password);
 
-    const loginPromise = login(credentials);
+    // const credentials: LoginCredentials = { email, password };
+
+    const loginPromise = login(formData);
 
     toaster.promise(loginPromise, {
       loading: {

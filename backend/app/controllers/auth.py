@@ -11,31 +11,28 @@ from ..database.database import get_db
 from ..models.user import (
     User,
     UserCreate,
-    LoginRequest,
     UserResponse,
     AuthResponse,
     MessageResponse,
     ForgotPasswordRequest,
     ResetPasswordRequest,
 )
+from ..dependencies.auth import (
+    authenticate_user,
+    create_access_token,
+    set_token_cookie,
+    clear_token_cookie,
+    get_current_user,
+    LoginResponse,
+    Token,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+)
 from ..utils.password import get_password_hash, verify_password
-from ..dependencies.auth import get_current_user, Token, authenticate_user, create_access_token
 from ..config import settings
 
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 router = APIRouter(prefix="/auth", tags=["auth"])
-
-
-def set_token_cookie(response: Response, token: Token):
-    response.set_cookie(
-        key="jwt",
-        value=token.access_token,
-        httponly=True,
-        secure=settings.frontend_url.startswith("https"),  # True in production
-        samesite="none" if settings.frontend_url.startswith("https") else "lax",
-        max_age=settings.jwt_expires_in_minutes * 60  # Convert to seconds
-    )
 
 
 @router.post("/signup", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
@@ -78,60 +75,31 @@ def signup(
         user=UserResponse.model_validate(new_user)
     )
 
-#TODO: Direct login in frontend to this endpoint, then have another call to get_current_user to retrieve user data.
-@router.post("/token")
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], response: Response) -> Token:
-    user = authenticate_user(form_data.username, form_data.password)
+
+@router.post("/login", response_model=LoginResponse)
+def login(response: Response, form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db) ) -> Token:
+    user = authenticate_user(form_data.username, form_data.password, db)
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user.email}, expires_delta=access_token_expires)
-    token = Token(access_token=access_token, token_type="bearer")
-    
-    set_token_cookie(response, token)
-    return token
 
-
-@router.post("/login", response_model=AuthResponse)
-def login(
-    credentials: LoginRequest,
-    response: Response,
-    db: Session = Depends(get_db)
-):
-    # Find user by email
-    statement = select(User).where(User.email == credentials.email)
-    user = db.exec(statement).first()
+    access_token = create_access_token(user.id)
+    set_token_cookie(response, access_token)
     
-    # Check if user exists and password is correct
-    if not user or not verify_password(credentials.password, user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password"
-        )
-
-    token = create_access_token(user.id)
-    set_token_cookie(response, token)
-    
-    return AuthResponse(
-        status="success",
-        token=token,
+    return LoginResponse(
+        access_token=access_token,
+        token_type="bearer",
         user=UserResponse.model_validate(user)
     )
 
 
 @router.get("/logout", response_model=MessageResponse)
 def logout(response: Response):
-    response.delete_cookie(
-        key="jwt",
-        httponly=True,
-        secure=settings.frontend_url.startswith("https"),
-        samesite="none" if settings.frontend_url.startswith("https") else "lax",
-    )
-    
+    clear_token_cookie(response)
     return MessageResponse(
         status="success",
         message="Logged out successfully"
@@ -139,8 +107,8 @@ def logout(response: Response):
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_me(current_user: Annotated[User, Depends(get_current_user)]) -> UserResponse:
-    return current_user
+def get_me(current_user: User = Depends(get_current_user)) -> UserResponse:
+    return UserResponse.model_validate(current_user)
 
 
 @router.post("/forgot-password", response_model=MessageResponse)
