@@ -28,7 +28,7 @@ interface UseRealtimeAPIReturn {
   isLoading: boolean;
   userIsSpeaking: boolean;
   error: string | null;
-  connect: (instructions?: string) => Promise<void>;
+  connect: (instructions?: string, language?: string) => Promise<void>;
   disconnect: () => void;
   sendEvent: (event: RealtimeEvent) => void;
   conversationHistory: ConversationTurn[];
@@ -132,128 +132,133 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     }
   }, [isPushToTalk]);
 
-  const connect = useCallback(async (instructions?: string) => {
-    // Before we establish the connection, ensure the token is valid
-    const usageTokenRes = await updateUsageToken();
-    if (usageTokenRes.status !== 'success') {
-      console.log(usageTokenRes.message);
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    setConversationHistory([]);
-    pendingUserTranscript.current = '';
-    currentAssistantResponse.current = '';
-
-    try {
-      // ========================================
-      // STEP 1: Get ephemeral token from backend
-      // ========================================
-      console.log('1. Getting ephemeral token...');
-      const tokenData = await getEphemeralToken(instructions);
-      const token = tokenData.value;
-
-      if (!token) {
-        throw new Error('No token in response');
+  const connect = useCallback(
+    async (instructions?: string, language?: string) => {
+      // Before we establish the connection, ensure the token is valid
+      const usageTokenRes = await updateUsageToken();
+      if (usageTokenRes.status !== 'success') {
+        console.log(usageTokenRes.message);
+        return;
       }
 
-      // ========================================
-      // STEP 2: Create WebRTC peer connection
-      // ========================================
-      console.log('2. Creating RTCPeerConnection...');
-      const pc = new RTCPeerConnection();
-      pcRef.current = pc;
+      setIsLoading(true);
+      setError(null);
+      setConversationHistory([]);
+      pendingUserTranscript.current = '';
+      currentAssistantResponse.current = '';
 
-      // ========================================
-      // STEP 3: Set up audio playback
-      // ========================================
-      console.log('3. Setting up audio playback...');
-      const audio = document.createElement('audio');
-      audio.autoplay = true;
-      audioRef.current = audio;
+      try {
+        // ========================================
+        // STEP 1: Get ephemeral token from backend
+        // ========================================
+        console.log('1. Getting ephemeral token...');
+        const tokenData = await getEphemeralToken(instructions, language);
+        const token = tokenData.value;
 
-      // When we receive audio from OpenAI, play it
-      // Currently we are playing audio tracks as soon as we receive them, which is likely part of the problem.
-      pc.ontrack = (event) => {
-        audio.srcObject = event.streams[0];
-      };
+        if (!token) {
+          throw new Error('No token in response');
+        }
 
-      // ========================================
-      // STEP 4: Get microphone and add to connection
-      // ========================================
-      console.log('4. Getting microphone access...');
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
+        // ========================================
+        // STEP 2: Create WebRTC peer connection
+        // ========================================
+        console.log('2. Creating RTCPeerConnection...');
+        const pc = new RTCPeerConnection();
+        pcRef.current = pc;
 
-      // Add microphone audio to the connection
-      stream.getTracks().forEach((track) => {
-        pc.addTrack(track, stream);
-      });
+        // ========================================
+        // STEP 3: Set up audio playback
+        // ========================================
+        console.log('3. Setting up audio playback...');
+        const audio = document.createElement('audio');
+        audio.autoplay = true;
+        audioRef.current = audio;
 
-      // ========================================
-      // STEP 5: Create data channel for events
-      // ========================================
-      console.log('5. Creating data channel...');
-      const dc = pc.createDataChannel('oai-events');
-      dcRef.current = dc;
+        // When we receive audio from OpenAI, play it
+        // Currently we are playing audio tracks as soon as we receive them, which is likely part of the problem.
+        pc.ontrack = (event) => {
+          audio.srcObject = event.streams[0];
+        };
 
-      dc.onopen = () => {
-        console.log('Data channel opened!');
-        setIsConnected(true);
-      };
+        // ========================================
+        // STEP 4: Get microphone and add to connection
+        // ========================================
+        console.log('4. Getting microphone access...');
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        streamRef.current = stream;
 
-      dc.onclose = () => {
-        console.log('Data channel closed');
-        setIsConnected(false);
-      };
+        // Add microphone audio to the connection
+        stream.getTracks().forEach((track) => {
+          pc.addTrack(track, stream);
+        });
 
-      dc.onmessage = (event) => {
-        handleServerEvent(JSON.parse(event.data));
-      };
+        // ========================================
+        // STEP 5: Create data channel for events
+        // ========================================
+        console.log('5. Creating data channel...');
+        const dc = pc.createDataChannel('oai-events');
+        dcRef.current = dc;
 
-      // ========================================
-      // STEP 6: Create SDP offer
-      // ========================================
-      console.log('6. Creating SDP offer...');
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
+        dc.onopen = () => {
+          console.log('Data channel opened!');
+          setIsConnected(true);
+        };
 
-      // ========================================
-      // STEP 7: Send offer to OpenAI, get answer
-      // ========================================
-      console.log('7. Sending offer to OpenAI...');
-      const sdpResponse = await fetch(
-        `https://api.openai.com/v1/realtime/calls`,
-        {
-          method: 'POST',
-          body: offer.sdp,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/sdp',
+        dc.onclose = () => {
+          console.log('Data channel closed');
+          setIsConnected(false);
+        };
+
+        dc.onmessage = (event) => {
+          handleServerEvent(JSON.parse(event.data));
+        };
+
+        // ========================================
+        // STEP 6: Create SDP offer
+        // ========================================
+        console.log('6. Creating SDP offer...');
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+
+        // ========================================
+        // STEP 7: Send offer to OpenAI, get answer
+        // ========================================
+        console.log('7. Sending offer to OpenAI...');
+        const sdpResponse = await fetch(
+          `https://api.openai.com/v1/realtime/calls`,
+          {
+            method: 'POST',
+            body: offer.sdp,
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/sdp',
+            },
           },
-        },
-      );
+        );
 
-      if (!sdpResponse.ok) {
-        throw new Error(`SDP request failed: ${sdpResponse.status}`);
+        if (!sdpResponse.ok) {
+          throw new Error(`SDP request failed: ${sdpResponse.status}`);
+        }
+
+        // ========================================
+        // STEP 8: Set OpenAI's answer
+        // ========================================
+        console.log('8. Setting remote description...');
+        const answerSdp = await sdpResponse.text();
+        await pc.setRemoteDescription({ type: 'answer', sdp: answerSdp });
+        console.log('Connected to OpenAI Realtime API!');
+      } catch (err) {
+        console.error('Connection failed:', err);
+        setError(err instanceof Error ? err.message : 'Connection failed');
+        disconnect();
+      } finally {
+        setIsLoading(false);
       }
-
-      // ========================================
-      // STEP 8: Set OpenAI's answer
-      // ========================================
-      console.log('8. Setting remote description...');
-      const answerSdp = await sdpResponse.text();
-      await pc.setRemoteDescription({ type: 'answer', sdp: answerSdp });
-      console.log('Connected to OpenAI Realtime API!');
-    } catch (err) {
-      console.error('Connection failed:', err);
-      setError(err instanceof Error ? err.message : 'Connection failed');
-      disconnect();
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   const disconnect = useCallback(() => {
     console.log('Disconnecting...');

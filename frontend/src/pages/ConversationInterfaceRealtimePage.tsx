@@ -85,7 +85,7 @@ export default function ConversationInterfaceRealtimePage() {
   // Handle connect with instructions
   const handleConnect = () => {
     if (examData?.exam.conversation_prompt) {
-      connect(examData.exam.conversation_prompt);
+      connect(examData.exam.conversation_prompt, examData.exam.target_language);
     }
   };
 

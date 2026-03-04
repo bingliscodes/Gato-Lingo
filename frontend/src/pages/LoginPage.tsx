@@ -12,7 +12,7 @@ import {
 import { NavLink, useNavigate } from 'react-router';
 
 import { toaster } from '@/components/ui/toaster';
-import { login, type LoginCredentials } from '../utils/authentication';
+import { login } from '../utils/authentication';
 import { useUser } from '@/contexts/UserContext';
 
 export default function LoginForm() {
@@ -30,8 +30,6 @@ export default function LoginForm() {
     const formData = new FormData();
     formData.append('username', email);
     formData.append('password', password);
-
-    // const credentials: LoginCredentials = { email, password };
 
     const loginPromise = login(formData);
 

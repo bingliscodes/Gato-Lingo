@@ -14,8 +14,14 @@ from ..utils.score_session import generate_session_score
 
 router = APIRouter(prefix="/realtime", tags=["realtime"])
 
+language_map = {
+    "spanish": "es",
+    "french": "fr"
+}
 class TokenRequest(BaseModel):
     instructions: Optional[str] = None
+    language: str = "spanish"
+
 
 @router.post("/token")
 def get_ephemeral_token(request: TokenRequest):
@@ -23,6 +29,8 @@ def get_ephemeral_token(request: TokenRequest):
     Retrieves an OpenAI ephemeral token to create a realtime session
     """
     try:
+        language_code = language_map[request.language]
+        
         client = OpenAI(api_key=settings.openai_api_key)
         session_config = {
             "type": "realtime",
@@ -30,7 +38,7 @@ def get_ephemeral_token(request: TokenRequest):
             "audio": {
                 "input": {
                     "transcription": {
-                        "language": "es",
+                        "language": language_code,
                         "model": "whisper-1",
                     },
                     "noise_reduction": {

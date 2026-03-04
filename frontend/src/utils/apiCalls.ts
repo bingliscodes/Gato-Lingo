@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getErrorMessage } from './helperFunctions';
-import { type AuthResponse } from './authentication';
+import { type LoginResponse } from './authentication';
 
 export interface ExamFormData {
   title: string;
@@ -290,11 +290,14 @@ export const getExamData = async (
 };
 // TODO: Need to decrease sensitivity of VAD, or switch to push to talk to avoid hallucinations
 // Issue with spelling. Using "K" for "que" when transcribing.
-export const getEphemeralToken = async (instructions?: string) => {
+export const getEphemeralToken = async (
+  instructions?: string,
+  language?: string,
+) => {
   try {
     const res = await axios.post(
       `${import.meta.env.VITE_API_BASE_URL}realtime/token`,
-      { instructions },
+      { instructions, language },
       { withCredentials: true },
     );
     return res.data;
@@ -348,7 +351,7 @@ export const startDemo = async (exam_data: ExamFormData) => {
     tenses: JSON.stringify(exam_data.tenses),
   };
   try {
-    const res = await axios.post<AuthResponse>(
+    const res = await axios.post<LoginResponse>(
       `${import.meta.env.VITE_API_BASE_URL}demo`,
       requestData,
       { withCredentials: true },
