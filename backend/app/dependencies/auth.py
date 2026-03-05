@@ -91,7 +91,7 @@ def set_token_cookie(response: Response, token: str) -> None:
         value=token,
         httponly=True,
         secure=settings.environment_mode == "production",
-        samesite="lax",
+        samesite="none" if settings.frontend_url.startswith("https") else "lax",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
 
