@@ -24,7 +24,6 @@ from ..dependencies.auth import (
     get_current_user,
     LoginResponse,
     Token,
-    ACCESS_TOKEN_EXPIRE_MINUTES,
 )
 from ..utils.password import get_password_hash, verify_password
 from ..config import settings

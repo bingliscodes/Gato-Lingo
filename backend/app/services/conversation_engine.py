@@ -1,10 +1,11 @@
 import anthropic
 from typing import Optional
 
+
 class ConversationEngine:
     def __init__(self, api_key: str):
         self.client = anthropic.Anthropic(api_key=api_key)
-    
+
     def build_system_prompt(
         self,
         target_language: str,
@@ -12,12 +13,18 @@ class ConversationEngine:
         vocabulary: list[str],
         topic: str,
         verb_tenses: list[str],
-        region_variant: Optional[str] = None
+        region_variant: Optional[str] = None,
     ) -> str:
         vocabulary_section = "\n".join([f"-{item}" for item in vocabulary])
-        tenses_formatted = ", ".join(verb_tenses) if verb_tenses else "any appropriate tenses"
-        region_note = f"Use {region_variant} regional vocabulary and expressions." if region_variant else ""
-        
+        tenses_formatted = (
+            ", ".join(verb_tenses) if verb_tenses else "any appropriate tenses"
+        )
+        region_note = (
+            f"Use {region_variant} regional vocabulary and expressions."
+            if region_variant
+            else ""
+        )
+
         return f"""
 # Role & Objective
 - You are a friendly, patient language tutor having a spoken conversation in {target_language}.
@@ -81,32 +88,30 @@ For advanced: Use sophisticated vocabulary, complex grammar, cultural nuances.
 """
 
     async def generate_response(
-        self,
-        system_prompt: str,
-        conversation_history: list[dict],
-        student_message: str
+        self, system_prompt: str, conversation_history: list[dict], student_message: str
     ) -> str:
-        messages = conversation_history + [
-            {"role": "user", "content": student_message}
-        ]
-        
+        messages = conversation_history + [{"role": "user", "content": student_message}]
+
         response = self.client.messages.create(
             model="claude-haiku-4-5",
             max_tokens=250,
             system=system_prompt,
-            messages=messages
+            messages=messages,
         )
-        
+
         return response.content[0].text
-    
+
     async def generate_opening(self, system_prompt: str) -> str:
         response = self.client.messages.create(
             model="claude-haiku-4-5",
             max_tokens=200,
             system=system_prompt,
             messages=[
-                {"role": "user", "content": "[The student has just joined. Begin the conversation with a friendly greeting and naturally introduce the topic.]"}
-            ]
+                {
+                    "role": "user",
+                    "content": "[The student has just joined. Begin the conversation with a friendly greeting and naturally introduce the topic.]",
+                }
+            ],
         )
-        
+
         return response.content[0].text

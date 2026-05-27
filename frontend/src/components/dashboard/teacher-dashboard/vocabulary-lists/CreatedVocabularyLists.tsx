@@ -5,18 +5,18 @@ import {
   IconButton,
   Input,
   Spinner,
-} from "@chakra-ui/react";
-import { useState } from "react";
+} from '@chakra-ui/react';
+import { useState } from 'react';
 
-import { useVocabularyLists } from "@/hooks/useVocabularyLists";
-import VocabularyListCard from "./VocabularyListCard";
-import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
+import { useVocabularyLists } from '@/hooks/useVocabularyLists';
+import VocabularyListCard from './VocabularyListCard';
+import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 
 export default function CreatedVocabularyLists() {
   const { vocabLists, isLoading, error } = useVocabularyLists();
   const [page, setPage] = useState(0);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   let vocabularyListsFiltered = [...vocabLists];
 
   vocabularyListsFiltered = vocabLists.filter(
@@ -45,6 +45,7 @@ export default function CreatedVocabularyLists() {
           slideCount={vocabLists.length}
           mx="auto"
           maxW="2xl"
+          maxH="50%"
           page={page}
           onPageChange={(e) => setPage(e.page)}
         >
