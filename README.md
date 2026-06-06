@@ -29,24 +29,24 @@ Gato Lingo solves a real pain point in language education: speaking practice and
 
 ### Teacher dashboard — exam creation
 
-![Teacher creating an exam: topic, target verb tenses, vocabulary list, and cultural context](docs/screenshots/teacher-create-exam.png)
+<img src="docs/screenshots/teacher-create-exam.png" alt="Teacher creating an exam: topic, target verb tenses, vocabulary list, and cultural context" width="700">
 
 ### Teacher dashboard — score review
 
-![AI-generated score breakdown with per-category feedback on vocabulary, grammar, tenses, and fluency](docs/screenshots/teacher-scores.png)
+<img src="docs/screenshots/teacher-scores.png" alt="AI-generated score breakdown with per-category feedback on vocabulary, grammar, tenses, and fluency" width="700">
 
 ### Vocabulary list management
 
-![Reusable vocabulary lists that can be attached to any exam](docs/screenshots/vocabulary-lists.png)
+<img src="docs/screenshots/vocabulary-lists.png" alt="Reusable vocabulary lists that can be attached to any exam" width="700">
 
 <!-- ### Student — live spoken exam
-![Student taking a real-time voice exam with the AI tutor](docs/screenshots/student-exam-session.png)
+<img src="docs/screenshots/student-exam-session.png" alt="Student taking a real-time voice exam with the AI tutor" width="700">
 -->
 
 <!--
 To add more, follow the same pattern:
 ### Caption
-![Descriptive alt text](docs/screenshots/your-image.png)
+<img src="docs/screenshots/your-image.png" alt="Descriptive alt text" width="700">
 -->
 
 ---
