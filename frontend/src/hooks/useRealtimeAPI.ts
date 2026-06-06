@@ -63,6 +63,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
   const currentAssistantResponse = useRef<string>('');
   const turnCounter = useRef<number>(0); // Track turn order
   const pendingUserTurn = useRef<number | null>(null); // Track user's turn number
+  const languageRef = useRef<string>(''); // ISO-639-1 code for input transcription
 
   // WebRTC objects (refs because they don't need to trigger re-renders)
   const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -95,42 +96,37 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
     }
   }, [tutorIsSpeaking]);
 
-  // Switch to push-to-talk mode
+  // Configure input audio once connected and whenever push-to-talk toggles.
+  // Transcription must be (re)sent here: config from the ephemeral token isn't
+  // reliably applied to the live session, and each session.update replaces the
+  // audio.input object, so omitting it stops student turns from transcribing.
   useEffect(() => {
     if (!isConnected) return;
-    if (isPushToTalk) {
-      sendEvent({
-        type: 'session.update',
-        session: {
-          type: 'realtime',
-          audio: {
-            input: {
-              turn_detection: null,
+    sendEvent({
+      type: 'session.update',
+      session: {
+        type: 'realtime',
+        audio: {
+          input: {
+            transcription: {
+              model: 'whisper-1',
+              ...(languageRef.current && { language: languageRef.current }),
             },
+            noise_reduction: { type: 'far_field' },
+            turn_detection: isPushToTalk
+              ? null
+              : {
+                  type: 'server_vad',
+                  threshold: 0.75,
+                  prefix_padding_ms: 400,
+                  silence_duration_ms: 800,
+                  interrupt_response: false,
+                },
           },
         },
-      });
-    }
-    if (!isPushToTalk) {
-      sendEvent({
-        type: 'session.update',
-        session: {
-          type: 'realtime',
-          audio: {
-            input: {
-              turn_detection: {
-                type: 'server_vad',
-                threshold: 0.75,
-                prefix_padding_ms: 400,
-                silence_duration_ms: 800,
-                interrupt_response: false,
-              },
-            },
-          },
-        },
-      });
-    }
-  }, [isPushToTalk]);
+      },
+    });
+  }, [isPushToTalk, isConnected]);
 
   const connect = useCallback(
     async (instructions?: string, language?: string) => {
@@ -146,6 +142,14 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
       setConversationHistory([]);
       pendingUserTranscript.current = '';
       currentAssistantResponse.current = '';
+
+      const languageCodeMap: Record<string, string> = {
+        spanish: 'es',
+        french: 'fr',
+      };
+      languageRef.current = language
+        ? languageCodeMap[language] ?? language
+        : '';
 
       try {
         // ========================================
