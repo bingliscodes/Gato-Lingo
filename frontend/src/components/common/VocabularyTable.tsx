@@ -1,6 +1,6 @@
-import { Table } from "@chakra-ui/react";
+import { Table } from '@chakra-ui/react';
 
-import { type VocabularyListResponse } from "@/utils/apiCalls";
+import { type VocabularyListResponse } from '@/utils/apiCalls';
 interface VocabularyTableProps {
   vocabularyListData: VocabularyListResponse | null;
 }

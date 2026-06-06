@@ -36,7 +36,7 @@ export default function CreatedVocabularyLists() {
 
   return (
     <Flex gap={2} mx={1} justify="center">
-      <Flex flexDir="column" gap={3}>
+      <Flex flexDir="column">
         <Text mb={2} textAlign="center" fontWeight="bolder" fontSize="3xl">
           Vocabulary Lists
         </Text>
@@ -45,7 +45,6 @@ export default function CreatedVocabularyLists() {
           slideCount={vocabLists.length}
           mx="auto"
           maxW="2xl"
-          maxH="50%"
           page={page}
           onPageChange={(e) => setPage(e.page)}
         >
