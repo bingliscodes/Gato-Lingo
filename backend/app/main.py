@@ -6,6 +6,7 @@ from typing import Annotated
 
 from .database.database import engine, init_db
 from .database.seed import seed_all
+from .redis_client import ping_redis
 from .controllers import user as user_controller
 from .controllers import auth as auth_controller
 from .controllers import conversation_session as conversation_session_controller
@@ -17,26 +18,35 @@ from .controllers import usage_tokens as usage_tokens_controller
 from .websockets.conversation import ConversationHandler
 
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     print("Creating database tables...")
     init_db()
-    
+
     print("Seeding database...")
     with Session(engine) as db:
         seed_all(db)
 
-    yield 
-    
+    print("Connecting to Redis...")
+    if ping_redis():
+        print("Redis connected.")
+    else:
+        print("Redis not reachable - limiter will fall back to Postgres.")
+    yield
+
     print("Shutting down...")
+
 
 app = FastAPI(title="Language Tutor API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000", "https://gato-lingo.netlify.app"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://gato-lingo.netlify.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,9 +64,12 @@ app.include_router(usage_tokens_controller.router)
 
 # WebSocket handler
 conversation_handler = ConversationHandler()
+
+
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
 
 @app.websocket("/ws/conversation")
 async def websocket_endpoint(websocket: WebSocket):
