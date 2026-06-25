@@ -1,4 +1,4 @@
-import redis 
+import redis
 
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
@@ -12,20 +12,22 @@ router = APIRouter(prefix="/usage", tags=["usage"])
 
 
 @router.get("/update", response_model=UsageTokenResponse)
-def update_usage_token(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_usage_token(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     usage_token = db.get(UsageToken, current_user.usage_token_id)
     if not usage_token:
         return UsageTokenResponse(
-            status="success"
+            status="success",
             message="No usage token associated with this user",
         )
-    
+
     try:
         allowed, count = increment_usage(usage_token.id, usage_token.usage_limit)
     except redis.RedisError as err:
         print(f"Redis unavailable, falling back to Postgres limiter: {err}")
         return _update_usage_postgres(db, usage_token)
-    
+
     if allowed:
         return UsageTokenResponse(
             status="success",
@@ -38,7 +40,6 @@ def update_usage_token(db: Session = Depends(get_db), current_user: User = Depen
 
 
 def _update_usage_postgres(db: Session, usage_token: UsageToken) -> UsageTokenResponse:
-
     if usage_token.daily_usage < usage_token.usage_limit:
         usage_token.daily_usage += 1
         db.add(usage_token)
