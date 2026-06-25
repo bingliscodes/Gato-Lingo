@@ -9,8 +9,8 @@ from ..utils.rate_limit import get_usage, resolve_key_and_limit
 router = APIRouter(prefix="/usage", tags=["usage"])
 
 
-@router.get("/update", response_model=UsageTokenResponse)
-def update_usage_token(current_user: User = Depends(get_current_user)):
+@router.get("/me", response_model=UsageTokenResponse)
+def read_usage(current_user: User = Depends(get_current_user)):
     key, limit = resolve_key_and_limit(current_user)
 
     try:

@@ -333,10 +333,10 @@ export interface UsageTokenResponse {
   message: string;
 }
 
-export const updateUsageToken = async () => {
+export const getUsage = async () => {
   try {
     const res = await axios.get<UsageTokenResponse>(
-      `${import.meta.env.VITE_API_BASE_URL}usage/update`,
+      `${import.meta.env.VITE_API_BASE_URL}usage/me`,
       { withCredentials: true },
     );
     return res.data;

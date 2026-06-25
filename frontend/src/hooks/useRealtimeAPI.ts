@@ -9,7 +9,7 @@ import {
 } from 'react';
 import {
   getEphemeralToken,
-  updateUsageToken,
+  getUsage,
   type ConversationTurn,
 } from '@/utils/apiCalls';
 
@@ -131,7 +131,7 @@ export const useRealtimeAPI = (): UseRealtimeAPIReturn => {
   const connect = useCallback(
     async (instructions?: string, language?: string) => {
       // Before we establish the connection, ensure the token is valid
-      const usageTokenRes = await updateUsageToken();
+      const usageTokenRes = await getUsage();
       if (usageTokenRes.status !== 'success') {
         console.log(usageTokenRes.message);
         return;
