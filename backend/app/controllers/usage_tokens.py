@@ -15,7 +15,7 @@ router = APIRouter(prefix="/usage", tags=["usage"])
 def update_usage_token(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
-    key, limit = resolve_key_and_limit(key, limit)
+    key, limit = resolve_key_and_limit(current_user)
 
     try:
         allowed, count = increment_usage(key, limit)
