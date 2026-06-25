@@ -1,9 +1,4 @@
 services:
-  - type: redis
-    name: gato-lingo-redis
-    ipAllowList: []
-    plan: free
-
   - type: web
     name: gato-lingo
     runtime: python
@@ -28,12 +23,10 @@ services:
       - key: FRONTEND_URL
         value: https://gato-lingo.netlify.app
 
-      # --- Redis: injected from the service above ---
+      # --- Redis (Upstash): URL contains a password, so set it in the
+      # dashboard, not in git. Use the rediss:// (TLS) connection string. ---
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: gato-lingo-redis
-          property: connectionString
+        sync: false
 
       # --- secrets: declared here, VALUES stay in the dashboard ---
       - key: ANTHROPIC_API_KEY
