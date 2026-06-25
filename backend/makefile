@@ -8,4 +8,4 @@ db:
 	docker exec -it language_tutor_db psql -U postgres -d language_tutor
 
 test:
-	cd backend && python -m pytest
+	python -m pytest
