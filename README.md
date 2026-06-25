@@ -39,9 +39,9 @@ Gato Lingo solves a real pain point in language education: speaking practice and
 
 <img src="docs/screenshots/vocabulary-lists.png" alt="Reusable vocabulary lists that can be attached to any exam" width="700">
 
-<!-- ### Student — live spoken exam
+### Student — live spoken exam
+
 <img src="docs/screenshots/student-exam-session.png" alt="Student taking a real-time voice exam with the AI tutor" width="700">
--->
 
 <!--
 To add more, follow the same pattern:
