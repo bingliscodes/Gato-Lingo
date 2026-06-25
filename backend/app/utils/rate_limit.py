@@ -17,6 +17,12 @@ def resolve_key_and_limit(user) -> tuple[str, int]:
     return f"usage:user:{user.id}:{_today()}", settings.max_daily_requests
 
 
+def get_usage(key: str) -> int:
+    """Current count for `key` without incrementing. 0 if unset."""
+    value = redis_client.get(key)
+    return int(value) if value else 0
+
+
 def increment_usage(key: str, limit: int) -> tuple[bool, int]:
     count = redis_client.incr(key)
     if count == 1:
