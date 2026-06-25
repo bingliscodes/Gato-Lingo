@@ -1,19 +1,24 @@
 from datetime import datetime, timezone
 
+from ..config import settings
 from ..redis_client import redis_client
 
 USAGE_TTL_SECONDS = 60 * 60 * 48
 
 
-def _usage_key(token_id) -> str:
-    today = datetime.now(timezone.utc).date().isoformat()
-    return f"usage:{token_id}:{today}"
+def _today() -> str:
+    return datetime.now(timezone.utc).date().isoformat()
 
 
-def increment_usage(token_id, limit: int) -> tuple[bool, int]:
-    key = _usage_key(token_id)
+def resolve_key_and_limit(user) -> tuple[str, int]:
+    token = user.usage_token
+    if token and token.name == "demo":
+        return f"usage:demo:{_today()}", token.usage_limit
+    return f"usage:user:{user.id}:{_today()}", settings.max_daily_requests
+
+
+def increment_usage(key: str, limit: int) -> tuple[bool, int]:
     count = redis_client.incr(key)
     if count == 1:
         redis_client.expire(key, USAGE_TTL_SECONDS)
-
     return count <= limit, count
