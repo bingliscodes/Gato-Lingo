@@ -58,10 +58,11 @@ To add more, follow the same pattern:
 | **Frontend**           | React 18, TypeScript, Vite, Chakra UI v3, React Router 7, Zod, Axios                                                    |
 | **Backend**            | Python 3.11, FastAPI, SQLModel / SQLAlchemy 2, Pydantic v2                                                              |
 | **Database**           | PostgreSQL 17 (local via Docker; Neon in production)                                                                    |
+| **Cache / rate limit** | Redis (local via Docker; Upstash in production) — atomic daily usage counters                                           |
 | **AI / ML**            | Anthropic Claude (Haiku for conversation, Sonnet for grading), OpenAI Realtime API (WebRTC), OpenAI Whisper (STT) & TTS |
 | **Auth**               | JWT (HS256) in HTTP-only cookies, Argon2 password hashing (`pwdlib`)                                                    |
 | **Realtime transport** | WebSockets + WebRTC (browser ↔ OpenAI)                                                                                  |
-| **Infra / DevOps**     | Docker Compose (local Postgres + pgAdmin), Render (API), Netlify (SPA)                                                  |
+| **Infra / DevOps**     | Docker Compose (local Postgres + pgAdmin + Redis), Render (API), Netlify (SPA)                                          |
 
 ---
 
@@ -114,7 +115,7 @@ Built on SQLModel with non-trivial relationships: self-referential teacher↔stu
 - Passwords are hashed with **Argon2**; unknown-email logins run a dummy hash compare to defeat timing oracles.
 - Tokens issued before a password change are rejected, forcing re-login after a reset.
 - Role-based access control gates teacher-only endpoints.
-- A per-user **daily usage-token** system rate-limits expensive AI calls, refreshed by a production cron script.
+- A **Redis-backed daily rate limiter** caps expensive AI calls. Counts are atomic `INCR`s on date-scoped keys with a TTL (so the daily window self-resets — no cron). Enforcement happens **server-side at the point of spend** (`/realtime/token`), which both requires auth and consumes quota before minting an OpenAI session. Authenticated users are limited per-user; anonymous demo sessions share a single daily pool. The token-minting endpoint fails *closed* (503) if Redis is unavailable, to avoid unmetered spend.
 
 ---
 
@@ -136,7 +137,7 @@ Built on SQLModel with non-trivial relationships: self-referential teacher↔stu
 │       ├── components/    # teacher & student dashboards, shared UI
 │       ├── hooks/         # useRealtimeAPI (WebRTC), …
 │       └── contexts/      # UserContext (JWT hydration)
-└── docker-compose.yml  # local Postgres 17 + pgAdmin
+└── docker-compose.yml  # local Postgres 17 + pgAdmin + Redis
 ```
 
 ---
@@ -150,7 +151,7 @@ Built on SQLModel with non-trivial relationships: self-referential teacher↔stu
 ### 1. Database
 
 ```bash
-docker-compose up -d        # Postgres on :5432, pgAdmin on :5050
+docker-compose up -d        # Postgres on :5432, pgAdmin on :5050, Redis on :6379
 ```
 
 ### 2. Backend
@@ -178,5 +179,5 @@ npm run dev                 # Vite on :5173
 - **Real-time AI over WebRTC** — integrating a browser-to-OpenAI WebRTC peer connection (data channel, mic capture, audio playback) for a responsive voice UX.
 - **LLM orchestration & structured output** — chaining STT → LLM → TTS, and coercing LLMs into reliable, parseable JSON for automated grading.
 - **Pragmatic trade-offs** — keeping a fully server-orchestrated pipeline alongside a low-latency client-driven one, each suited to a different job, with shared persistence and scoring.
-- **Production-minded auth & cost control** — cookie-based JWT auth with Argon2, RBAC, timing-attack mitigation, and a usage-token rate limiter on costly model calls.
+- **Production-minded auth & cost control** — cookie-based JWT auth with Argon2, RBAC, timing-attack mitigation, and a Redis-backed daily rate limiter enforced server-side at the point of spend (atomic counters, TTL-based reset, fail-closed on outage).
 - **Full deployment story** — containerized local dev, deployed across Render (API) and Netlify (SPA) with environment-aware configuration.

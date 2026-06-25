@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
     if ping_redis():
         print("Redis connected.")
     else:
-        print("Redis not reachable - limiter will fall back to Postgres.")
+        print("Redis not reachable - session minting (/realtime/token) will be refused (503) until Redis recovers.")
     yield
 
     print("Shutting down...")
