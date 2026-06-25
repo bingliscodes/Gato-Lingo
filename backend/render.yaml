@@ -1,7 +1,55 @@
 services:
+  - type: redis
+    name: gato-lingo-redis
+    ipAllowList: []
+    plan: free
+
   - type: web
     name: gato-lingo
     runtime: python
     pythonVersion: "3.11.9"
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      # --- non-secret config: lives in code ---
+      - key: ENVIRONMENT_MODE
+        value: production
+      - key: USE_MOCK_SERVICES
+        value: "false"
+      - key: MAX_DAILY_REQUESTS
+        value: "50"
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_EXPIRES_IN_MINUTES
+        value: "10080"
+      - key: PGSSLMODE
+        value: require
+      - key: PGCHANNELBINDING
+        value: require
+      - key: FRONTEND_URL
+        value: https://gato-lingo.netlify.app
+
+      # --- Redis: injected from the service above ---
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: gato-lingo-redis
+          property: connectionString
+
+      # --- secrets: declared here, VALUES stay in the dashboard ---
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: PGUSER
+        sync: false
+      - key: PGPASSWORD
+        sync: false
+      - key: PGHOST
+        sync: false
+      - key: PGDATABASE
+        sync: false
