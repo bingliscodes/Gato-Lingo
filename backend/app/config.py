@@ -1,15 +1,16 @@
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     anthropic_api_key: str = ""
     openai_api_key: str = ""
     use_mock_services: bool = True
     max_daily_requests: int = 50
-    
+
     postgres_user: str = "postgres"
     postgres_password: str = "postgres"
     db_name: str = ""
-    
+
     pguser: str = ""
     pgpassword: str = ""
     pghost: str = ""
@@ -25,9 +26,12 @@ class Settings(BaseSettings):
 
     secret_key: str = "super-secret-key"
 
-    frontend_url: str="http://localhost:5173"
-    
+    frontend_url: str = "http://localhost:5173"
+
+    redis_url: str = "redis://localhost:6379/0"
+
     class Config:
         env_file = ".env"
+
 
 settings = Settings()
