@@ -2,16 +2,17 @@ import anthropic
 import json
 import re
 
+
 class ScoringEngine:
     def __init__(self, api_key: str):
         self.client = anthropic.Anthropic(api_key=api_key)
 
     def analyze_with_ai(
-            self,
-            target_language: str,
-            conversation_turns: list,
-            expected_tenses: list[str],
-            vocabulary: list[str],
+        self,
+        target_language: str,
+        conversation_turns: list,
+        expected_tenses: list[str],
+        vocabulary: list[str],
     ) -> dict:
         # Clean Data
         conversation = ""
@@ -20,7 +21,7 @@ class ScoringEngine:
             conversation += dialogue + "\n"
 
         vocabulary_section = "\n".join([f"-{item}" for item in vocabulary])
-        
+
         # 1. Build the prompt
         system = "You are a language learning assessment assistant. Always respond with valid JSON only, no other text."
         user_message = f"""
@@ -35,7 +36,7 @@ class ScoringEngine:
 
         Please evaluate and respond in JSON format:
         {{
-            "vocabulary_usage_score:": <0.0-1.0>,
+            "vocabulary_usage_score": <0.0-1.0>,
             "vocabulary_errors": [<list of specific errors>],
             "vocabulary_used": [<list of target vocabulary items successfully used>],
             "vocabulary_missed": [<list of target vocabulary items missed or misused>],
@@ -54,19 +55,19 @@ class ScoringEngine:
             model="claude-sonnet-4-6",
             max_tokens=10000,
             system=system,
-            messages=[{"role": "user", "content": user_message}]
+            messages=[{"role": "user", "content": user_message}],
         )
-        
+
         # 3. Parse JSON response
         response_text = response.content[0].text
-        
+
         extracted_text = extract_json_from_markdown(response_text)
-        
+
         if extracted_text is None:
             raise ValueError("Failed to parse scoring response from AI")
 
         return extracted_text
-    
+
 
 def extract_json_from_markdown(response_text: str) -> dict | None:
     try:
@@ -85,5 +86,5 @@ def extract_json_from_markdown(response_text: str) -> dict | None:
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON: {e}")
             return None
-    
+
     return None
