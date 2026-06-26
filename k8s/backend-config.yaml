@@ -1,0 +1,26 @@
+# Non-secret config. These become environment variables in the backend Pod.
+# pydantic-settings maps each (case-insensitively) onto a Settings field, e.g.
+# POSTGRES_HOST -> postgres_host.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  ENVIRONMENT_MODE: "development" # selects the dev DB-URL branch in database.py
+  USE_MOCK_SERVICES: "true" # no real Anthropic/OpenAI keys needed in-cluster
+  POSTGRES_HOST: "postgres" # the Postgres SERVICE name (not localhost!)
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: "postgres"
+  DB_NAME: "language_tutor"
+  REDIS_URL: "redis://redis:6379/0" # the future Redis service (deployed next)
+---
+# Sensitive values. stringData lets us write plaintext; K8s base64-encodes it.
+# NOTE: these are throwaway local-cluster values. Never commit real secrets.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-secret
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: "postgres"
+  JWT_SECRET: "dev-cluster-secret-not-for-prod"
