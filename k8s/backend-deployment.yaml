@@ -1,0 +1,30 @@
+apiVersion: apps/v1 # Deployments live in the apps/v1 API group
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 1 # desired state: keep exactly 1 Pod running
+  selector:
+    matchLabels:
+      app: backend # this Deployment owns Pods with this label...
+  template: # ...and stamps that label onto the Pods it creates
+    metadata:
+      labels:
+        app: backend # MUST match selector.matchLabels above
+    spec:
+      containers:
+        - name: backend
+          image: gato-lingo-backend:dev
+          # Use the locally-built image instead of pulling from a registry.
+          # (We never pushed it anywhere, so a pull would fail.)
+          imagePullPolicy: IfNotPresent
+          # Inject every key from the ConfigMap and Secret as environment vars.
+          envFrom:
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: backend-secret
+          ports:
+            - containerPort: 8000
