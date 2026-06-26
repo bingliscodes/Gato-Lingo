@@ -1,0 +1,65 @@
+# --- Storage: a request for a 1Gi volume that OUTLIVES the Pod -----------
+# A PersistentVolumeClaim (PVC) is a *request* for storage. Docker Desktop's
+# default StorageClass dynamically provisions a PersistentVolume to satisfy it.
+# Because the volume is separate from the Pod, DB data survives Pod restarts
+# and rescheduling — that's what makes Postgres "stateful".
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce          # mounted read-write by a single node
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17.4-alpine3.21   # same image as docker-compose
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres               # TODO(step 3): move to a Secret
+            - name: POSTGRES_DB
+              value: language_tutor
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc          # attach the PVC above
+---
+# --- The stable address the backend will use as its DB "host" ------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres            # <-- in-cluster DNS name. backend connects to
+                            #     host "postgres", port 5432 (NOT localhost).
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP
