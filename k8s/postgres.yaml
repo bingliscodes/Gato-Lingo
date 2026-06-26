@@ -9,7 +9,7 @@ metadata:
   name: postgres-pvc
 spec:
   accessModes:
-    - ReadWriteOnce          # mounted read-write by a single node
+    - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
@@ -32,12 +32,15 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:17.4-alpine3.21   # same image as docker-compose
+          image: postgres:17.4-alpine3.21 # same image as docker-compose
           env:
             - name: POSTGRES_USER
               value: postgres
             - name: POSTGRES_PASSWORD
-              value: postgres               # TODO(step 3): move to a Secret
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-password
+                  key: password
             - name: POSTGRES_DB
               value: language_tutor
           ports:
@@ -48,14 +51,15 @@ spec:
       volumes:
         - name: postgres-data
           persistentVolumeClaim:
-            claimName: postgres-pvc          # attach the PVC above
+            claimName: postgres-pvc # attach the PVC above
 ---
 # --- The stable address the backend will use as its DB "host" ------------
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres            # <-- in-cluster DNS name. backend connects to
-                            #     host "postgres", port 5432 (NOT localhost).
+  name:
+    postgres # <-- in-cluster DNS name. backend connects to
+    #     host "postgres", port 5432 (NOT localhost).
 spec:
   selector:
     app: postgres

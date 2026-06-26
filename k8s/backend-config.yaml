@@ -12,15 +12,5 @@ data:
   POSTGRES_PORT: "5432"
   POSTGRES_USER: "postgres"
   DB_NAME: "language_tutor"
-  REDIS_URL: "redis://redis:6379/0" # the future Redis service (deployed next)
----
-# Sensitive values. stringData lets us write plaintext; K8s base64-encodes it.
-# NOTE: these are throwaway local-cluster values. Never commit real secrets.
-apiVersion: v1
-kind: Secret
-metadata:
-  name: backend-secret
-type: Opaque
-stringData:
-  POSTGRES_PASSWORD: "postgres"
-  JWT_SECRET: "dev-cluster-secret-not-for-prod"
+  REDIS_URL: "redis://redis:6379/0" # the Redis service (k8s/redis.yaml)
+# Secrets live in k8s/secrets.yaml (gitignored) — see k8s/secrets.example.yaml.

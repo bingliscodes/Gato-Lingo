@@ -20,11 +20,19 @@ spec:
           # Use the locally-built image instead of pulling from a registry.
           # (We never pushed it anywhere, so a pull would fail.)
           imagePullPolicy: IfNotPresent
-          # Inject every key from the ConfigMap and Secret as environment vars.
+          # Inject all keys from the ConfigMap and the backend Secret (JWT_SECRET).
           envFrom:
             - configMapRef:
                 name: backend-config
             - secretRef:
                 name: backend-secret
+          env:
+            # DB password from the SAME Secret that Postgres uses (single source
+            # of truth). secretKeyRef pulls ONE key: `password` -> POSTGRES_PASSWORD.
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-password
+                  key: password
           ports:
             - containerPort: 8000

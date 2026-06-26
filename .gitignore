@@ -36,3 +36,6 @@ dist/
 
 # Scripts
 *.sh
+
+# YAML Credentials — real K8s Secret values (use k8s/secrets.example.yaml as a template)
+k8s/secrets.yaml
