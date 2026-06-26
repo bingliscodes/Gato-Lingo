@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Repository Layout
 
 Monorepo with two deployables:
+
 - `backend/` — FastAPI app (`app/main.py`), deployed to Render (`backend/render.yaml`) as `gato-lingo`.
 - `frontend/` — React + TypeScript + Vite + Chakra UI v3, deployed to Netlify (`gato-lingo.netlify.app`).
 - `docker-compose.yml` (repo root) — local Postgres 17 on `:5432`, pgAdmin on `:5050`, and Redis 7 on `:6379`.
@@ -13,18 +14,22 @@ Monorepo with two deployables:
 ## Common Commands
 
 ### Backend (`cd backend`)
+
 - `make dev` — `uvicorn app.main:app --reload` (dev server on `:8000`).
 - `python reset_db.py` — **destructive**: drops `public` schema, recreates all tables, reseeds (prompts `yes/no`).
 - `make seed` — runs `reset_db.py` (same destructive behavior, despite the name).
-- `pip install -r requirements.txt` — install deps. Python 3.11.9 (see `render.yaml`, `.python-version`).
+- `pip install -r requirements.txt` — install deps. Python 3.11.9 (see `render.yaml`, `.python-version`). Test-only deps live in `requirements-dev.txt` (`pip install -r requirements-dev.txt`).
+- `make test` — runs `python -m pytest` (config in `backend/pyproject.toml`). Run from `backend/` with the venv active. See Testing below.
 
 ### Frontend (`cd frontend`)
+
 - `npm run dev` — Vite dev server on `:5173`.
 - `npm run build` — `tsc && vite build` (typecheck gates the build).
 - `npm run preview` — preview production build.
-- No test runner is wired up in either tree.
+- No test runner is wired up on the frontend yet (the backend has pytest — see Testing).
 
 ### Database (repo root)
+
 - `docker-compose up -d` — starts `language_tutor_db` (Postgres), `pgadmin`, and `gato_lingo_redis` (Redis). Default creds: `postgres`/`postgres`, DB `language_tutor`.
 - Tables are auto-created on backend startup via `init_db()` in the FastAPI `lifespan`, then `seed_all()` runs unconditionally (idempotent — each `seed_*` function early-returns if rows already exist). The `lifespan` also pings Redis at startup and logs reachability (it does not block startup if Redis is down).
 - `make db` — opens a `psql` shell into the local Postgres container (`docker exec -it language_tutor_db psql -U postgres -d language_tutor`).
@@ -87,6 +92,18 @@ The daily AI-usage limiter is **Redis-backed**. There is no `daily_usage` column
 - **Enforcement is server-side at the point of spend.** `POST /realtime/token` requires auth (`get_current_user`) and calls `increment_usage` **before** minting the OpenAI session; over limit → `429`. This is the real gate. `GET /usage/me` (in `usage_tokens.py`) is a **read-only** UI helper (`get_usage`, a plain `GET`) — it must never `INCR` or it double-counts.
 - **Failure modes are deliberate and asymmetric:** `/realtime/token` fails **closed** (`503`) if Redis is down (don't risk unmetered OpenAI spend); `/usage/me` fails **open** (it's just a hint). There is **no Postgres fallback** — if you see a reference to one, it's stale.
 - `config.max_daily_requests` is the live per-user default (previously dead code). `redis_client` is a module-level shared client; import it, don't re-create.
+
+### Testing (`backend/tests/`)
+
+pytest, config in `backend/pyproject.toml` (`pythonpath = ["."]`, `testpaths = ["tests"]`). Run from `backend/` with the venv active (`make test`, or `python -m pytest` — prefer `python -m` so it uses the venv's interpreter, not a global pytest). Test-only deps are in `requirements-dev.txt`. No suite on the frontend yet.
+
+Fixtures live in `tests/conftest.py` and lean on FastAPI's `dependency_overrides` + `monkeypatch`:
+
+- **DB:** in-memory SQLite per test (`StaticPool`, `check_same_thread=False`); `SQLModel.metadata.create_all` works because importing `app.main` pulls in every model. `get_db` is overridden to the test session.
+- **Redis:** `fakeredis` swapped in via `monkeypatch.setattr("app.utils.rate_limit.redis_client", ...)`. NOTE: patch the name _in the module that uses it_ (`rate_limit` did `from ..redis_client import redis_client`), not `app.redis_client`.
+- **Auth:** `auth_client` overrides `get_current_user` to return a persisted test user; tests for the 401 path use the plain `client` (no override) so the real dependency rejects.
+- **`TestClient` is intentionally NOT used as a context manager** — entering its context fires the app `lifespan` (`init_db`/`seed_all`/Redis ping) against real infrastructure. Keep it as a plain `TestClient(app)`.
+- External calls (e.g. OpenAI mint in `/realtime/token`) are monkeypatched (`app.controllers.realtime.OpenAI`) so tests never hit the network.
 
 ### Frontend structure (`frontend/src/`)
 

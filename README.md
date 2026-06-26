@@ -115,7 +115,7 @@ Built on SQLModel with non-trivial relationships: self-referential teacher↔stu
 - Passwords are hashed with **Argon2**; unknown-email logins run a dummy hash compare to defeat timing oracles.
 - Tokens issued before a password change are rejected, forcing re-login after a reset.
 - Role-based access control gates teacher-only endpoints.
-- A **Redis-backed daily rate limiter** caps expensive AI calls. Counts are atomic `INCR`s on date-scoped keys with a TTL (so the daily window self-resets — no cron). Enforcement happens **server-side at the point of spend** (`/realtime/token`), which both requires auth and consumes quota before minting an OpenAI session. Authenticated users are limited per-user; anonymous demo sessions share a single daily pool. The token-minting endpoint fails *closed* (503) if Redis is unavailable, to avoid unmetered spend.
+- A **Redis-backed daily rate limiter** caps expensive AI calls. Counts are atomic `INCR`s on date-scoped keys with a TTL (so the daily window self-resets — no cron). Enforcement happens **server-side at the point of spend** (`/realtime/token`), which both requires auth and consumes quota before minting an OpenAI session. Authenticated users are limited per-user; anonymous demo sessions share a single daily pool. The token-minting endpoint fails _closed_ (503) if Redis is unavailable, to avoid unmetered spend.
 
 ---
 
@@ -171,6 +171,16 @@ cd frontend
 npm install
 npm run dev                 # Vite on :5173
 ```
+
+### Tests (backend)
+
+```bash
+cd backend
+pip install -r requirements-dev.txt
+make test                   # python -m pytest
+```
+
+The backend suite uses **pytest** with in-memory SQLite and `fakeredis`, so it runs without Docker or any live services. FastAPI dependency overrides swap the database and Redis client, and external calls (OpenAI) are mocked — tests cover the rate-limiter internals and server-side enforcement on `/realtime/token` (401 unauthenticated, 429 over-limit).
 
 ---
 
