@@ -62,7 +62,7 @@ To add more, follow the same pattern:
 | **AI / ML**            | Anthropic Claude (Haiku for conversation, Sonnet for grading), OpenAI Realtime API (WebRTC), OpenAI Whisper (STT) & TTS |
 | **Auth**               | JWT (HS256) in HTTP-only cookies, Argon2 password hashing (`pwdlib`)                                                    |
 | **Realtime transport** | WebSockets + WebRTC (browser ↔ OpenAI)                                                                                  |
-| **Infra / DevOps**     | Docker Compose (local Postgres + pgAdmin + Redis), Render (API), Netlify (SPA)                                          |
+| **Infra / DevOps**     | Docker, Docker Compose (local Postgres + pgAdmin + Redis), Kubernetes (local learning cluster), Render (API), Netlify (SPA) |
 
 ---
 
@@ -181,6 +181,27 @@ make test                   # python -m pytest
 ```
 
 The backend suite uses **pytest** with in-memory SQLite and `fakeredis`, so it runs without Docker or any live services. FastAPI dependency overrides swap the database and Redis client, and external calls (OpenAI) are mocked — tests cover the rate-limiter internals and server-side enforcement on `/realtime/token` (401 unauthenticated, 429 over-limit).
+
+### Kubernetes (local learning cluster)
+
+> **Note:** production runs on managed PaaS (Render + Netlify + Neon + Upstash). The Kubernetes setup is a **local learning environment** that orchestrates the full stack on Docker Desktop's single-node cluster — it is not the production deployment.
+
+The `k8s/` manifests containerize and run the whole app locally, exercising the core building blocks:
+
+- **Backend** — `Deployment` + `Service`, built from `backend/Dockerfile`.
+- **Postgres** — `Deployment` + `Service` with a `PersistentVolumeClaim` (stateful storage that survives Pod restarts).
+- **Redis** — `Deployment` + `Service`, no PVC (stateless — rate-limit counters are disposable).
+- **Config/secrets** — non-secret values in a `ConfigMap`; the DB password and JWT secret in `Secret`s. Real secret values live in a **gitignored** `k8s/secrets.yaml` (template: `k8s/secrets.example.yaml`); only ConfigMaps/Deployments/Services are committed. Workloads find each other by Service DNS name — the backend reaches Postgres at `postgres:5432`, never `localhost`.
+
+```bash
+# Enable Kubernetes in Docker Desktop, then:
+docker build -t gato-lingo-backend:dev backend/
+cp k8s/secrets.example.yaml k8s/secrets.yaml      # fill in real values
+kubectl apply -f k8s/secrets.yaml -f k8s/postgres.yaml -f k8s/redis.yaml \
+  -f k8s/backend-config.yaml -f k8s/backend-deployment.yaml -f k8s/backend-service.yaml
+kubectl get pods                                  # backend + postgres + redis Running
+kubectl port-forward service/backend 8000:8000    # then: curl localhost:8000/health
+```
 
 ---
 

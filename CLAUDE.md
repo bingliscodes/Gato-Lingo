@@ -9,6 +9,8 @@ Monorepo with two deployables:
 - `backend/` — FastAPI app (`app/main.py`), deployed to Render (`backend/render.yaml`) as `gato-lingo`.
 - `frontend/` — React + TypeScript + Vite + Chakra UI v3, deployed to Netlify (`gato-lingo.netlify.app`).
 - `docker-compose.yml` (repo root) — local Postgres 17 on `:5432`, pgAdmin on `:5050`, and Redis 7 on `:6379`.
+- `backend/Dockerfile` + `backend/.dockerignore` — container image for the backend (`gato-lingo-backend:dev`).
+- `k8s/` (repo root) — Kubernetes manifests for a **local** Docker Desktop cluster (learning, not production). See "Local Kubernetes" below.
 - `myenv/` — Python virtualenv (gitignored in practice).
 
 ## Common Commands
@@ -113,6 +115,17 @@ Fixtures live in `tests/conftest.py` and lean on FastAPI's `dependency_overrides
 - Path alias `@/` → `src/` (configured in `vite.config.ts` and `tsconfig.app.json`).
 - `vite-plugin-svgr` is enabled — import `.svg?react` for inline React components.
 - API layer is plain axios in `src/utils/apiCalls.ts` and `src/utils/authentication.ts`; every call passes `withCredentials: true`. There is no global query/caching library — components manage their own loading state.
+
+## Local Kubernetes (learning)
+
+The `k8s/` manifests run the full stack (backend + Postgres + Redis) on Docker Desktop's single-node cluster. This is a **local learning setup, NOT the production deployment** — production is Render/Netlify/Neon/Upstash. Don't conflate the two (e.g. don't describe this as "production Kubernetes").
+
+- **Manifests:** `backend-deployment.yaml` + `backend-service.yaml`, `postgres.yaml` (Deployment + Service + `PersistentVolumeClaim`), `redis.yaml` (Deployment + Service, no PVC — counters are disposable), `backend-config.yaml` (ConfigMap only).
+- **Secrets convention:** real values live in `k8s/secrets.yaml`, which is **gitignored**; `k8s/secrets.example.yaml` is the committed template. Never commit `secrets.yaml`, and never `kubectl apply -f k8s/` blindly — that would also apply the `.example` template (with `CHANGE_ME` values). Apply files explicitly. Use `stringData` (plaintext) not `data` (base64) in Secret manifests.
+- **Single-source DB password:** one `postgres-password` Secret (key `password`) is read by BOTH Postgres and the backend via `secretKeyRef` (→ env `POSTGRES_PASSWORD`). Don't reintroduce a second copy.
+- **Image:** `gato-lingo-backend:dev` is built locally (`docker build -t gato-lingo-backend:dev backend/`) and used with `imagePullPolicy: IfNotPresent` (never pushed to a registry). Code changes require a **rebuild** before they reach the cluster (code is baked into the image), then re-apply or `kubectl rollout restart deployment/backend`.
+- **Networking:** workloads reach each other by Service DNS name, never `localhost`. The backend connects to Postgres at host `postgres` — enabled by `config.postgres_host`/`postgres_port` (default `localhost`/`5432` for non-K8s dev), overridden to `postgres`/`5432` via the ConfigMap. `ENVIRONMENT_MODE=development` selects the dev DB-URL branch in `database.py`; `USE_MOCK_SERVICES=true` avoids needing real AI keys in-cluster.
+- **Status:** Phases 1–4 done (containerize, Deployment/Service, ConfigMap/Secret, Postgres+Redis in-cluster). Next: liveness/readiness probes + resource limits + rolling updates (Phase 5), then Ingress + HPA (Phase 6). Full roadmap + context in memory `gatolingo-k8s-learning`.
 
 ## Conventions Worth Knowing
 
