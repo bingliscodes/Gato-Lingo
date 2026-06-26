@@ -11,6 +11,7 @@ def _today() -> str:
 
 
 def resolve_key_and_limit(user) -> tuple[str, int]:
+    """Takes in a user and returns a tuple with their Redis key and daily usage limit"""
     token = user.usage_token
     if token and token.name == "demo":
         return f"usage:demo:{_today()}", token.usage_limit
