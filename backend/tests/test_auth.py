@@ -30,11 +30,12 @@ def test_login_success_returns_token(client):
 
     assert res.status_code == 200
     assert res.json()["access_token"]
+    assert "jwt" in res.cookies
 
 
 def test_signup_duplicate_email_returns_400(client):
     client.post("/auth/signup", json=VALID_SIGNUP)
-    second = client.post("auth/signup", json=VALID_SIGNUP)
+    second = client.post("/auth/signup", json=VALID_SIGNUP)
 
     assert second.status_code == 400
 
